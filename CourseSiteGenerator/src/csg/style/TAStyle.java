@@ -30,7 +30,7 @@ public class TAStyle extends AppStyleComponent {
     public static String CLASS_TA_TABLE_COLUMN_HEADER = "ta_table_column_header";
     public static String CLASS_ADD_TA_PANE = "add_ta_pane";
     public static String CLASS_ADD_TA_TEXT_FIELD = "add_ta_text_field";
-    public static String CLASS_ADD_TA_BUTTON = "add_ta_button";
+    public static String CLASS_ADD_TA_BUTTON = "add_ta_button";    
     public static String CLASS_CLEAR_TA_BUTTON="clear_ta_button";
 
     // ON THE RIGHT WE HAVE THE OFFICE HOURS GRID

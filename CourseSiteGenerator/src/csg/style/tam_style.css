@@ -38,26 +38,26 @@
 }
 
 .bordered_pane {
-    -fx-background-color: #aaaaff;
+    -fx-background-color: #FFECD7;
     -fx-background-radius: 5.0;
     -fx-padding: 15;
     -fx-spacing: 10;
     -fx-border-width: 2px;
-    -fx-border-color: #7777dd;
+    -fx-border-color: #000000;
 }
 
 .header_pane{
-    -fx-background-color:#ccccff;
+    -fx-background-color:#FFD8AD;
 }
 
 .header_label {
-    -fx-font-size: 20pt;
+    -fx-font-size: 18pt;
     -fx-font-weight: bold;
     -fx-padding: 5 10 5 10;
 }
 
 .ta_table{
-    -fx-font-size:16pt;
+    -fx-font-size:12pt;
     -fx-background-color:#000066;
 }
 
@@ -71,24 +71,24 @@
 }
 
 .add_ta_text_field{
-    -fx-font-size: 14pt;
+    -fx-font-size: 12pt;
 }
 
 .add_ta_button{
-    -fx-font-size: 14pt;
+    -fx-font-size: 12pt;
     -fx-font-weight: bold;
   -fx-border-radius: 10 10 10 10;
   -fx-background-radius: 10 10 10 10;    
 }
-clear_ta_button{
-    -fx-font-size: 14pt;
+.clear_ta_button{
+    -fx-font-size: 12pt;
     -fx-font-weight: bold;
-  -fx-border-radius: 10 10 10 10;
-  -fx-background-radius: 10 10 10 10;  
+    -fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;   
 }
 
 .office_hours_grid{
-    
+  
 }
 
 .office_hours_grid_time_column_header_pane{
@@ -98,7 +98,7 @@ clear_ta_button{
 
 .office_hours_grid_time_column_header_label{
     -fx-text-fill:white;
-    -fx-font-size:14pt;   
+    -fx-font-size:12pt;   
     -fx-font-weight:bold;
     -fx-padding: 10 20 10 20;
 }
@@ -111,7 +111,7 @@ clear_ta_button{
 
 .office_hours_grid_day_column_header_label{
     -fx-text-fill:white;
-    -fx-font-size:14pt;   
+    -fx-font-size:12pt;   
     -fx-font-weight:bold;
     -fx-padding: 10 20 10 20;
 }
@@ -124,7 +124,7 @@ clear_ta_button{
 }
 
 .office_hours_grid_time_cell_label{
-    -fx-font-size:14pt;
+    -fx-font-size:12pt;
     -fx-text-fill:white;
 }
 

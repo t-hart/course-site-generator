@@ -69,6 +69,7 @@
         <!-- WORKSPACE CONTROLS STUFF -->        
         <property name="TAS_HEADER_TEXT"                value="Teaching Assistants"></property>
         <property name="NAME_COLUMN_TEXT"               value="Name"></property>
+        <property name="UG_COLUMN_TEXT"                 value="Undergrad"></property>
         <property name="EMAIL_COLUMN_TEXT"              value="Email"></property>
         <property name="NAME_PROMPT_TEXT"               value="Name"></property>
         <property name="EMAIL_PROMPT_TEXT"              value="Email"></property>
@@ -82,6 +83,9 @@
         <property name="MISSING_TA_EMAIL_MESSAGE"       value="You must provide a TA Email"></property>
         <property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_TITLE"     value="TA Name and Email Not Unique"></property>
         <property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_MESSAGE"   value="You must provide a unique TA Name and Email"></property>
+        
+        <property name="DELETE_TA_TEXT"                 value="Delete"></property>
+        <property name="CLEAR_BUTTON_TEXT"              value="Clear"></property>
     </property_list>
     <property_options_list>
         <property_options name="OFFICE_HOURS_TABLE_HEADERS">
