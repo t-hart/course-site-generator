@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -23,6 +24,7 @@ import static djf.components.AppStyleComponent.CLASS_FILE_BUTTON;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.geometry.Pos;
 
 /**
  * This class provides the basic user interface for this application,
@@ -48,7 +50,7 @@ public class AppGUI {
     protected BorderPane appPane;
     
     // THIS IS THE TOP TOOLBAR AND ITS CONTROLS
-    protected FlowPane fileToolbarPane;
+    protected BorderPane fileToolbarPane;
 
     // FILE TOOLBAR BUTTONS
     protected Button newButton;
@@ -57,6 +59,9 @@ public class AppGUI {
     protected Button exitButton;
     protected Button saveAsButton;
     protected Button exportButton;
+    protected Button undoButton;
+    protected Button redoButton;
+    protected Button aboutButton;
     // THIS DIALOG IS USED FOR GIVING FEEDBACK TO THE USER
     protected AppYesNoCancelDialogSingleton yesNoCancelDialog;
     
@@ -146,16 +151,18 @@ public class AppGUI {
      * the application window. These are related to file management.
      */
     private void initFileToolbar(AppTemplate app) {
-        fileToolbarPane = new FlowPane();
-
+        fileToolbarPane = new BorderPane();
+        
+        FlowPane leftToolbar = new FlowPane();
+        leftToolbar.setAlignment(Pos.CENTER_LEFT);
         // HERE ARE OUR FILE TOOLBAR BUTTONS, NOTE THAT SOME WILL
         // START AS ENABLED (false), WHILE OTHERS DISABLED (true)
-        newButton = initChildButton(fileToolbarPane,	NEW_ICON.toString(),	    NEW_TOOLTIP.toString(),	false);
-        loadButton = initChildButton(fileToolbarPane,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
-        saveButton = initChildButton(fileToolbarPane,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
-        exitButton = initChildButton(fileToolbarPane,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
-        saveAsButton=initChildButton(fileToolbarPane,	SAVE_AS_ICON.toString(),	    SAVE_AS_TOOLTIP.toString(),	true);
-        exportButton=initChildButton(fileToolbarPane,	EXPORT_ICON.toString(),	    EXPORT_TOOLTIP.toString(),	false);
+        newButton = initChildButton(leftToolbar,	NEW_ICON.toString(),	    NEW_TOOLTIP.toString(),	false);
+        loadButton = initChildButton(leftToolbar,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
+        saveButton = initChildButton(leftToolbar,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
+        saveAsButton=initChildButton(leftToolbar,	SAVE_AS_ICON.toString(),	    SAVE_AS_TOOLTIP.toString(),	true);
+        exportButton=initChildButton(leftToolbar,	EXPORT_ICON.toString(),	    EXPORT_TOOLTIP.toString(),	false);
+        exitButton = initChildButton(leftToolbar,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
 // AND NOW SETUP THEIR EVENT HANDLERS
         fileController = new AppFileController(app);
         newButton.setOnAction(e -> {
@@ -184,6 +191,18 @@ public class AppGUI {
                 Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });	
+        
+        fileToolbarPane.setLeft(leftToolbar);
+       
+        FlowPane rightToolbar = new FlowPane();
+        rightToolbar.setAlignment(Pos.CENTER_RIGHT);
+        undoButton = initChildButton(rightToolbar,	UNDO_ICON.toString(),	    UNDO_TOOLTIP.toString(),	false);
+        redoButton = initChildButton(rightToolbar,	REDO_ICON.toString(),	    REDO_TOOLTIP.toString(),	false);
+        aboutButton = initChildButton(rightToolbar,	ABOUT_ICON.toString(),	    ABOUT_TOOLTIP.toString(),	false);
+        fileToolbarPane.setRight(rightToolbar);
+        
+
+        
     }
 
     // INITIALIZE THE WINDOW (i.e. STAGE) PUTTING ALL THE CONTROLS
@@ -208,6 +227,7 @@ public class AppGUI {
         // THE USER STARTS EDITING A COURSE
         appPane = new BorderPane();
         appPane.setTop(fileToolbarPane);
+        appPane.setStyle("-fx-background-color: #FFECD7");
         primaryScene = new Scene(appPane);
         
         // SET THE APP ICON
@@ -244,6 +264,7 @@ public class AppGUI {
 	
 	// NOW MAKE THE BUTTON
         Button button = new Button();
+        button.setPrefSize(35, 35);
         button.setDisable(disabled);
         button.setGraphic(new ImageView(buttonImage));
         Tooltip buttonTooltip = new Tooltip(props.getProperty(tooltip));

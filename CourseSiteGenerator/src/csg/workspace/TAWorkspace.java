@@ -266,12 +266,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         VBox courseDetailsPane = new VBox(10);
         courseDetailsPane.setPadding(new Insets(10, 10, 10, 10));
+        
         /***** COURSE DETAILS : COURSE INFO *****/
         GridPane courseInfoPane = new GridPane();
         courseInfoPane.setHgap(10);
         courseInfoPane.setVgap(10);
         courseInfoPane.setPadding(new Insets(10, 10, 10, 10));
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.COURSE_INFO_TEXT.toString())), 0, 0, 1, 1);
+        Label courseInfoTitle = new Label(props.getProperty(TAManagerProp.COURSE_INFO_TEXT.toString()));
+        courseInfoTitle.getStyleClass().add("section-subheader");
+        
+        courseInfoPane.add(courseInfoTitle, 0, 0, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(TAManagerProp.SUBJECT_TEXT.toString())+":"), 0, 1, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(TAManagerProp.SEMESTER_TEXT.toString())+":"), 0, 2, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(TAManagerProp.TITLE_TEXT.toString())+":"), 0, 3, 1, 1);
@@ -314,10 +318,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         changeCourseInfoButton.setPrefWidth(80);
         courseInfoPane.add(changeCourseInfoButton, 5, 6, 1, 1);
         courseInfoPane.setStyle("-fx-background-color: #EBEBEB");
-        /***** COURSE DETAILS : SITE TEMPLATE *****/
         
+        /***** COURSE DETAILS : SITE TEMPLATE *****/
         VBox siteTemplatePane = new VBox(15);
-        siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_TEXT.toString())));
+        Label siteTemplateTitle = new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_TEXT.toString()));
+        siteTemplateTitle.getStyleClass().add("section-subheader");
+        
+        siteTemplatePane.getChildren().add(siteTemplateTitle);
         siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_DISC_TEXT.toString())));
         siteTemplatePane.getChildren().add(new Label("..\\templates\\CSE219"));
         
@@ -344,7 +351,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
         GridPane pageStyleGridPane = new GridPane();
         pageStyleGridPane.setHgap(10);
         pageStyleGridPane.setVgap(10);
-        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.PAGE_STYLE_TEXT.toString())), 0, 0, 2, 1);
+        Label pageStyleTitle = new Label(props.getProperty(TAManagerProp.PAGE_STYLE_TEXT.toString()));
+        pageStyleTitle.getStyleClass().add("section-subheader");
+        
+        pageStyleGridPane.add(pageStyleTitle, 0, 0, 2, 1);
         pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.BANNER_SCHOOL_IMAGE_TEXT.toString())+":"), 0, 1, 2, 1);
         pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.LEFT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 2, 2, 1);
         pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 2, 1);
@@ -376,7 +386,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         pageStyleGridPane.add(changeRightFooterImageButton, 2, 3, 1, 1);
         
         pageStylePane.getChildren().add(pageStyleGridPane);
-        pageStylePane.getChildren().add(new Label("NOTE: New stylesheets must be placed in work/css to be selectable."));
+        
+        pageStylePane.getChildren().add(new Label(props.getProperty(TAManagerProp.STYLESHEET_DISC_TEXT.toString())));
         
         pageStylePane.setStyle("-fx-background-color: #EBEBEB");
         pageStylePane.setPadding(new Insets(10, 10, 10, 10));
@@ -647,6 +658,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         schedulePane.setStyle("-fx-background-color: #FFD8AD");
         recitationDataPane.setStyle("-fx-background-color: #FFD8AD");
         courseDetailsPane.setStyle("-fx-background-color: #FFD8AD");
+        tabPane.getStyleClass().add("tab-pane");
         appPane.setStyle("-fx-background-color: #FFECD7");
         
         tabPane.getTabs().addAll(courseDetailsTab, taDataTab, recitationDataTab, scheduleDataTab, projectDataTab);

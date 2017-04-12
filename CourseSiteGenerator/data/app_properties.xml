@@ -20,14 +20,23 @@
         <property name="EXIT_ICON"      value="Exit.png"></property>
 		<property name="SAVE_AS_ICON"   value="SaveAs.png"></property>
 		<property name= "EXPORT_ICON"   value="Export.png"></property>
+		<property name="UNDO_ICON"      value="undo.png"></property>
+		<property name="REDO_ICON"   value="redo.png"></property>
+		<property name="ABOUT_ICON"   value="about.png"></property>
+		
         
         <!-- TOOLTIPS FOR BUTTONS -->
         <property name="NEW_TOOLTIP"		value="Build a new TA Grid"></property>
         <property name="LOAD_TOOLTIP"		value="Load an existing TA Grid"></property>
         <property name="SAVE_TOOLTIP"		value="Save the current TA Grid"></property>
         <property name="EXIT_TOOLTIP"		value="Exit the Application"></property>
-        <property name="SAVE_AS_TOOLTIP"    value="SAVE AS!!"></property>
-		<property name="EXPORT_TOOLTIP"     value="export"></property>
+        <property name="SAVE_AS_TOOLTIP"    value="Save As"></property>
+		<property name="EXPORT_TOOLTIP"     value="Export"></property>
+		<property name="UNDO_TOOLTIP"		value="Undo"></property>
+        <property name="REDO_TOOLTIP"    value="Redo"></property>
+		<property name="ABOUT_TOOLTIP"     value="About"></property>
+	
+
         <!-- ERROR MESSAGES -->
         <property name="CLOSE_BUTTON_TEXT"              value="Close"></property>
 
