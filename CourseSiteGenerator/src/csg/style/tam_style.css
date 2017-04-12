@@ -156,3 +156,8 @@
     -fx-font-size: 14pt;
     -fx-font-weight: bold;
 }
+
+.tab-header {
+    -fx-font-size: 16pt;
+    -fx-font-weight: bold;
+}
