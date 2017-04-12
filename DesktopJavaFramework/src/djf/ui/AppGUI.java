@@ -59,14 +59,13 @@ public class AppGUI {
     protected Button exitButton;
     protected Button saveAsButton;
     protected Button exportButton;
-    protected Button undoButton;
-    protected Button redoButton;
-    protected Button aboutButton;
+
     // THIS DIALOG IS USED FOR GIVING FEEDBACK TO THE USER
     protected AppYesNoCancelDialogSingleton yesNoCancelDialog;
     
     // THIS TITLE WILL GO IN THE TITLE BAR
     protected String appTitle;
+    
     
     /**
      * This constructor initializes the file toolbar for use.
@@ -84,9 +83,9 @@ public class AppGUI {
 	// SAVE THESE FOR LATER
 	primaryStage = initPrimaryStage;
 	appTitle = initAppTitle;
-	       
         // INIT THE TOOLBAR
         initFileToolbar(app);
+        
 		
         // AND FINALLY START UP THE WINDOW (WITHOUT THE WORKSPACE)
         initWindow();
@@ -194,13 +193,6 @@ public class AppGUI {
         
         fileToolbarPane.setLeft(leftToolbar);
        
-        FlowPane rightToolbar = new FlowPane();
-        rightToolbar.setAlignment(Pos.CENTER_RIGHT);
-        undoButton = initChildButton(rightToolbar,	UNDO_ICON.toString(),	    UNDO_TOOLTIP.toString(),	false);
-        redoButton = initChildButton(rightToolbar,	REDO_ICON.toString(),	    REDO_TOOLTIP.toString(),	false);
-        aboutButton = initChildButton(rightToolbar,	ABOUT_ICON.toString(),	    ABOUT_TOOLTIP.toString(),	false);
-        fileToolbarPane.setRight(rightToolbar);
-        
 
         
     }
@@ -288,5 +280,9 @@ public class AppGUI {
 	saveButton.getStyleClass().add(CLASS_FILE_BUTTON);
 	exitButton.getStyleClass().add(CLASS_FILE_BUTTON);
         saveAsButton.getStyleClass().add(CLASS_FILE_BUTTON);
+    }
+    
+    public BorderPane getHeaderPane(){
+        return fileToolbarPane;
     }
 }

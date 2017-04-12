@@ -159,6 +159,12 @@ jTPS j=new jTPS();
             }
    
     }
+    public void undoTransaction(){
+        j.undoTransaction();
+    }
+    public void redoTransaction(){
+        j.doTransaction();
+    }
     public void handleKeyPress(KeyEvent codee,KeyCode code) {
         // DID THE USER PRESS THE DELETE KEY?
         if ( code==KeyCode.DELETE) {

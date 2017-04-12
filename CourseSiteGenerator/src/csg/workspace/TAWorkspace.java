@@ -44,6 +44,14 @@ import static csg.TAManagerProp.MISSING_TA_NAME_TITLE;
 import csg.style.TAStyle;
 import csg.data.TAData;
 import csg.data.TeachingAssistant;
+import static djf.settings.AppPropertyType.ABOUT_ICON;
+import static djf.settings.AppPropertyType.ABOUT_TOOLTIP;
+import static djf.settings.AppPropertyType.REDO_ICON;
+import static djf.settings.AppPropertyType.REDO_TOOLTIP;
+import static djf.settings.AppPropertyType.UNDO_ICON;
+import static djf.settings.AppPropertyType.UNDO_TOOLTIP;
+import static djf.settings.AppStartupConstants.FILE_PROTOCOL;
+import static djf.settings.AppStartupConstants.PATH_IMAGES;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.Tab;
@@ -54,6 +62,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.FlowPane;
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -86,6 +96,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
     TextField emailTextField;
     Button addButton;
     Button clearButton;
+    Button undoButton;
+    Button redoButton;
+    Button aboutButton;
+    FlowPane rightToolbar;
 
     // THE HEADER ON THE RIGHT
     HBox officeHoursHeaderBox;
@@ -112,7 +126,15 @@ public class TAWorkspace extends AppWorkspaceComponent {
     public TAWorkspace(TAManagerApp initApp) {
         // KEEP THIS FOR LATER
         app = initApp;
-
+        
+        BorderPane toolbarPane = app.getGUI().getHeaderPane();
+        rightToolbar = new FlowPane();
+        rightToolbar.setAlignment(Pos.CENTER_RIGHT);
+        undoButton = initChildButton(rightToolbar,	UNDO_ICON.toString(),	    UNDO_TOOLTIP.toString(),	false);
+        redoButton = initChildButton(rightToolbar,	REDO_ICON.toString(),	    REDO_TOOLTIP.toString(),	false);
+        aboutButton = initChildButton(rightToolbar,	ABOUT_ICON.toString(),	    ABOUT_TOOLTIP.toString(),	false);
+        toolbarPane.setRight(rightToolbar);
+        
         // WE'LL NEED THIS TO GET LANGUAGE PROPERTIES FOR OUR UI
         PropertiesManager props = PropertiesManager.getPropertiesManager();
 
@@ -144,6 +166,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         emailColumn.setCellValueFactory(
                 new PropertyValueFactory<TeachingAssistant, String>("email")
         );
+        ugColumn.setMinWidth(110);
+        nameColumn.setMinWidth(210);
+        emailColumn.setMinWidth(310);
         taTable.getColumns().add(ugColumn);
         taTable.getColumns().add(nameColumn);
         taTable.getColumns().add(emailColumn);
@@ -246,7 +271,6 @@ public class TAWorkspace extends AppWorkspaceComponent {
         VBox leftPane = new VBox();
         taTable.setPadding(new Insets(0, 0, 10, 10));
         taTable.setStyle("-fx-background-color: #FFD8AD;");
-        taTable.setPrefHeight(400);
         leftPane.getChildren().add(tasHeaderBox);
         leftPane.getChildren().add(taTable);
         leftPane.getChildren().add(addBox);
@@ -260,6 +284,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         ScrollPane sp = new ScrollPane(rightPane);
         sp.setStyle("-fx-background: #FFD8AD;");
         SplitPane sPane = new SplitPane(leftPane, sp);
+        sPane.setDividerPositions(0.45);
         workspace = new BorderPane();
 
         // CREATE TABBED INTERFACE
@@ -657,6 +682,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         projectDataPane.setStyle("-fx-background-color: #FFD8AD");
         schedulePane.setStyle("-fx-background-color: #FFD8AD");
         recitationDataPane.setStyle("-fx-background-color: #FFD8AD");
+        sPane.setStyle("-fx-background-color: #FFD8AD");
         courseDetailsPane.setStyle("-fx-background-color: #FFD8AD");
         tabPane.getStyleClass().add("tab-pane");
         appPane.setStyle("-fx-background-color: #FFECD7");
@@ -673,7 +699,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         // NOW LET'S SETUP THE EVENT HANDLING
         controller = new TAController(app);
-
+        
+        undoButton.setOnAction(e -> {
+           controller.undoTransaction();
+        });
+        redoButton.setOnAction(e -> {
+            controller.redoTransaction();
+        });
+        aboutButton.setOnAction(e -> {
+            
+        });
         // CONTROLS FOR ADDING TAs
         nameTextField.setOnAction(e -> {
             controller.handleAddTA();
@@ -1080,5 +1115,27 @@ public class TAWorkspace extends AppWorkspaceComponent {
         // AND FINALLY, GIVE THE TEXT PROPERTY TO THE DATA MANAGER
         // SO IT CAN MANAGE ALL CHANGES
         dataComponent.setCellProperty(col, row, cellLabel.textProperty());
+    }
+    
+    private Button initChildButton(Pane toolbar, String icon, String tooltip, boolean disabled) {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+	
+	// LOAD THE ICON FROM THE PROVIDED FILE
+        String imagePath = FILE_PROTOCOL + PATH_IMAGES + props.getProperty(icon);
+        Image buttonImage = new Image(imagePath);
+	
+	// NOW MAKE THE BUTTON
+        Button button = new Button();
+        button.setPrefSize(35, 35);
+        button.setDisable(disabled);
+        button.setGraphic(new ImageView(buttonImage));
+        Tooltip buttonTooltip = new Tooltip(props.getProperty(tooltip));
+        button.setTooltip(buttonTooltip);
+	
+	// PUT THE BUTTON IN THE TOOLBAR
+        toolbar.getChildren().add(button);
+	
+	// AND RETURN THE COMPLETED BUTTON
+        return button;
     }
 }
