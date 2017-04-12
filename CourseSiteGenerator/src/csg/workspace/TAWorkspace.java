@@ -52,6 +52,8 @@ import javafx.collections.FXCollections;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.ColorPicker;
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -269,13 +271,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.setHgap(10);
         courseInfoPane.setVgap(10);
         courseInfoPane.setPadding(new Insets(10, 10, 10, 10));
-        courseInfoPane.add(new Label("Course Info"), 0, 0, 1, 1);
-        courseInfoPane.add(new Label("Subject:"), 0, 1, 1, 1);
-        courseInfoPane.add(new Label("Semester:"), 0, 2, 1, 1);
-        courseInfoPane.add(new Label("Title:"), 0, 3, 1, 1);
-        courseInfoPane.add(new Label("Instructor Name:"), 0, 4, 1, 1);
-        courseInfoPane.add(new Label("Instructor Home:"), 0, 5, 1, 1);
-        courseInfoPane.add(new Label("Export Dir:"), 0, 6, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.COURSE_INFO_TEXT.toString())), 0, 0, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.SUBJECT_TEXT.toString())+":"), 0, 1, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.SEMESTER_TEXT.toString())+":"), 0, 2, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.TITLE_TEXT.toString())+":"), 0, 3, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.INSTRUCTOR_NAME_TEXT.toString())+":"), 0, 4, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.INSTRUCTOR_HOME_TEXT.toString())+":"), 0, 5, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.EXPORT_DIR_TEXT.toString())+":"), 0, 6, 1, 1);
         courseInfoPane.add(new Label("..\\courses\\CSE219\\Summer2017\\public"), 1, 6, 1, 1);
         
         ObservableList subjectList = FXCollections.observableArrayList("CSE");
@@ -284,7 +286,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         subjectComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(subjectComboBox, 1, 1, 2, 1);
         
-        ObservableList semesterList = FXCollections.observableArrayList("Fall");
+        ObservableList semesterList = FXCollections.observableArrayList(props.getProperty(TAManagerProp.SEMESTER_LIST.toString()));
         ComboBox semesterComboBox = new ComboBox(semesterList);
         semesterComboBox.setPrefWidth(80);
         semesterComboBox.getSelectionModel().selectFirst();
@@ -293,8 +295,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.add(new TextField(), 1, 3, 5, 1);
         courseInfoPane.add(new TextField(), 1, 4, 5, 1);
         courseInfoPane.add(new TextField(), 1, 5, 5, 1);
-        courseInfoPane.add(new Label("Number:"), 3, 1, 1, 1);
-        courseInfoPane.add(new Label("Year:"), 3, 2, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.NUMBER_TEXT.toString())+":"), 3, 1, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.YEAR_TEXT.toString())+":"), 3, 2, 1, 1);
         
         ObservableList numberList = FXCollections.observableArrayList("219");
         ComboBox numberComboBox = new ComboBox(numberList);
@@ -308,27 +310,27 @@ public class TAWorkspace extends AppWorkspaceComponent {
         yearComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(yearComboBox, 5, 2, 1, 1);
         
-        Button changeCourseInfoButton = new Button("Change");
+        Button changeCourseInfoButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
         changeCourseInfoButton.setPrefWidth(80);
         courseInfoPane.add(changeCourseInfoButton, 5, 6, 1, 1);
         courseInfoPane.setStyle("-fx-background-color: #EBEBEB");
         /***** COURSE DETAILS : SITE TEMPLATE *****/
         
         VBox siteTemplatePane = new VBox(15);
-        siteTemplatePane.getChildren().add(new Label("Site Template"));
-        siteTemplatePane.getChildren().add(new Label("The selected directory should contain the full site template, including the HTML files."));
+        siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_TEXT.toString())));
+        siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_DISC_TEXT.toString())));
         siteTemplatePane.getChildren().add(new Label("..\\templates\\CSE219"));
         
-        Button selectTemplateButton = new Button("Select Template Directory");
+        Button selectTemplateButton = new Button(props.getProperty(TAManagerProp.SELECT_TEMPLATE_BUTTON_TEXT.toString()));
         siteTemplatePane.getChildren().add(selectTemplateButton);
         
-        siteTemplatePane.getChildren().add(new Label("Site Pages:"));
+        siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_PAGES_TEXT.toString())+":"));
         
         TableView sitePagesTable = new TableView();
-        TableColumn useColumn = new TableColumn("Use");
-        TableColumn navbarTitleColumn = new TableColumn("Navbar Title");
-        TableColumn fileNameColumn = new TableColumn("File Name");
-        TableColumn scriptColumn = new TableColumn("Script");
+        TableColumn useColumn = new TableColumn(props.getProperty(TAManagerProp.USE_COLUMN_TEXT.toString()));
+        TableColumn navbarTitleColumn = new TableColumn(props.getProperty(TAManagerProp.NAVBAR_COLUMN_TEXT.toString()));
+        TableColumn fileNameColumn = new TableColumn(props.getProperty(TAManagerProp.FILENAME_COLUMN_TEXT.toString()));
+        TableColumn scriptColumn = new TableColumn(props.getProperty(TAManagerProp.SCRIPT_COLUMN_TEXT.toString()));
         sitePagesTable.getColumns().addAll(useColumn, navbarTitleColumn, fileNameColumn, scriptColumn);
         sitePagesTable.setMaxWidth(550);
         sitePagesTable.setPrefHeight(200);
@@ -342,11 +344,11 @@ public class TAWorkspace extends AppWorkspaceComponent {
         GridPane pageStyleGridPane = new GridPane();
         pageStyleGridPane.setHgap(10);
         pageStyleGridPane.setVgap(10);
-        pageStyleGridPane.add(new Label("Page Style"), 0, 0, 2, 1);
-        pageStyleGridPane.add(new Label("Banner School Image:"), 0, 1, 2, 1);
-        pageStyleGridPane.add(new Label("Left Footer Image:"), 0, 2, 2, 1);
-        pageStyleGridPane.add(new Label("Right Footer Image:"), 0, 3, 2, 1);
-        pageStyleGridPane.add(new Label("Stylesheet:"), 0, 4, 1, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.PAGE_STYLE_TEXT.toString())), 0, 0, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.BANNER_SCHOOL_IMAGE_TEXT.toString())+":"), 0, 1, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.LEFT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 2, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.STYLESHEET_TEXT.toString())+":"), 0, 4, 1, 1);
         
         ObservableList stylesheetList = FXCollections.observableArrayList("sea_wolf.css");
         ComboBox stylesheetComboBox = new ComboBox(stylesheetList);
@@ -362,9 +364,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         pageStyleGridPane.add(leftFooterImageView, 1, 2, 1, 1);
         pageStyleGridPane.add(rightFooterImageView, 1, 3, 1, 1);
         
-        Button changeBannerSchoolImageButton = new Button("Change");
-        Button changeLeftFooterImageButton = new Button("Change");
-        Button changeRightFooterImageButton = new Button("Change");
+        Button changeBannerSchoolImageButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
+        Button changeLeftFooterImageButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
+        Button changeRightFooterImageButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
         changeBannerSchoolImageButton.setPrefWidth(80);
         changeLeftFooterImageButton.setPrefWidth(80);
         changeRightFooterImageButton.setPrefWidth(80);
@@ -381,6 +383,243 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         courseDetailsPane.getChildren().addAll(courseInfoPane, siteTemplatePane, pageStylePane);
         
+        /******* RECITATION DATA *******/
+        VBox recitationDataPane = new VBox(10);
+        recitationDataPane.setPadding(new Insets(10, 10, 10, 10));
+        
+        HBox recitationDataHeader = new HBox(10);
+        Button deleteRecitationButton = new Button("DELETE");
+        recitationDataHeader.getChildren().addAll(new Label("Recitations"), deleteRecitationButton);
+        recitationDataHeader.setAlignment(Pos.CENTER_LEFT);
+        
+        recitationDataPane.getChildren().add(recitationDataHeader);
+        
+        TableColumn sectionColumn = new TableColumn("Section");
+        TableColumn instructorColumn = new TableColumn("Instructor");
+        TableColumn dayTimeColumn = new TableColumn("Day/Time");
+        TableColumn locationColumn = new TableColumn("Location");
+        TableColumn TA1Column = new TableColumn("TA");
+        TableColumn TA2Column = new TableColumn("TA");
+        
+        TableView recitationTable = new TableView();
+        recitationTable.getColumns().addAll(sectionColumn, instructorColumn, dayTimeColumn, locationColumn, TA1Column, TA2Column);
+        
+        recitationDataPane.getChildren().add(recitationTable);
+        
+        GridPane addEditPane = new GridPane();
+        addEditPane.setHgap(10);
+        addEditPane.setVgap(10);
+        addEditPane.setPadding(new Insets(10, 10, 10, 10));
+        addEditPane.add(new Label("Add/Edit"), 0, 0, 2, 1);
+        addEditPane.add(new Label("Section:"), 0, 1, 1, 1);
+        addEditPane.add(new Label("Instructor:"), 0, 2, 1, 1);
+        addEditPane.add(new Label("Day/Time:"), 0, 3, 1, 1);
+        addEditPane.add(new Label("Location:"), 0, 4, 1, 1);
+        addEditPane.add(new Label("Supervising TA:"), 0, 5, 1, 1);
+        addEditPane.add(new Label("Supervising TA:"), 0, 6, 1, 1);
+        
+        addEditPane.add(new TextField(), 1, 1, 10, 1);
+        addEditPane.add(new TextField(), 1, 2, 10, 1);
+        addEditPane.add(new TextField(), 1, 3, 10, 1);
+        addEditPane.add(new TextField(), 1, 4, 10, 1);
+        ComboBox ta1ComboBox = new ComboBox();
+        ComboBox ta2ComboBox = new ComboBox();
+        ta1ComboBox.setPrefWidth(200);
+        ta2ComboBox.setPrefWidth(200);
+        addEditPane.add(ta1ComboBox, 1, 5, 10, 1);
+        addEditPane.add(ta2ComboBox, 1, 6, 10, 1);
+        
+        addEditPane.setStyle("-fx-background-color: #EBEBEB");
+        
+        Button addUpdateRecitationButton = new Button("Add/Update");
+        Button clearAddEditRecitationButton = new Button("Clear");
+        addUpdateRecitationButton.setPrefWidth(110);
+        clearAddEditRecitationButton.setPrefWidth(110);
+        
+        addEditPane.add(addUpdateRecitationButton, 0, 7, 1, 1);
+        addEditPane.add(clearAddEditRecitationButton, 1, 7, 1, 1);
+        
+        recitationDataPane.getChildren().add(addEditPane);
+        
+        /******* SCHEDULE DATA *******/
+        VBox schedulePane = new VBox(10);
+        schedulePane.setPadding(new Insets(10, 10, 10, 10));
+        schedulePane.getChildren().add(new Label("Schedule"));
+        GridPane calBoundariesPane = new GridPane();
+        calBoundariesPane.setHgap(10);
+        calBoundariesPane.setVgap(10);
+        calBoundariesPane.setStyle("-fx-background-color: #EBEBEB");
+        calBoundariesPane.add(new Label("Calendar Boundaries"), 0, 0, 2, 1);
+        calBoundariesPane.add(new Label("Starting Monday:"), 0, 1, 1, 1);
+        calBoundariesPane.add(new DatePicker(), 1, 1, 1, 1);
+        calBoundariesPane.add(new Label("Ending Friday:"), 2, 1, 1, 1);
+        calBoundariesPane.add(new DatePicker(), 3, 1, 1, 1);
+        calBoundariesPane.setPadding(new Insets(10, 10, 10, 10));
+        
+        VBox scheduleItemsPane = new VBox(10);
+        scheduleItemsPane.setPadding(new Insets(10, 10, 10, 10));
+        scheduleItemsPane.setStyle("-fx-background-color: #EBEBEB");
+        
+        HBox scheduleItemsHeader = new HBox(10);
+        scheduleItemsHeader.setAlignment(Pos.CENTER_LEFT);
+        
+        Button deleteScheduleItemButton = new Button("DELETE");
+        scheduleItemsHeader.getChildren().addAll(new Label("Schedule Items"), deleteScheduleItemButton);
+        
+        scheduleItemsPane.getChildren().add(scheduleItemsHeader);
+        
+        TableColumn typeColumn = new TableColumn("Type");
+        TableColumn dateColumn = new TableColumn("Date");
+        TableColumn titleColumn = new TableColumn("Title");
+        TableColumn topicColumn = new TableColumn("Topic");
+        TableView scheduleItemsTable = new TableView();
+        scheduleItemsTable.getColumns().addAll(typeColumn, dateColumn, titleColumn, topicColumn);
+        
+        scheduleItemsPane.getChildren().add(scheduleItemsTable);
+        
+        GridPane addEditSchedulePane = new GridPane();
+        addEditSchedulePane.setHgap(10);
+        addEditSchedulePane.setVgap(10);
+        
+        addEditSchedulePane.add(new Label("Add/Edit"), 0, 0, 1, 1);
+        addEditSchedulePane.add(new Label("Type:"), 0, 1, 1, 1);
+        addEditSchedulePane.add(new Label("Date:"), 0, 2, 1, 1);
+        addEditSchedulePane.add(new Label("Time:"), 0, 3, 1, 1);
+        addEditSchedulePane.add(new Label("Title:"), 0, 4, 1, 1);
+        addEditSchedulePane.add(new Label("Topic:"), 0, 5, 1, 1);
+        addEditSchedulePane.add(new Label("Link:"), 0, 6, 1, 1);
+        addEditSchedulePane.add(new Label("Criteria:"), 0, 7, 1, 1);
+        
+        ComboBox typeComboBox = new ComboBox();
+        typeComboBox.setPrefWidth(100);
+        
+        addEditSchedulePane.add(typeComboBox, 1, 1, 1, 1);
+        addEditSchedulePane.add(new DatePicker(), 1, 2, 1, 1);
+        addEditSchedulePane.add(new TextField(), 1, 3, 1, 1);
+        addEditSchedulePane.add(new TextField(), 1, 4, 30, 1);
+        addEditSchedulePane.add(new TextField(), 1, 5, 30, 1);
+        addEditSchedulePane.add(new TextField(), 1, 6, 30, 1);
+        addEditSchedulePane.add(new TextField(), 1, 7, 30, 1);
+        
+        Button addUpdateScheduleItemButton = new Button("Add/Update");
+        Button clearScheduleItemButton = new Button("Clear");
+        addUpdateScheduleItemButton.setPrefWidth(100);
+        clearScheduleItemButton.setPrefWidth(100);
+        
+        addEditSchedulePane.add(addUpdateScheduleItemButton, 0, 8, 1, 1);
+        addEditSchedulePane.add(clearScheduleItemButton, 1, 8, 1, 1);
+        
+        scheduleItemsPane.getChildren().add(addEditSchedulePane);
+        
+        schedulePane.getChildren().addAll(calBoundariesPane, scheduleItemsPane);
+        
+        /******* PROJECT DATA ********/
+        VBox projectDataPane = new VBox(10);
+        projectDataPane.setPadding(new Insets(10, 10, 10, 10));
+        
+        VBox teamPane = new VBox(10);
+        teamPane.setPadding(new Insets(10, 10, 10, 10));
+        teamPane.setStyle("-fx-background-color: #EBEBEB");
+        
+        HBox projectDataHeader = new HBox(10);
+        projectDataHeader.setAlignment(Pos.CENTER_LEFT);
+        
+        Button deleteTeamButton = new Button("DELETE");
+        projectDataHeader.getChildren().addAll(new Label("Teams"), deleteTeamButton);   
+        
+        teamPane.getChildren().add(projectDataHeader);
+        
+        TableColumn teamNameColumn = new TableColumn("Name");
+        TableColumn colorColumn = new TableColumn("Color"+" (hex#)");
+        TableColumn textColorColumn = new TableColumn("TextColor"+" (hex#)");
+        TableColumn linkColumn = new TableColumn("Link:");
+        TableView teamTable = new TableView();
+        teamTable.getColumns().addAll(teamNameColumn, colorColumn, textColorColumn, linkColumn);
+        
+        teamPane.getChildren().add(teamTable);
+        
+        GridPane addEditProjectPane = new GridPane();
+        addEditProjectPane.setHgap(10);
+        addEditProjectPane.setVgap(10);
+        
+        addEditProjectPane.add(new Label("Add/Edit"), 0, 0, 1, 1);
+        addEditProjectPane.add(new Label("Name:"), 0, 1, 1, 1);
+        addEditProjectPane.add(new Label("Color:"), 0, 2, 1, 1);
+        addEditProjectPane.add(new Label("Link:"), 0, 3, 1, 1);
+        
+        addEditProjectPane.add(new TextField(), 1, 1, 1, 1);
+        addEditProjectPane.add(new ColorPicker(), 1, 2, 1, 1);
+        addEditProjectPane.add(new TextField(), 1, 3, 3, 1);
+        
+        addEditProjectPane.add(new Label("Text Color:"), 2, 2, 1, 1);
+        addEditProjectPane.add(new ColorPicker(), 3, 2, 1, 1);
+        
+        Button addUpdateProjectButton = new Button("Add/Update");
+        Button clearProjectButton = new Button("Clear");
+        addUpdateProjectButton.setPrefWidth(100);
+        clearProjectButton.setPrefWidth(100);
+        
+        addEditProjectPane.add(addUpdateProjectButton, 0, 4, 1, 1);
+        addEditProjectPane.add(clearProjectButton, 1, 4, 1, 1);
+        
+        teamPane.getChildren().add(addEditProjectPane);
+        
+        VBox studentPane = new VBox(10);
+        studentPane.setPadding(new Insets(10, 10, 10, 10));
+        studentPane.setStyle("-fx-background-color: #EBEBEB");
+        
+        HBox studentDataHeader = new HBox(10);
+        studentDataHeader.setAlignment(Pos.CENTER_LEFT);
+        
+        Button deleteStudentButton = new Button("DELETE");
+        studentDataHeader.getChildren().addAll(new Label("Students"), deleteStudentButton);   
+        
+        studentPane.getChildren().add(studentDataHeader);
+        
+        TableColumn firstNameColumn = new TableColumn("First Name");
+        TableColumn lastNameColumn = new TableColumn("Last Name");
+        TableColumn teamColumn = new TableColumn("Team");
+        TableColumn roleColumn = new TableColumn("Role");
+        TableView studentTable = new TableView();
+        studentTable.getColumns().addAll(firstNameColumn, lastNameColumn, teamColumn, roleColumn);
+        
+        studentPane.getChildren().add(studentTable);
+        
+        GridPane addEditStudentPane = new GridPane();
+        addEditStudentPane.setHgap(10);
+        addEditStudentPane.setVgap(10);
+        
+        addEditStudentPane.add(new Label("Add/Edit"), 0, 0, 1, 1);
+        addEditStudentPane.add(new Label("First Name:"), 0, 1, 1, 1);
+        addEditStudentPane.add(new Label("Last Name:"), 0, 2, 1, 1);
+        addEditStudentPane.add(new Label("Team:"), 0, 3, 1, 1);
+        addEditStudentPane.add(new Label("Role:"), 0, 4, 1, 1);
+        
+        addEditStudentPane.add(new TextField(), 1, 1, 10, 1);
+        addEditStudentPane.add(new TextField(), 1, 2, 10, 1);
+        addEditStudentPane.add(new TextField(), 1, 4, 10, 1);
+        
+        ComboBox teamComboBox = new ComboBox();
+        teamComboBox.setPrefWidth(200);
+        
+        addEditStudentPane.add(teamComboBox, 1, 3, 10, 1);
+        
+        Button addUpdateStudentButton = new Button("Add/Update");
+        Button clearStudentButton = new Button("Clear");
+        addUpdateStudentButton.setPrefWidth(100);
+        clearStudentButton.setPrefWidth(100);
+        
+        addEditStudentPane.add(addUpdateStudentButton, 0, 5, 1, 1);
+        addEditStudentPane.add(clearStudentButton, 1, 5, 1, 1);
+        
+        studentPane.getChildren().add(addEditStudentPane);
+        
+        teamTable.setMaxHeight(150);
+        studentTable.setMaxHeight(150);
+        
+        
+        projectDataPane.getChildren().addAll(new Label("Projects"), teamPane, studentPane);
+        
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         
@@ -392,18 +631,21 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taDataTab.setContent(sPane);
         
         Tab recitationDataTab = new Tab("Recitation Data");
-        recitationDataTab.setContent(new Pane());
+        recitationDataTab.setContent(recitationDataPane);
         
         Tab scheduleDataTab = new Tab("Schedule Data");
-        scheduleDataTab.setContent(new Pane());
+        scheduleDataTab.setContent(schedulePane);
         
         Tab projectDataTab = new Tab("Project Data");
-        projectDataTab.setContent(new Pane());
+        projectDataTab.setContent(projectDataPane);
         
         BorderPane appPane = new BorderPane();
         appPane.setPadding(new Insets(10, 10, 10, 10));
         appPane.setCenter(tabPane);
         
+        projectDataPane.setStyle("-fx-background-color: #FFD8AD");
+        schedulePane.setStyle("-fx-background-color: #FFD8AD");
+        recitationDataPane.setStyle("-fx-background-color: #FFD8AD");
         courseDetailsPane.setStyle("-fx-background-color: #FFD8AD");
         appPane.setStyle("-fx-background-color: #FFECD7");
         

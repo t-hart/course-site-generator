@@ -42,7 +42,7 @@
     -fx-background-radius: 5.0;
     -fx-padding: 15;
     -fx-spacing: 10;
-    -fx-border-width: 2px;
+    -fx-border-width: 0px;
     -fx-border-color: #000000;
 }
 

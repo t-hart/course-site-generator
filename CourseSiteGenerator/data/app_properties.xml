@@ -86,6 +86,33 @@
         
         <property name="DELETE_TA_TEXT"                 value="Delete"></property>
         <property name="CLEAR_BUTTON_TEXT"              value="Clear"></property>
+        <property name="COURSE_INFO_TEXT"               value="Course Info"></property>
+        <property name="SUBJECT_TEXT"                   value="Subject"></property>
+        <property name="SEMESTER_TEXT"                  value="Semester"></property>
+        <property name="TITLE_TEXT"                     value="Title"></property>
+        <property name="INSTRUCTOR_NAME_TEXT"           value="Instructor Name"></property>
+        <property name="INSTRUCTOR_HOME_TEXT"           value="Instructor Home"></property>
+        <property name="EXPORT_DIR_TEXT"                value="Export Dir"></property>
+        <property name="SEMESTER_LIST"                  value="Fall"></property>
+
+        <property name="NUMBER_TEXT"					value="Number"></property>
+    	<property name="YEAR_TEXT"						value="Year"></property>
+    	<property name="CHANGE_BUTTON_TEXT"				value="Change"></property>
+    	<property name="SITE_TEMPLATE_TEXT"				value="Site Template"></property>
+    	<property name="SITE_TEMPLATE_DISC_TEXT"		value="The selected directory should contain the full site template, including the HTML files."></property>
+    	<property name="SELECT_TEMPLATE_BUTTON_TEXT"	value="Select Template Directory"></property>
+    	<property name="SITE_PAGES_TEXT"				value="Site Pages"></property>
+   	 	<property name="USE_COLUMN_TEXT"				value="Use"></property>
+    	<property name="NAVBAR_COLUMN_TEXT"				value="Navbar Title"></property>
+    	<property name="FILENAME_COLUMN_TEXT"			value="File Name"></property>
+    	<property name="SCRIPT_COLUMN_TEXT"				value="Script"></property>
+
+    	<property name="PAGE_STYLE_TEXT"				value="Page Style"></property>
+    	<property name="BANNER_SCHOOL_IMAGE_TEXT"		value="Banner School Image"></property>
+    	<property name="LEFT_FOOTER_IMAGE_TEXT"			value="Left Footer Image"></property>
+    	<property name="RIGHT_FOOTER_IMAGE_TEXT"		value="Right Footer Image"></property>
+    	<property name="STYLESHEET_TEXT"				value="Stylesheet"></property>
+    	<property name="STYLESHEET_DISC_TEXT"			value="NOTE: New stylesheets must be placed in work/css to be selectable."></property>
     </property_list>
     <property_options_list>
         <property_options name="OFFICE_HOURS_TABLE_HEADERS">
