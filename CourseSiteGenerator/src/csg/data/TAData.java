@@ -263,11 +263,12 @@ public class TAData implements AppDataComponent {
 
 
 
-    public void addTA(String initName, String initEmail) {
+    public void addTA(String initName, String initEmail, boolean ug) {
+
         // MAKE THE TA
         EmailValidator a=new EmailValidator();
    if(a.validate(initEmail)){
-        TeachingAssistant ta = new TeachingAssistant(initName, initEmail);
+        TeachingAssistant ta = new TeachingAssistant(initName, initEmail, ug, app);
 
         // ADD THE TA
         if (!containsTA(initName, initEmail)) {

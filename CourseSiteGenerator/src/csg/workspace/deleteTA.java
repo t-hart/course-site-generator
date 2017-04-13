@@ -25,6 +25,7 @@ public class deleteTA  implements jTPS_Transaction{
        TAWorkspace workspace;
        String email;
        String name;
+       boolean ug = false;
        ArrayList<StringProperty> list;
     deleteTA(TAManagerApp app,TAController controller,Object selectedItem, TAWorkspace workspace){
         this.app=app;
@@ -40,6 +41,7 @@ public class deleteTA  implements jTPS_Transaction{
                 String taName = ta.getName();
                 this.name=ta.getName();
                 this.email=ta.getEmail();
+                this.ug = ta.getUndergrad().get();
                 TAData data = (TAData)app.getDataComponent();
                 data.removeTA(taName);
                 ArrayList<StringProperty> list=new ArrayList<StringProperty>();
@@ -61,7 +63,7 @@ public class deleteTA  implements jTPS_Transaction{
     @Override
     public void undoTransaction() {
         TAData data=(TAData)app.getDataComponent();
-        data.addTA(name, email);
+        data.addTA(name, email, ug);
         for(int i=0;i<list.size();i++){
             list.get(i).setValue(list.get(i).getValue()+(list.get(i).getValue().equals("")?name:"\n"+name));
         }

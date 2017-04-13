@@ -64,6 +64,13 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.FlowPane;
+import java.lang.Boolean;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.util.Callback;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.beans.value.ObservableValue;
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -88,7 +95,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     TableView<TeachingAssistant> taTable;
     TableColumn<TeachingAssistant, String> nameColumn;
     TableColumn<TeachingAssistant, String> emailColumn;
-    TableColumn ugColumn;
+    TableColumn<TeachingAssistant, Boolean> ugColumn;
 
     // THE TA INPUT
     HBox addBox;
@@ -117,6 +124,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
     HashMap<String, Label> officeHoursGridTimeCellLabels;
     HashMap<String, Pane> officeHoursGridTACellPanes;
     HashMap<String, Label> officeHoursGridTACellLabels;
+    
+    boolean fullyLoaded = false;
 
     /**
      * The constructor initializes the user interface, except for the full
@@ -152,6 +161,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         TAData data = (TAData) app.getDataComponent();
         ObservableList<TeachingAssistant> tableData = data.getTeachingAssistants();
+        taTable.setEditable(true);
         taTable.setItems(tableData);
         String ugColumnText = props.getProperty(TAManagerProp.UG_COLUMN_TEXT.toString());
         String nameColumnText = props.getProperty(TAManagerProp.NAME_COLUMN_TEXT.toString());
@@ -159,7 +169,15 @@ public class TAWorkspace extends AppWorkspaceComponent {
         ugColumn = new TableColumn(ugColumnText);
         nameColumn = new TableColumn(nameColumnText);
         emailColumn = new TableColumn(emailColumnText);
-        
+        ugColumn.setCellValueFactory(
+                new Callback<CellDataFeatures<TeachingAssistant, Boolean>, ObservableValue<Boolean>>() {
+            
+            @Override
+            public ObservableValue<Boolean> call(CellDataFeatures<TeachingAssistant, Boolean> param) {
+                return param.getValue().getUndergrad();
+            }
+        });
+        ugColumn.setCellFactory( CheckBoxTableCell.forTableColumn(ugColumn) );
         nameColumn.setCellValueFactory(
                 new PropertyValueFactory<TeachingAssistant, String>("name")
         );
@@ -242,12 +260,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         }
         Label start = new Label(officeHoursGridText);
         Label end = new Label(officeHoursGridText);
-
-        end.setText("End Time: ");
+        
+        ArrayList<String> comboBoxLabels = props.getPropertyOptionsList(TAManagerProp.OFFICE_HOURS_TABLE_HEADERS);
+        end.setText(comboBoxLabels.get(1)+": ");
         end.setStyle(" -fx-font-weight:bold;\n"
                 + "    -fx-font-size:12pt;  \n"
                 + "    -fx-padding: 5 10 5 10;");
-        start.setText("\t Start Time: ");
+        start.setText("\t "+comboBoxLabels.get(0)+": ");
         start.setStyle(" -fx-font-weight:bold;\n"
                 + "    -fx-font-size:12pt;  \n"
                 + "    -fx-padding: 5 10 5 10;");
@@ -708,7 +727,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseDetailsPane.setStyle("-fx-background-color: #FFD8AD");
         tabPane.getStyleClass().add("tab-pane");
         appPane.setStyle("-fx-background-color: #FFECD7");
-        
+        taDataTab.setOnSelectionChanged(e -> {
+            fullyLoaded = true;
+        });
         tabPane.getTabs().addAll(courseDetailsTab, taDataTab, recitationDataTab, scheduleDataTab, projectDataTab);
         
         // AND PUT EVERYTHING IN THE WORKSPACE
@@ -1159,5 +1180,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
 	
 	// AND RETURN THE COMPLETED BUTTON
         return button;
+    }
+    
+    public TAController getController(){
+        return controller;
     }
 }

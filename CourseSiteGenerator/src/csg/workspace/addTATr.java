@@ -16,14 +16,16 @@ public class addTATr implements jTPS_Transaction{
 TAData ta;
 String email;
 String name;
+boolean ug;
     addTATr(String name,String email, TAData data){
        ta=data;
        this.email=email;
        this.name=name;
+       this.ug = false;
     }
     @Override
     public void doTransaction() {     
-      ta.addTA(name, email);
+      ta.addTA(name, email, ug);
     }
 
     @Override

@@ -90,7 +90,7 @@ jTPS j=new jTPS();
          nameTextField.setText("");
                emailTextField.setText("");
                workspace.getAddButton().setText("Add TA");
-           jTPS_Transaction change=new change(oldName,oldEmail,name,email,data);
+           jTPS_Transaction change=new change(oldName,oldEmail,name,email,data, ta.getUndergrad().get(), ta.getUndergrad().get());
            j.addTransaction(change );
            }
                else;
