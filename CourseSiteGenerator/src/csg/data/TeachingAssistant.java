@@ -35,6 +35,7 @@ public class TeachingAssistant<E extends Comparable<E>> implements Comparable<E>
                 TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
                 TAController controller = workspace.getController();
                 TAData data = (TAData)app.getDataComponent();
+                app.getGUI().getFileController().markAsEdited(app.getGUI());
                 controller.getJ().addTransaction(new change(name.get(), email.get(), name.get(), email.get(), data, !isSelected, isSelected));
             }
         });
