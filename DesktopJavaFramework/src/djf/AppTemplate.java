@@ -8,6 +8,11 @@ import properties_manager.PropertiesManager;
 import static djf.settings.AppPropertyType.*;
 import static djf.settings.AppStartupConstants.*;
 import properties_manager.InvalidXMLFileFormatException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ButtonBar.ButtonData;
+import java.util.Optional;
 
 /**
  * This is the framework's JavaFX application. It provides the start method
@@ -41,7 +46,8 @@ public abstract class AppTemplate extends Application {
         
     // THIS METHOD MUST BE OVERRIDDEN WHERE THE CUSTOM BUILDER OBJECT
     // WILL PROVIDE THE CUSTOM APP COMPONENTS
-
+    
+    public String langChoice;
     /**
      * This function must be overridden, it should initialize all
      * of the components used by the app in the proper order according
@@ -75,6 +81,8 @@ public abstract class AppTemplate extends Application {
      *  Accessor for the gui. Note that the GUI would contain the workspace.
      */
     public AppGUI getGUI() { return gui; }
+    
+    public String getLangChoice(){ return langChoice; }
 
     /**
      * This is where our Application begins its initialization, it will load
@@ -127,7 +135,30 @@ public abstract class AppTemplate extends Application {
      */
     public boolean loadProperties(String propertiesFileName) {
 	    PropertiesManager props = PropertiesManager.getPropertiesManager();
-	try {
+	Alert langAlert = new Alert(AlertType.CONFIRMATION);
+        langAlert.setTitle("Select Languange");
+        langAlert.setHeaderText("Please select a languange.");
+        ButtonType eng = new ButtonType("English");
+        ButtonType lux = new ButtonType("Luxembourgish");
+        ButtonType can = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+        
+        langAlert.getButtonTypes().setAll(eng, lux, can);
+        Optional<ButtonType> result = langAlert.showAndWait();
+        
+        if(result.get() == eng){
+            propertiesFileName = "app_properties_eng.xml";
+            langChoice = new String("eng");
+        }
+        else if(result.get() == lux){
+            propertiesFileName = "app_properties_lux.xml";
+            langChoice = new String("lux");
+        }
+        else{
+            propertiesFileName = "app_properties_eng.xml";
+            langChoice = new String("eng");
+        }
+        
+        try {
 	    // LOAD THE SETTINGS FOR STARTING THE APP
 	    props.addProperty(PropertiesManager.DATA_PATH_PROPERTY, PATH_DATA);
 	    props.loadProperties(propertiesFileName, PROPERTIES_SCHEMA_FILE_NAME);

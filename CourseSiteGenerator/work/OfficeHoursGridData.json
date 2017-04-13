@@ -135,6 +135,11 @@
             "name":"Aarin Chase"
         },
         {
+            "day":"THURSDAY",
+            "time":"7_30am",
+            "name":"Aarin Chase"
+        },
+        {
             "day":"FRIDAY",
             "time":"7_30am",
             "name":"Aarin Chase"
@@ -213,6 +218,11 @@
             "day":"TUESDAY",
             "time":"10_30am",
             "name":"Jerrel Sogoni"
+        },
+        {
+            "day":"TUESDAY",
+            "time":"10_30am",
+            "name":"Milto Ndrenika"
         },
         {
             "day":"WEDNESDAY",

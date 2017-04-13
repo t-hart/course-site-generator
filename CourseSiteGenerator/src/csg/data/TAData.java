@@ -166,6 +166,21 @@ public class TAData implements AppDataComponent {
     }
     
     public String getCellKey(String day, String time) {
+        String langChoice = app.getLangChoice();
+        if(langChoice.equals("lux")){
+            if(day.equals("MONDAY"))  { day = "MÉINDEG"; }
+            else if(day.equals("TUESDAY")) { day = "DËNSCHDEG"; }
+            else if(day.equals("WEDNESDAY")) { day = "MËTTWOCH"; }
+            else if(day.equals("THURSDAY")) { day = "DONNESCHDEG"; }
+            else if(day.equals("FRIDAY")) { day = "FREIDEG"; }
+        }
+        else if(langChoice.equals("eng")){
+            if(day.equals("MÉINDEG"))  { day = "MONDAY"; }
+            else if(day.equals("DËNSCHDEG")) { day = "TUESDAY"; }
+            else if(day.equals("MËTTWOCH")) { day = "WEDNESDAY"; }
+            else if(day.equals("DONNESCHDEG")) { day = "THURSDAY"; }
+            else if(day.equals("FREIDEG")) { day = "FRIDAY"; }
+        }
         int col = gridHeaders.indexOf(day);
         int row = 1;
         int hour = Integer.parseInt(time.substring(0, time.indexOf("_")));

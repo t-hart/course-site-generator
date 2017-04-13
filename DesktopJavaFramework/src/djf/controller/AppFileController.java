@@ -154,14 +154,24 @@ public class AppFileController {
         }
     }
     public void handlesaveAsRequest() throws IOException{
-if (saveas != null) {
-		    saveWork(saveas);
-		    saved = true;
-		}
-	    
-	    else {
-		handleSaveRequest();
-	    }        
+// WE'LL NEED THIS TO GET CUSTOM STUFF
+	PropertiesManager props = PropertiesManager.getPropertiesManager();
+       
+	    FileChooser fc = new FileChooser();
+            fc.setInitialDirectory(new File(PATH_WORK));
+            fc.setTitle(props.getProperty(SAVE_WORK_TITLE));
+            fc.getExtensionFilters().addAll(
+            new ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), props.getProperty(WORK_FILE_EXT)));
+            
+            try{
+                File selectedFile = fc.showSaveDialog(app.getGUI().getWindow());
+                if (selectedFile != null) {
+                    saveWork(selectedFile);
+                }
+            } catch (IOException ioe) {
+	    AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+	    dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
+        }    
     }
     public void handleExportRequest() throws IOException{
      PropertiesManager props = PropertiesManager.getPropertiesManager();

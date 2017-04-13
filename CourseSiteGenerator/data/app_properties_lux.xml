@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This XML file allows us to easily customize the look and language used
+    in our program's user interface. Note that this properties file is only
+    for the standard controls for an app from the Desktop Java Framework, so
+    it would not include things initialized for the workspace, which is
+    customizable.
+-->
+<properties>
+	<property_list>
+		<property name="APP_TITLE"	    value="TA Manager"></property>
+		<property name="APP_LOGO"	    value="TAManagerLogo.png"></property>
+		<property name="APP_PATH_CSS"	    value="style/"></property>
+		<property name="APP_CSS"	    value="tam_style.css"></property>
+
+		<!-- PROGRAM ICON FILES -->
+		<property name="NEW_ICON"	    value="New.png"></property>
+		<property name="LOAD_ICON"	    value="Load.png"></property>
+		<property name="SAVE_ICON"	    value="Save.png"></property>
+		<property name="EXIT_ICON"      value="Exit.png"></property>
+		<property name="SAVE_AS_ICON"   value="SaveAs.png"></property>
+		<property name= "EXPORT_ICON"   value="Export.png"></property>
+		<property name="UNDO_ICON"      value="undo.png"></property>
+		<property name="REDO_ICON"   	value="redo.png"></property>
+		<property name="ABOUT_ICON"   	value="about.png"></property>
+		
+
+		<!-- TOOLTIPS FOR BUTTONS -->
+		<property name="NEW_TOOLTIP"		value="Bauen eng nei GA Saachen"></property>
+		<property name="LOAD_TOOLTIP"		value="Lueden eng bestehend Erp GA Saachen"></property>
+		<property name="SAVE_TOOLTIP"		value="Retten déi aktuell GA Saachen"></property>
+		<property name="EXIT_TOOLTIP"		value="Exit 'Uwendung"></property>
+		<property name="SAVE_AS_TOOLTIP"    value="Trend Als"></property>
+		<property name="EXPORT_TOOLTIP"     value="Exportéieren"></property>
+		<property name="UNDO_TOOLTIP"		value="Réckgängeg"></property>
+		<property name="REDO_TOOLTIP"    	value="Nees zeréck"></property>
+		<property name="ABOUT_TOOLTIP"     	value="Iwwer"></property>
+
+
+		<!-- ERROR MESSAGES -->
+		<property name="CLOSE_BUTTON_TEXT"              value="Enk"></property>
+
+		<property name="NEW_ERROR_MESSAGE"              value="E Feeler ass nei Aarbecht ze schafen."></property>
+		<property name="NEW_ERROR_TITLE"		value="Nei Aarbecht Feeler"></property>
+		<property name="LOAD_ERROR_MESSAGE"             value="E Feeler ass beim Luede Aarbecht."></property>
+		<property name="LOAD_ERROR_TITLE"		value="Aarbecht Lueden Feeler"></property>
+		<property name="SAVE_ERROR_MESSAGE"             value="E Feeler ass Aarbecht spueren."></property>
+		<property name="SAVE_ERROR_TITLE"		value="Retten Work Feeler"></property>
+		<property name="PROPERTIES_LOAD_ERROR_MESSAGE"	value="E Feeler ass eng Eegeschafte Fichier Luede."></property>	
+		<property name="PROPERTIES_LOAD_ERROR_TITLE"	value="Eegeschafte Fichier Lued Feeler"></property>
+
+		<!-- VERIFICATION MESSAGES -->
+		<property name="INVALID_EMAIL"		value="Onwierksamkeet Email"></property>
+
+		<property name="TIME_EXIST"  		value="Et gëtt Zäit Plaze thatwill geläscht ginn, fir dat?"></property>
+		<property name="TIME_EXIST_TITLE"   value="Zäit Slot Existéiert"></property>
+		<property name="TIME_CONF"			value="Ufank Stonn muss virun Enn Stonn ginn."></property>
+		<property name="TIME_CONF_TITLE"    value="Zäit Konflikt"></property>
+		<property name="NEW_COMPLETED_MESSAGE"		value="Nei Aarbecht Prett fir änneren"></property>
+		<property name="NEW_COMPLETED_TITLE"		value="Nei Aarbecht ugeluecht"></property>
+		<property name="LOAD_COMPLETED_MESSAGE"		value="Fichier Lued Fäerdeg an Prett fir änneren"></property>
+		<property name="LOAD_COMPLETED_TITLE"		value="Luede Fäerdeg"></property>
+		<property name="SAVE_COMPLETED_MESSAGE"		value="Fichier Spueren Fäerdeg"></property>
+		<property name="SAVE_COMPLETED_TITLE"		value="Spueren Fäerdeg"></property>
+		<property name="SAVE_UNSAVED_WORK_MESSAGE"	value="Géif Dir wéi Är Aarbecht net gespäichert éischt ze retten?"></property>
+		<property name="SAVE_UNSAVED_WORK_TITLE"	value="Retten gespäichert schaffen?"></property>
+
+		<property name="NEW_CREATED_MESSAGE"		value="Nei Aarbecht Duerch awer nach net gerett"></property>
+		<property name="WORK_LOADED_MESSAGE"		value="Der Aarbecht ass iwwerlaascht"></property>
+		<property name="WORK_SAVED_MESSAGE"		value="Der Aarbecht ass gerett"></property>
+		<property name="SAVE_UNSAVED_WORK_MESSAGE"	value="Wëllt Dir Är Aarbecht net gespäichert éischt ze retten?"></property>
+		<property name="SAVE_WORK_TITLE"		value="spuert Aarbecht"></property>
+		<property name="LOAD_WORK_TITLE"		value="Wielt Aarbecht Fichier ze opbauen"></property>
+		<property name="EXPORT_WORK_TITLE"      value="Wielt Plaz ze exportéieren"></property>
+		<property name="WORK_FILE_EXT"			value=".json"></property>
+		<property name="WORK_FILE_EXT_DESC"		value="GA Büro Stonnen"></property>
+
+		<!-- WORKSPACE CONTROLS STUFF -->        
+		<property name="TAS_HEADER_TEXT"                value="Geléiert Assistenten"></property>
+		<property name="NAME_COLUMN_TEXT"               value="Numm"></property>
+		<property name="UG_COLUMN_TEXT"                 value="Undergrad"></property>
+		<property name="EMAIL_COLUMN_TEXT"              value="Email"></property>
+		<property name="NAME_PROMPT_TEXT"               value="Numm"></property>
+		<property name="EMAIL_PROMPT_TEXT"              value="Email"></property>
+		<property name="ADD_BUTTON_TEXT"                value="Foto GA"></property>
+		<property name="OFFICE_HOURS_SUBHEADER"         value="Büro Stonnen Saachen"></property>
+
+		<!-- WORKSPACE ERROR MESSAGES -->
+		<property name="MISSING_TA_NAME_TITLE"          value="Vermësst GA Numm"></property>
+		<property name="MISSING_TA_NAME_MESSAGE"        value="Dir musst e GA Numm gëtt"></property>
+		<property name="MISSING_TA_EMAIL_TITLE"         value="Vermësst GA Email"></property>
+		<property name="MISSING_TA_EMAIL_MESSAGE"       value="Dir musst e GA Email déi"></property>
+		<property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_TITLE"     value="GA Numm an Email Net Eenzegaarteg"></property>
+		<property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_MESSAGE"   value="Dir musst eng eenzegaarteg GA Numm gëtt an Email"></property>
+
+		<property name="DELETE_TEXT"                 value="Läschen"></property>
+		<property name="CLEAR_BUTTON_TEXT"              value="Kloer"></property>
+		<property name="COURSE_INFO_TEXT"               value="Natierlech Info"></property>
+		<property name="SUBJECT_TEXT"                   value="Sujet"></property>
+		<property name="SEMESTER_TEXT"                  value="Semester"></property>
+		<property name="TITLE_TEXT"                     value="Titel"></property>
+		<property name="INSTRUCTOR_NAME_TEXT"           value="Instrument den Numm"></property>
+		<property name="INSTRUCTOR_HOME_TEXT"           value="Instrument Hoheem"></property>
+		<property name="EXPORT_DIR_TEXT"                value="Exportéieren Guide"></property>
+		<property name="SEMESTER_LIST"                  value="Hierscht"></property>
+
+		<property name="NUMBER_TEXT"					value="Zuel"></property>
+		<property name="YEAR_TEXT"						value="Joer"></property>
+		<property name="CHANGE_BUTTON_TEXT"				value="Änneren"></property>
+		<property name="SITE_TEMPLATE_TEXT"				value="Websäit Schabloun"></property>
+		<property name="SITE_TEMPLATE_DISC_TEXT"		value="Der gewielter Dossier soll déi voll Site Skelett enthält, dorënner der HTML Fichieren."></property>
+		<property name="SELECT_TEMPLATE_BUTTON_TEXT"	value="Wielt Schabloun Guide"></property>
+		<property name="SITE_PAGES_TEXT"				value="Site Säiten"></property>
+		<property name="USE_COLUMN_TEXT"				value="Benotzen"></property>
+		<property name="NAVBAR_COLUMN_TEXT"				value="Navbar Titel"></property>
+		<property name="FILENAME_COLUMN_TEXT"			value="Fichiersnumm"></property>
+		<property name="SCRIPT_COLUMN_TEXT"				value="Schrëft"></property>
+
+		<property name="PAGE_STYLE_TEXT"				value="Säit Stil"></property>
+		<property name="BANNER_SCHOOL_IMAGE_TEXT"		value="Banner Schoul Bild"></property>
+		<property name="LEFT_FOOTER_IMAGE_TEXT"			value="Lénks Fousszeilen Bild"></property>
+		<property name="RIGHT_FOOTER_IMAGE_TEXT"		value="Recht Fousszeilen Bild"></property>
+		<property name="STYLESHEET_TEXT"				value="Virlag"></property>
+		<property name="STYLESHEET_DISC_TEXT"			value="REMARQUE: Nei virlags muss an work/css gesat ginn gin selectable."></property>
+
+		<property name="RECITATIONS_TEXT"				value="Endlech"></property>
+		<property name="SECTION_TEXT"					value="Sektioun"></property>
+		<property name="INSTRUCTOR_TEXT"				value="Kritt op"></property>
+		<property name="DAYTIME_TEXT"					value="Dag/Zäit"></property>
+		<property name="LOCATION_TEXT"					value="Standuert"></property>
+		<property name="TA_TEXT"						value="GA"></property>
+		<property name="ADDEDIT_TEXT"					value="Foto/Ännerung"></property>
+		<property name="SUPERVISING_TA_TEXT"			value="Iwwerwaachung GA"></property>
+		<property name="ADDUPDATE_TEXT"					value="Foto/Aktualiséierung"></property>
+
+		<property name="SCHEDULE_TEXT"					value="Zäitplang"></property>
+		<property name="CAL_BOUNDS_TEXT"				value="Kalenner Grenze"></property>
+		<property name="STARTING_MON_TEXT"				value="Ab Méinden"></property>
+		<property name="ENDING_FRI_TEXT"				value="Gedronk Freideg"></property>
+		<property name="SCHEDULE_ITEMS_TEXT"			value="Zäitplang Artikelen"></property>
+		<property name="TYPE_TEXT"						value="Typ"></property>
+		<property name="DATE_TEXT"						value="Datum"></property>
+		<property name="TOPIC_TEXT"						value="Sujet"></property>
+		<property name="TIME_TEXT"						value="Zäit"></property>
+		<property name="LINK_TEXT"						value="Link"></property>
+		<property name="CRITERIA_TEXT"					value="Critèrë"></property>
+		<property name="TEAM_TEXT"						value="Équipë"></property>
+		<property name="TEAMS_TEXT"						value="Équipës"></property>
+		<property name="NAME_TEXT"						value="Numm"></property>
+		<property name="COLOR_TEXT"						value="Faarf"></property>
+		<property name="TEXT_COLOR_TEXT"				value="Wuert Faarf"></property>
+		<property name="STUDENTS_TEXT"					value="Schüler"></property>
+		<property name="FIRSTNAME_TEXT"					value="Virnumm"></property>
+		<property name="LASTNAME_TEXT"					value="Familljennumm"></property>
+		<property name="ROLE_TEXT"						value="Roll"></property>
+		<property name="PROJECTS_TEXT"					value="Projeten"></property>
+		<property name="COURSE_DETAILS_TEXT"			value="Natierlech Detailer"></property>
+		<property name="TA_DATA_TEXT"					value="GA Donnéeën"></property>
+		<property name="RECITATION_DATA_TEXT"			value="Endlech Donnéeën"></property>
+		<property name="SCHEDULE_DATA_TEXT"				value="Zäitplang Donnéeën"></property>
+		<property name="PROJECT_DATA_TEXT"				value="Projet Donnéeën"></property>
+	</property_list>
+	<property_options_list>
+		<property_options name="OFFICE_HOURS_TABLE_HEADERS">
+			<option>Ufank Zäit</option>
+			<option>Enn Zäit</option>
+		</property_options>
+		<property_options name="DAYS_OF_WEEK">
+			<option>MÉINDEG</option>
+			<option>DËNSCHDEG</option>
+			<option>MËTTWOCH</option>
+			<option>DONNESCHDEG</option>
+			<option>FREIDEG</option>
+		</property_options>
+	</property_options_list>
+</properties>

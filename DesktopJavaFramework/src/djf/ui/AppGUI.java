@@ -130,7 +130,7 @@ public class AppGUI {
         // THIS TOGGLES WITH WHETHER THE CURRENT COURSE
         // HAS BEEN SAVED OR NOT
         saveButton.setDisable(saved);
-        saveAsButton.setDisable(saved);
+        saveAsButton.setDisable(false);
         // ALL THE OTHER BUTTONS ARE ALWAYS ENABLED
         // ONCE EDITING THAT FIRST COURSE BEGINS
 	newButton.setDisable(false);
@@ -159,7 +159,7 @@ public class AppGUI {
         newButton = initChildButton(leftToolbar,	NEW_ICON.toString(),	    NEW_TOOLTIP.toString(),	false);
         loadButton = initChildButton(leftToolbar,	LOAD_ICON.toString(),	    LOAD_TOOLTIP.toString(),	false);
         saveButton = initChildButton(leftToolbar,	SAVE_ICON.toString(),	    SAVE_TOOLTIP.toString(),	true);
-        saveAsButton=initChildButton(leftToolbar,	SAVE_AS_ICON.toString(),	    SAVE_AS_TOOLTIP.toString(),	true);
+        saveAsButton=initChildButton(leftToolbar,	SAVE_AS_ICON.toString(),	    SAVE_AS_TOOLTIP.toString(),	false);
         exportButton=initChildButton(leftToolbar,	EXPORT_ICON.toString(),	    EXPORT_TOOLTIP.toString(),	false);
         exitButton = initChildButton(leftToolbar,	EXIT_ICON.toString(),	    EXIT_TOOLTIP.toString(),	false);
 // AND NOW SETUP THEIR EVENT HANDLERS
