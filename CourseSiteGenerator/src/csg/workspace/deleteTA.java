@@ -10,8 +10,8 @@ import java.util.HashMap;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import jtps.jTPS_Transaction;
-import csg.TAManagerApp;
-import csg.data.TAData;
+import csg.CourseSiteGeneratorApp;
+import csg.data.Data;
 import csg.data.TeachingAssistant;
 
 /**
@@ -19,7 +19,7 @@ import csg.data.TeachingAssistant;
  * @author moham_000
  */
 public class deleteTA  implements jTPS_Transaction{
-       TAManagerApp app;
+       CourseSiteGeneratorApp app;
        TAController controller;
        Object selectedItem;
        TAWorkspace workspace;
@@ -27,7 +27,7 @@ public class deleteTA  implements jTPS_Transaction{
        String name;
        boolean ug = false;
        ArrayList<StringProperty> list;
-    deleteTA(TAManagerApp app,TAController controller,Object selectedItem, TAWorkspace workspace){
+    deleteTA(CourseSiteGeneratorApp app,TAController controller,Object selectedItem, TAWorkspace workspace){
         this.app=app;
         this.controller=controller;
         this.selectedItem=selectedItem;
@@ -42,7 +42,7 @@ public class deleteTA  implements jTPS_Transaction{
                 this.name=ta.getName();
                 this.email=ta.getEmail();
                 this.ug = ta.getUndergrad().get();
-                TAData data = (TAData)app.getDataComponent();
+                Data data = (Data)app.getDataComponent();
                 data.removeTA(taName);
                 ArrayList<StringProperty> list=new ArrayList<StringProperty>();
                 // AND BE SURE TO REMOVE ALL THE TA'S OFFICE HOURS
@@ -62,7 +62,7 @@ public class deleteTA  implements jTPS_Transaction{
 
     @Override
     public void undoTransaction() {
-        TAData data=(TAData)app.getDataComponent();
+        Data data=(Data)app.getDataComponent();
         data.addTA(name, email, ug);
         for(int i=0;i<list.size();i++){
             list.get(i).setValue(list.get(i).getValue()+(list.get(i).getValue().equals("")?name:"\n"+name));

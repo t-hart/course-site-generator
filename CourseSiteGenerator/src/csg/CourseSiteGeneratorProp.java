@@ -10,7 +10,7 @@ package csg;
  * @author Richard McKenna
  * @version 1.0
  */
-public enum TAManagerProp {
+public enum CourseSiteGeneratorProp {
     // FOR SIMPLE OK/CANCEL DIALOG BOXES
     OK_PROMPT,
     CANCEL_PROMPT,

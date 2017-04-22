@@ -8,7 +8,7 @@
 -->
 <properties>
 	<property_list>
-		<property name="APP_TITLE"	    value="TA Manager"></property>
+		<property name="APP_TITLE"	    value="GA Manager"></property>
 		<property name="APP_LOGO"	    value="TAManagerLogo.png"></property>
 		<property name="APP_PATH_CSS"	    value="style/"></property>
 		<property name="APP_CSS"	    value="tam_style.css"></property>

@@ -22,10 +22,15 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
-import csg.TAManagerApp;
-import csg.data.TAData;
+import csg.CourseSiteGeneratorApp;
+import csg.data.Data;
 import csg.data.TeachingAssistant;
 import csg.workspace.TAWorkspace;
+import csg.data.Recitation;
+import csg.data.SitePage;
+import csg.data.ScheduledItem;
+import csg.data.Team;
+import csg.data.Student;
 
 /**
  * This class serves as the file component for the TA manager app. It provides
@@ -36,7 +41,7 @@ import csg.workspace.TAWorkspace;
 public class TAFiles implements AppFileComponent {
 
     // THIS IS THE APP ITSELF
-    TAManagerApp app;
+    CourseSiteGeneratorApp app;
 
     // THESE ARE USED FOR IDENTIFYING JSON TYPES
     static final String JSON_START_HOUR = "startHour";
@@ -48,15 +53,59 @@ public class TAFiles implements AppFileComponent {
     static final String JSON_UNDERGRAD_TAS = "undergrad_tas";
     static final String JSON_EMAIL = "email";
     static final String JSON_UG = "ug";
-
-    public TAFiles(TAManagerApp initApp) {
+    static final String JSON_REC = "recitaions";
+    static final String JSON_REC_SECTION = "rec_section";
+    static final String JSON_REC_INSTRUCTOR = "rec_instructor";
+    static final String JSON_REC_DAYTIME = "rec_daytime";
+    static final String JSON_REC_LOCATION = "rec_location";
+    static final String JSON_REC_SUPERVISINGTA_1 = "supervisingTA_1";
+    static final String JSON_REC_SUPERVISINGTA_2 = "supervisingTA_2";
+    static final String JSON_COURSE_SUBJECT = "subject";
+    static final String JSON_COURSE_NUMBER = "number";
+    static final String JSON_COURSE_SEMESTER = "semester";
+    static final String JSON_COURSE_YEAR = "year";
+    static final String JSON_COURSE_TITLE = "title";
+    static final String JSON_COURSE_INSTRUCTOR_NAME = "instructor_name";
+    static final String JSON_COURSE_INSTRUCTOR_HOME = "instructor_home";
+    static final String JSON_COURSE_EXPORT_DIR = "course_export_dir";
+    static final String JSON_SITETEMPLATE_DIR = "site_template_dir";
+    static final String JSON_SITEPAGES = "site_pages";
+    static final String JSON_SITEPAGE_USE = "use";
+    static final String JSON_SITEPAGE_NAVBARTITLE = "navbar_title";
+    static final String JSON_SITEPAGE_FILENAME = "file_name";
+    static final String JSON_SITEPAGE_SCRIPT = "script";
+    static final String JSON_PAGESTYLE_BANNERSCHOOL_DIR = "banner_school_image_dir";
+    static final String JSON_PAGESTYLE_LEFTFOOTER_DIR = "left_footer_image_dir";
+    static final String JSON_PAGESTYLE_RIGHTFOOTER_DIR = "right_footer_image_dir";
+    static final String JSON_PAGESTYLE_STYLESHEET_DIR = "stylesheet_dir";
+    static final String JSON_SCHEDULE_STARTINGMONDAY = "starting_monday";
+    static final String JSON_SCHEDULE_ENDINGFRIDAY = "ending_friday";
+    static final String JSON_SCHEDULEDITEMS = "scheduled_items";
+    static final String JSON_SCHEDULEDITEM_TYPE = "type";
+    static final String JSON_SCHEDULEDITEM_DATE = "date";
+    static final String JSON_SCHEDULEDITEM_TITLE = "title";
+    static final String JSON_SCHEDULEDITEM_TOPIC = "topic";
+    static final String JSON_SCHEDULEDITEM_LINK = "link";
+    static final String JSON_SCHEDULEDITEM_CRITERIA = "criteria";
+    static final String JSON_TEAMS = "teams";
+    static final String JSON_TEAM_NAME = "name";
+    static final String JSON_TEAM_COLOR = "color";
+    static final String JSON_TEAM_TEXTCOLOR = "text_color";
+    static final String JSON_TEAM_LINK = "link";
+    static final String JSON_STUDENTS = "students";
+    static final String JSON_STUDENT_FIRSTNAME = "first_name";
+    static final String JSON_STUDENT_LASTNAME = "last_name";
+    static final String JSON_STUDENT_TEAM = "team";
+    static final String JSON_STUDENT_ROLE = "role";
+    
+    public TAFiles(CourseSiteGeneratorApp initApp) {
         app = initApp;
     }
 
     @Override
     public void loadData(AppDataComponent data, String filePath) throws IOException {
         // CLEAR THE OLD DATA OUT
-        TAData dataManager = (TAData) data;
+        Data dataManager = (Data) data;
 
         // LOAD THE JSON FILE WITH ALL THE DATA
         JsonObject json = loadJSONFile(filePath);
@@ -124,7 +173,7 @@ public class TAFiles implements AppFileComponent {
     @Override
     public void saveData(AppDataComponent data, String filePath) throws IOException {
         // GET THE DATA
-        TAData dataManager = (TAData) data;
+        Data dataManager = (Data) data;
 
         // NOW BUILD THE TA JSON OBJCTS TO SAVE
         JsonArrayBuilder taArrayBuilder = Json.createArrayBuilder();
@@ -149,13 +198,97 @@ public class TAFiles implements AppFileComponent {
             timeSlotArrayBuilder.add(tsJson);
         }
         JsonArray timeSlotsArray = timeSlotArrayBuilder.build();
-
+        
+        JsonArrayBuilder recitationArrayBuilder = Json.createArrayBuilder();
+        ObservableList<Recitation> recs = dataManager.getRecitations();
+        for(Recitation rec : recs){
+            JsonObject recJson = Json.createObjectBuilder()
+                    .add(JSON_REC_SECTION, rec.getSection().getValue())
+                    .add(JSON_REC_INSTRUCTOR, rec.getInstructor().getValue())
+                    .add(JSON_REC_DAYTIME, rec.getDayTime().getValue())
+                    .add(JSON_REC_LOCATION, rec.getLocation().getValue())
+                    .add(JSON_REC_SUPERVISINGTA_1, rec.getSupervisingTA_1().getName())
+                    .add(JSON_REC_SUPERVISINGTA_2, rec.getSupervisingTA_2().getName()).build();
+            recitationArrayBuilder.add(recJson);
+        }
+        JsonArray recitationArray = recitationArrayBuilder.build();
+       
+        JsonArrayBuilder sitePagesArrayBuilder = Json.createArrayBuilder();
+        ObservableList<SitePage> sitePages = dataManager.getSitePages();
+        for(SitePage sp : sitePages){
+            JsonObject spJson = Json.createObjectBuilder()
+                    .add(JSON_SITEPAGE_USE, String.valueOf(sp.isUse()))
+                    .add(JSON_SITEPAGE_NAVBARTITLE, sp.getNavbarTitle())
+                    .add(JSON_SITEPAGE_FILENAME, sp.getFileName())
+                    .add(JSON_SITEPAGE_SCRIPT, sp.getScript()).build();
+            sitePagesArrayBuilder.add(spJson);
+        }
+        JsonArray sitePageArray = sitePagesArrayBuilder.build();
+        
+        JsonArrayBuilder scheduledItemsArrayBuilder = Json.createArrayBuilder();
+        ObservableList<ScheduledItem> scheduledItems = dataManager.getScheduledItems();
+        for(ScheduledItem si : scheduledItems){
+            JsonObject siJson = Json.createObjectBuilder()
+                    .add(JSON_SCHEDULEDITEM_TYPE, si.getType().getValue())
+                    .add(JSON_SCHEDULEDITEM_DATE, si.getDate().toString())
+                    .add(JSON_SCHEDULEDITEM_TITLE, si.getTitle().getValue())
+                    .add(JSON_SCHEDULEDITEM_TOPIC, si.getTopic().getValue())
+                    .add(JSON_SCHEDULEDITEM_LINK, si.getLink().getValue())
+                    .add(JSON_SCHEDULEDITEM_CRITERIA, si.getCriteria().getValue()).build();
+            scheduledItemsArrayBuilder.add(siJson);
+        }
+        JsonArray scheduledItemsArray = scheduledItemsArrayBuilder.build();
+        
+        JsonArrayBuilder teamsArrayBuilder = Json.createArrayBuilder();
+        ObservableList<Team> teams = dataManager.getTeams();
+        for(Team t : teams){
+            JsonObject tJson = Json.createObjectBuilder()
+                    .add(JSON_TEAM_NAME, t.getName().getValue())
+                    .add(JSON_TEAM_COLOR, t.getColor().toString())
+                    .add(JSON_TEAM_TEXTCOLOR, t.getTextColor().toString())
+                    .add(JSON_TEAM_LINK, t.getLink().getValue()).build();
+            teamsArrayBuilder.add(tJson);
+        }
+        JsonArray teamsArray = teamsArrayBuilder.build();
+        
+        JsonArrayBuilder studentsArrayBuilder = Json.createArrayBuilder();
+        ObservableList<Student> students = dataManager.getStudents();
+        for(Student s : students){
+            JsonObject sJson = Json.createObjectBuilder()
+                    .add(JSON_STUDENT_FIRSTNAME, s.getFirstName().getValue())
+                    .add(JSON_STUDENT_LASTNAME, s.getLastName().getValue())
+                    .add(JSON_STUDENT_TEAM, s.getTeam().getName().getValue())
+                    .add(JSON_STUDENT_ROLE, s.getRole().getValue()).build();
+            studentsArrayBuilder.add(sJson);
+        }
+        JsonArray studentsArray = studentsArrayBuilder.build();
+        
         // THEN PUT IT ALL TOGETHER IN A JsonObject
         JsonObject dataManagerJSO = Json.createObjectBuilder()
+                .add(JSON_COURSE_SUBJECT, dataManager.getSubject())
+                .add(JSON_COURSE_NUMBER, dataManager.getNumber())
+                .add(JSON_COURSE_SEMESTER, dataManager.getSemester())
+                .add(JSON_COURSE_YEAR, dataManager.getYear())
+                .add(JSON_COURSE_TITLE, dataManager.getTitle())
+                .add(JSON_COURSE_INSTRUCTOR_NAME, dataManager.getInstructorName())
+                .add(JSON_COURSE_INSTRUCTOR_HOME, dataManager.getInstructorHome())
+                .add(JSON_COURSE_EXPORT_DIR, dataManager.getExportDir())
+                .add(JSON_SITETEMPLATE_DIR, dataManager.getSiteTemplateDir())
+                .add(JSON_SITEPAGES, sitePageArray)
+                .add(JSON_PAGESTYLE_BANNERSCHOOL_DIR, dataManager.getBannerSchoolImageDir())
+                .add(JSON_PAGESTYLE_LEFTFOOTER_DIR, dataManager.getLeftFooterImageDir())
+                .add(JSON_PAGESTYLE_RIGHTFOOTER_DIR, dataManager.getRightFooterImageDir())
+                .add(JSON_PAGESTYLE_STYLESHEET_DIR, dataManager.getStylesheetDir())
+                .add(JSON_UNDERGRAD_TAS, undergradTAsArray)
                 .add(JSON_START_HOUR, "" + dataManager.getStartHour())
                 .add(JSON_END_HOUR, "" + dataManager.getEndHour())
-                .add(JSON_UNDERGRAD_TAS, undergradTAsArray)
                 .add(JSON_OFFICE_HOURS, timeSlotsArray)
+                .add(JSON_REC, recitationArray)
+                .add(JSON_SCHEDULE_STARTINGMONDAY, dataManager.getStartingMonday().toString())
+                .add(JSON_SCHEDULE_ENDINGFRIDAY, dataManager.getEndingFriday().toString())
+                .add(JSON_SCHEDULEDITEMS, scheduledItemsArray)
+                .add(JSON_TEAMS, teamsArray)
+                .add(JSON_STUDENTS, studentsArray)
                 .build();
 
         // AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING

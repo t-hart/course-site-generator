@@ -3,7 +3,7 @@ package csg.workspace;
 import djf.controller.AppFileController;
 import static djf.settings.AppPropertyType.INVALID_EMAIL;
 import djf.ui.AppGUI;
-import static csg.TAManagerProp.*;
+import static csg.CourseSiteGeneratorProp.*;
 import djf.ui.AppMessageDialogSingleton;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,9 +21,9 @@ import javafx.scene.layout.Pane;
 import jtps.jTPS;
 import jtps.jTPS_Transaction;
 import properties_manager.PropertiesManager;
-import csg.TAManagerApp;
+import csg.CourseSiteGeneratorApp;
 import csg.data.EmailValidator;
-import csg.data.TAData;
+import csg.data.Data;
 import csg.data.TeachingAssistant;
 import csg.style.TAStyle;
 import static csg.style.TAStyle.CLASS_HIGHLIGHTED_GRID_CELL;
@@ -41,14 +41,14 @@ import csg.workspace.TAWorkspace;
  */
 public class TAController {
     // THE APP PROVIDES ACCESS TO OTHER COMPONENTS AS NEEDED
-    TAManagerApp app;
+    CourseSiteGeneratorApp app;
 String oldName="";
 String oldEmail="";
 jTPS j=new jTPS();
     /**
      * Constructor, note that the app must already be constructed.
      */
-    public TAController(TAManagerApp initApp) {
+    public TAController(CourseSiteGeneratorApp initApp) {
         // KEEP THIS FOR LATER
         app = initApp;
     }
@@ -78,7 +78,7 @@ jTPS j=new jTPS();
         String email = emailTextField.getText();
         
         // WE'LL NEED TO ASK THE DATA SOME QUESTIONS TOO
-        TAData data = (TAData)app.getDataComponent();
+        Data data = (Data)app.getDataComponent();
         
         // WE'LL NEED THIS IN CASE WE NEED TO DISPLAY ANY ERROR MESSAGES
         PropertiesManager props = PropertiesManager.getPropertiesManager();
@@ -206,7 +206,7 @@ public jTPS getJ(){
             // GET THE TA
             TeachingAssistant ta = (TeachingAssistant)selectedItem;
             String taName = ta.getName();
-            TAData data = (TAData)app.getDataComponent();
+            Data data = (Data)app.getDataComponent();
             String cellKey = pane.getId();
             
             // AND TOGGLE THE OFFICE HOURS IN THE CLICKED CELL
@@ -220,7 +220,7 @@ public jTPS getJ(){
     
     void handleGridCellMouseExited(Pane pane) {
         String cellKey = pane.getId();
-        TAData data = (TAData)app.getDataComponent();
+        Data data = (Data)app.getDataComponent();
         int column = Integer.parseInt(cellKey.substring(0, cellKey.indexOf("_")));
         int row = Integer.parseInt(cellKey.substring(cellKey.indexOf("_") + 1));
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
@@ -258,7 +258,7 @@ public jTPS getJ(){
 
     void handleGridCellMouseEntered(Pane pane) {
         String cellKey = pane.getId();
-        TAData data = (TAData)app.getDataComponent();
+        Data data = (Data)app.getDataComponent();
         int column = Integer.parseInt(cellKey.substring(0, cellKey.indexOf("_")));
         int row = Integer.parseInt(cellKey.substring(cellKey.indexOf("_") + 1));
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();

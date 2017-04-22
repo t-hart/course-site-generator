@@ -6,7 +6,7 @@
 package csg.workspace;
 
 import jtps.jTPS_Transaction;
-import csg.data.TAData;
+import csg.data.Data;
 
 /**
  *
@@ -15,8 +15,8 @@ import csg.data.TAData;
 public class addtoGrid implements jTPS_Transaction {
 String cellKey="";
 String taName="";
-TAData data;
-    public addtoGrid(String cellkey,String taName, TAData data){
+Data data;
+    public addtoGrid(String cellkey,String taName, Data data){
         this.cellKey=cellkey;
         this.taName=taName;
         this.data=data;

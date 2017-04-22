@@ -135,29 +135,29 @@ public abstract class AppTemplate extends Application {
      */
     public boolean loadProperties(String propertiesFileName) {
 	    PropertiesManager props = PropertiesManager.getPropertiesManager();
-	Alert langAlert = new Alert(AlertType.CONFIRMATION);
-        langAlert.setTitle("Select Languange");
-        langAlert.setHeaderText("Please select a languange.");
-        ButtonType eng = new ButtonType("English");
-        ButtonType lux = new ButtonType("Luxembourgish");
-        ButtonType can = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
-        
-        langAlert.getButtonTypes().setAll(eng, lux, can);
-        Optional<ButtonType> result = langAlert.showAndWait();
-        
-        if(result.get() == eng){
-            propertiesFileName = "app_properties_eng.xml";
-            langChoice = new String("eng");
-        }
-        else if(result.get() == lux){
-            propertiesFileName = "app_properties_lux.xml";
-            langChoice = new String("lux");
-        }
-        else{
-            propertiesFileName = "app_properties_eng.xml";
-            langChoice = new String("eng");
-        }
-        
+//	Alert langAlert = new Alert(AlertType.CONFIRMATION);
+//        langAlert.setTitle("Select Languange");
+//        langAlert.setHeaderText("Please select a languange.");
+//        ButtonType eng = new ButtonType("English");
+//        ButtonType lux = new ButtonType("Luxembourgish");
+//        ButtonType can = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
+//        
+//        langAlert.getButtonTypes().setAll(eng, lux, can);
+//        Optional<ButtonType> result = langAlert.showAndWait();
+//        
+//        if(result.get() == eng){
+//            propertiesFileName = "app_properties_eng.xml";
+//            langChoice = new String("eng");
+//        }
+//        else if(result.get() == lux){
+//            propertiesFileName = "app_properties_lux.xml";
+//            langChoice = new String("lux");
+//        }
+//        else{
+//            propertiesFileName = "app_properties_eng.xml";
+//            langChoice = new String("eng");
+//        }
+        propertiesFileName = "app_properties_eng.xml";
         try {
 	    // LOAD THE SETTINGS FOR STARTING THE APP
 	    props.addProperty(PropertiesManager.DATA_PATH_PROPERTY, PATH_DATA);

@@ -1,7 +1,7 @@
 package csg;
 
 import java.util.Locale;
-import csg.data.TAData;
+import csg.data.Data;
 import csg.file.TAFiles;
 import csg.workspace.TAWorkspace;
 import djf.AppTemplate;
@@ -19,7 +19,7 @@ import static javafx.application.Application.launch;
  * @author Richard McKenna
  * @version 1.0
  */
-public class TAManagerApp extends AppTemplate {
+public class CourseSiteGeneratorApp extends AppTemplate {
     /**
      * This hook method must initialize all four components in the
      * proper order ensuring proper dependencies are respected, meaning
@@ -31,7 +31,7 @@ public class TAManagerApp extends AppTemplate {
         // CONSTRUCT ALL FOUR COMPONENTS. NOTE THAT FOR THIS APP
         // THE WORKSPACE NEEDS THE DATA COMPONENT TO EXIST ALREADY
         // WHEN IT IS CONSTRUCTED, SO BE CAREFUL OF THE ORDER
-        dataComponent = new TAData(this);
+        dataComponent = new Data(this);
         workspaceComponent = new TAWorkspace(this);
         fileComponent = new TAFiles(this);
         styleComponent = new TAStyle(this);

@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.Set;
 import javafx.beans.property.StringProperty;
 import jtps.jTPS_Transaction;
-import csg.data.TAData;
+import csg.data.Data;
 
 /**
  *
@@ -18,7 +18,7 @@ import csg.data.TAData;
  */
 public class change implements jTPS_Transaction {
 
-    TAData data;
+    Data data;
     String oldName;
     String newName;
     String oldEmail;
@@ -26,7 +26,7 @@ public class change implements jTPS_Transaction {
     boolean oldUG;
     boolean newUG;
 
-    public change(String oldName, String oldEmail, String newName, String newEmail, TAData data, boolean oldUG, boolean newUG) {
+    public change(String oldName, String oldEmail, String newName, String newEmail, Data data, boolean oldUG, boolean newUG) {
         this.oldName = oldName;
         this.newEmail = newEmail;
         this.oldEmail = oldEmail;

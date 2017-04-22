@@ -6,18 +6,18 @@
 package csg.workspace;
 
 import jtps.jTPS_Transaction;
-import csg.data.TAData;
+import csg.data.Data;
 
 /**
  *
  * @author moham_000
  */
 public class addTATr implements jTPS_Transaction{
-TAData ta;
+Data ta;
 String email;
 String name;
 boolean ug;
-    addTATr(String name,String email, TAData data){
+    addTATr(String name,String email, Data data){
        ta=data;
        this.email=email;
        this.name=name;

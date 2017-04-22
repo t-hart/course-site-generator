@@ -9,16 +9,16 @@ import java.util.HashMap;
 import java.util.Set;
 import javafx.scene.control.Label;
 import jtps.jTPS_Transaction;
-import csg.TAManagerApp;
-import csg.data.TAData;
+import csg.CourseSiteGeneratorApp;
+import csg.data.Data;
 
 /**
  *
  * @author moham_000
  */
 public class javaa implements jTPS_Transaction{
-    TAData taData;
-    TAManagerApp app;
+    Data taData;
+    CourseSiteGeneratorApp app;
     boolean big;
  int dif;
  int oldHour;
@@ -26,7 +26,7 @@ public class javaa implements jTPS_Transaction{
  HashMap<String,Label>kk;
      HashMap<String, Label> officeHoursGridTACellLabels;
  HashMap<String,Label>clone;
-    public javaa(TAData tadata,TAManagerApp app, boolean big, int dif, int oldHour, int k, HashMap<String,Label>kk,HashMap<String, Label> officeHoursGridTACellLabels){
+    public javaa(Data tadata,CourseSiteGeneratorApp app, boolean big, int dif, int oldHour, int k, HashMap<String,Label>kk,HashMap<String, Label> officeHoursGridTACellLabels){
         this.app=app;
         this.big=big;
         this.dif=dif;

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import javafx.beans.property.StringProperty;
-import csg.TAManagerApp;
+import csg.CourseSiteGeneratorApp;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -36,13 +36,13 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import jtps.jTPS_Transaction;
 import properties_manager.PropertiesManager;
-import csg.TAManagerProp;
-import static csg.TAManagerProp.MISSING_TA_EMAIL_MESSAGE;
-import static csg.TAManagerProp.MISSING_TA_EMAIL_TITLE;
-import static csg.TAManagerProp.MISSING_TA_NAME_MESSAGE;
-import static csg.TAManagerProp.MISSING_TA_NAME_TITLE;
+import csg.CourseSiteGeneratorProp;
+import static csg.CourseSiteGeneratorProp.MISSING_TA_EMAIL_MESSAGE;
+import static csg.CourseSiteGeneratorProp.MISSING_TA_EMAIL_TITLE;
+import static csg.CourseSiteGeneratorProp.MISSING_TA_NAME_MESSAGE;
+import static csg.CourseSiteGeneratorProp.MISSING_TA_NAME_TITLE;
 import csg.style.TAStyle;
-import csg.data.TAData;
+import csg.data.Data;
 import csg.data.TeachingAssistant;
 import static djf.settings.AppPropertyType.ABOUT_ICON;
 import static djf.settings.AppPropertyType.ABOUT_TOOLTIP;
@@ -81,7 +81,7 @@ import javafx.beans.value.ObservableValue;
 public class TAWorkspace extends AppWorkspaceComponent {
 
     // THIS PROVIDES US WITH ACCESS TO THE APP COMPONENTS
-    TAManagerApp app;
+    CourseSiteGeneratorApp app;
 
     // THIS PROVIDES RESPONSES TO INTERACTIONS WITH THIS WORKSPACE
     TAController controller;
@@ -132,7 +132,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
      * office hours grid, since it doesn't yet know what the hours will be until
      * a file is loaded or a new one is created.
      */
-    public TAWorkspace(TAManagerApp initApp) {
+    public TAWorkspace(CourseSiteGeneratorApp initApp) {
         // KEEP THIS FOR LATER
         app = initApp;
         
@@ -149,9 +149,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
 
         // INIT THE HEADER ON THE LEFT
         tasHeaderBox = new HBox();
-        String tasHeaderText = props.getProperty(TAManagerProp.TAS_HEADER_TEXT.toString());
+        String tasHeaderText = props.getProperty(CourseSiteGeneratorProp.TAS_HEADER_TEXT.toString());
         tasHeaderLabel = new Label(tasHeaderText);
-        Button deleteTAButton = new Button(props.getProperty(TAManagerProp.DELETE_TEXT.toString()));
+        Button deleteTAButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
         tasHeaderBox.setAlignment(Pos.CENTER_LEFT);
         tasHeaderBox.getChildren().addAll(tasHeaderLabel, deleteTAButton);
         
@@ -159,13 +159,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         // MAKE THE TABLE AND SETUP THE DATA MODEL
         taTable = new TableView();
         taTable.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        TAData data = (TAData) app.getDataComponent();
+        Data data = (Data) app.getDataComponent();
         ObservableList<TeachingAssistant> tableData = data.getTeachingAssistants();
         taTable.setEditable(true);
         taTable.setItems(tableData);
-        String ugColumnText = props.getProperty(TAManagerProp.UG_COLUMN_TEXT.toString());
-        String nameColumnText = props.getProperty(TAManagerProp.NAME_COLUMN_TEXT.toString());
-        String emailColumnText = props.getProperty(TAManagerProp.EMAIL_COLUMN_TEXT.toString());
+        String ugColumnText = props.getProperty(CourseSiteGeneratorProp.UG_COLUMN_TEXT.toString());
+        String nameColumnText = props.getProperty(CourseSiteGeneratorProp.NAME_COLUMN_TEXT.toString());
+        String emailColumnText = props.getProperty(CourseSiteGeneratorProp.EMAIL_COLUMN_TEXT.toString());
         ugColumn = new TableColumn(ugColumnText);
         nameColumn = new TableColumn(nameColumnText);
         emailColumn = new TableColumn(emailColumnText);
@@ -192,10 +192,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taTable.getColumns().add(emailColumn);
 
         // ADD BOX FOR ADDING A TA
-        String namePromptText = props.getProperty(TAManagerProp.NAME_PROMPT_TEXT.toString());
-        String emailPromptText = props.getProperty(TAManagerProp.EMAIL_PROMPT_TEXT.toString());
-        String addButtonText = props.getProperty(TAManagerProp.ADD_BUTTON_TEXT.toString());
-        String clearButtonText = props.getProperty(TAManagerProp.CLEAR_BUTTON_TEXT.toString());
+        String namePromptText = props.getProperty(CourseSiteGeneratorProp.NAME_PROMPT_TEXT.toString());
+        String emailPromptText = props.getProperty(CourseSiteGeneratorProp.EMAIL_PROMPT_TEXT.toString());
+        String addButtonText = props.getProperty(CourseSiteGeneratorProp.ADD_BUTTON_TEXT.toString());
+        String clearButtonText = props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString());
         nameTextField = new TextField();
         emailTextField = new TextField();
         nameTextField.setPromptText(namePromptText);
@@ -221,7 +221,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         // INIT THE HEADER ON THE RIGHT
         officeHoursHeaderBox = new HBox();
         officeHoursHeaderBox.setAlignment(Pos.CENTER_LEFT);
-        String officeHoursGridText = props.getProperty(TAManagerProp.OFFICE_HOURS_SUBHEADER.toString());
+        String officeHoursGridText = props.getProperty(CourseSiteGeneratorProp.OFFICE_HOURS_SUBHEADER.toString());
         officeHoursHeaderLabel = new Label(officeHoursGridText);
         a = new ComboBox();
         int h = 1;
@@ -261,7 +261,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         Label start = new Label(officeHoursGridText);
         Label end = new Label(officeHoursGridText);
         
-        ArrayList<String> comboBoxLabels = props.getPropertyOptionsList(TAManagerProp.OFFICE_HOURS_TABLE_HEADERS);
+        ArrayList<String> comboBoxLabels = props.getPropertyOptionsList(CourseSiteGeneratorProp.OFFICE_HOURS_TABLE_HEADERS);
         end.setText(comboBoxLabels.get(1)+": ");
         end.setStyle(" -fx-font-weight:bold;\n"
                 + "    -fx-font-size:12pt;  \n"
@@ -316,16 +316,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.setHgap(10);
         courseInfoPane.setVgap(10);
         courseInfoPane.setPadding(new Insets(10, 10, 10, 10));
-        Label courseInfoTitle = new Label(props.getProperty(TAManagerProp.COURSE_INFO_TEXT.toString()));
+        Label courseInfoTitle = new Label(props.getProperty(CourseSiteGeneratorProp.COURSE_INFO_TEXT.toString()));
         courseInfoTitle.getStyleClass().add("section-subheader");
         
         courseInfoPane.add(courseInfoTitle, 0, 0, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.SUBJECT_TEXT.toString())+":"), 0, 1, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.SEMESTER_TEXT.toString())+":"), 0, 2, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.TITLE_TEXT.toString())+":"), 0, 3, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.INSTRUCTOR_NAME_TEXT.toString())+":"), 0, 4, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.INSTRUCTOR_HOME_TEXT.toString())+":"), 0, 5, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.EXPORT_DIR_TEXT.toString())+":"), 0, 6, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SUBJECT_TEXT.toString())+":"), 0, 1, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SEMESTER_TEXT.toString())+":"), 0, 2, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TITLE_TEXT.toString())+":"), 0, 3, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_NAME_TEXT.toString())+":"), 0, 4, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_HOME_TEXT.toString())+":"), 0, 5, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.EXPORT_DIR_TEXT.toString())+":"), 0, 6, 1, 1);
         courseInfoPane.add(new Label("..\\courses\\CSE219\\Summer2017\\public"), 1, 6, 1, 1);
         
         ObservableList subjectList = FXCollections.observableArrayList("CSE");
@@ -334,7 +334,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         subjectComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(subjectComboBox, 1, 1, 2, 1);
         
-        ObservableList semesterList = FXCollections.observableArrayList(props.getProperty(TAManagerProp.SEMESTER_LIST.toString()));
+        ObservableList semesterList = FXCollections.observableArrayList(props.getProperty(CourseSiteGeneratorProp.SEMESTER_LIST.toString()));
         ComboBox semesterComboBox = new ComboBox(semesterList);
         semesterComboBox.setPrefWidth(80);
         semesterComboBox.getSelectionModel().selectFirst();
@@ -343,8 +343,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.add(new TextField(), 1, 3, 5, 1);
         courseInfoPane.add(new TextField(), 1, 4, 5, 1);
         courseInfoPane.add(new TextField(), 1, 5, 5, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.NUMBER_TEXT.toString())+":"), 3, 1, 1, 1);
-        courseInfoPane.add(new Label(props.getProperty(TAManagerProp.YEAR_TEXT.toString())+":"), 3, 2, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.NUMBER_TEXT.toString())+":"), 3, 1, 1, 1);
+        courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.YEAR_TEXT.toString())+":"), 3, 2, 1, 1);
         
         ObservableList numberList = FXCollections.observableArrayList("219");
         ComboBox numberComboBox = new ComboBox(numberList);
@@ -358,30 +358,30 @@ public class TAWorkspace extends AppWorkspaceComponent {
         yearComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(yearComboBox, 5, 2, 1, 1);
         
-        Button changeCourseInfoButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
+        Button changeCourseInfoButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
         changeCourseInfoButton.setPrefWidth(80);
         courseInfoPane.add(changeCourseInfoButton, 5, 6, 1, 1);
         courseInfoPane.setStyle("-fx-background-color: #EBEBEB");
         
         /***** COURSE DETAILS : SITE TEMPLATE *****/
         VBox siteTemplatePane = new VBox(15);
-        Label siteTemplateTitle = new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_TEXT.toString()));
+        Label siteTemplateTitle = new Label(props.getProperty(CourseSiteGeneratorProp.SITE_TEMPLATE_TEXT.toString()));
         siteTemplateTitle.getStyleClass().add("section-subheader");
         
         siteTemplatePane.getChildren().add(siteTemplateTitle);
-        siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_TEMPLATE_DISC_TEXT.toString())));
+        siteTemplatePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.SITE_TEMPLATE_DISC_TEXT.toString())));
         siteTemplatePane.getChildren().add(new Label("..\\templates\\CSE219"));
         
-        Button selectTemplateButton = new Button(props.getProperty(TAManagerProp.SELECT_TEMPLATE_BUTTON_TEXT.toString()));
+        Button selectTemplateButton = new Button(props.getProperty(CourseSiteGeneratorProp.SELECT_TEMPLATE_BUTTON_TEXT.toString()));
         siteTemplatePane.getChildren().add(selectTemplateButton);
         
-        siteTemplatePane.getChildren().add(new Label(props.getProperty(TAManagerProp.SITE_PAGES_TEXT.toString())+":"));
+        siteTemplatePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.SITE_PAGES_TEXT.toString())+":"));
         
         TableView sitePagesTable = new TableView();
-        TableColumn useColumn = new TableColumn(props.getProperty(TAManagerProp.USE_COLUMN_TEXT.toString()));
-        TableColumn navbarTitleColumn = new TableColumn(props.getProperty(TAManagerProp.NAVBAR_COLUMN_TEXT.toString()));
-        TableColumn fileNameColumn = new TableColumn(props.getProperty(TAManagerProp.FILENAME_COLUMN_TEXT.toString()));
-        TableColumn scriptColumn = new TableColumn(props.getProperty(TAManagerProp.SCRIPT_COLUMN_TEXT.toString()));
+        TableColumn useColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.USE_COLUMN_TEXT.toString()));
+        TableColumn navbarTitleColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.NAVBAR_COLUMN_TEXT.toString()));
+        TableColumn fileNameColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.FILENAME_COLUMN_TEXT.toString()));
+        TableColumn scriptColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.SCRIPT_COLUMN_TEXT.toString()));
         sitePagesTable.getColumns().addAll(useColumn, navbarTitleColumn, fileNameColumn, scriptColumn);
         sitePagesTable.setMaxWidth(550);
         sitePagesTable.setPrefHeight(200);
@@ -395,14 +395,14 @@ public class TAWorkspace extends AppWorkspaceComponent {
         GridPane pageStyleGridPane = new GridPane();
         pageStyleGridPane.setHgap(10);
         pageStyleGridPane.setVgap(10);
-        Label pageStyleTitle = new Label(props.getProperty(TAManagerProp.PAGE_STYLE_TEXT.toString()));
+        Label pageStyleTitle = new Label(props.getProperty(CourseSiteGeneratorProp.PAGE_STYLE_TEXT.toString()));
         pageStyleTitle.getStyleClass().add("section-subheader");
         
         pageStyleGridPane.add(pageStyleTitle, 0, 0, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.BANNER_SCHOOL_IMAGE_TEXT.toString())+":"), 0, 1, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.LEFT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 2, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(TAManagerProp.STYLESHEET_TEXT.toString())+":"), 0, 4, 1, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.BANNER_SCHOOL_IMAGE_TEXT.toString())+":"), 0, 1, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LEFT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 2, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.STYLESHEET_TEXT.toString())+":"), 0, 4, 1, 1);
         
         ObservableList stylesheetList = FXCollections.observableArrayList("sea_wolf.css");
         ComboBox stylesheetComboBox = new ComboBox(stylesheetList);
@@ -418,9 +418,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         pageStyleGridPane.add(leftFooterImageView, 1, 2, 1, 1);
         pageStyleGridPane.add(rightFooterImageView, 1, 3, 1, 1);
         
-        Button changeBannerSchoolImageButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
-        Button changeLeftFooterImageButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
-        Button changeRightFooterImageButton = new Button(props.getProperty(TAManagerProp.CHANGE_BUTTON_TEXT.toString()));
+        Button changeBannerSchoolImageButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
+        Button changeLeftFooterImageButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
+        Button changeRightFooterImageButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
         changeBannerSchoolImageButton.setPrefWidth(80);
         changeLeftFooterImageButton.setPrefWidth(80);
         changeRightFooterImageButton.setPrefWidth(80);
@@ -431,7 +431,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         pageStylePane.getChildren().add(pageStyleGridPane);
         
-        pageStylePane.getChildren().add(new Label(props.getProperty(TAManagerProp.STYLESHEET_DISC_TEXT.toString())));
+        pageStylePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.STYLESHEET_DISC_TEXT.toString())));
         
         pageStylePane.setStyle("-fx-background-color: #EBEBEB");
         pageStylePane.setPadding(new Insets(10, 10, 10, 10));
@@ -443,20 +443,20 @@ public class TAWorkspace extends AppWorkspaceComponent {
         recitationDataPane.setPadding(new Insets(10, 10, 10, 10));
         
         HBox recitationDataHeader = new HBox(10);
-        Button deleteRecitationButton = new Button(props.getProperty(TAManagerProp.DELETE_TEXT.toString()));
-        Label recitationDataHeaderLabel = new Label(props.getProperty(TAManagerProp.RECITATIONS_TEXT.toString()));
+        Button deleteRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
+        Label recitationDataHeaderLabel = new Label(props.getProperty(CourseSiteGeneratorProp.RECITATIONS_TEXT.toString()));
         recitationDataHeaderLabel.getStyleClass().add("tab-header");
         recitationDataHeader.getChildren().addAll(recitationDataHeaderLabel, deleteRecitationButton);
         recitationDataHeader.setAlignment(Pos.CENTER_LEFT);
         
         recitationDataPane.getChildren().add(recitationDataHeader);
         
-        TableColumn sectionColumn = new TableColumn(props.getProperty(TAManagerProp.SECTION_TEXT.toString()));
-        TableColumn instructorColumn = new TableColumn(props.getProperty(TAManagerProp.INSTRUCTOR_TEXT.toString()));
-        TableColumn dayTimeColumn = new TableColumn(props.getProperty(TAManagerProp.DAYTIME_TEXT.toString()));
-        TableColumn locationColumn = new TableColumn(props.getProperty(TAManagerProp.LOCATION_TEXT.toString()));
-        TableColumn TA1Column = new TableColumn(props.getProperty(TAManagerProp.TA_TEXT.toString()));
-        TableColumn TA2Column = new TableColumn(props.getProperty(TAManagerProp.TA_TEXT.toString()));
+        TableColumn sectionColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.SECTION_TEXT.toString()));
+        TableColumn instructorColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_TEXT.toString()));
+        TableColumn dayTimeColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.DAYTIME_TEXT.toString()));
+        TableColumn locationColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.LOCATION_TEXT.toString()));
+        TableColumn TA1Column = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TA_TEXT.toString()));
+        TableColumn TA2Column = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TA_TEXT.toString()));
         
         TableView recitationTable = new TableView();
         recitationTable.getColumns().addAll(sectionColumn, instructorColumn, dayTimeColumn, locationColumn, TA1Column, TA2Column);
@@ -467,15 +467,15 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditPane.setHgap(10);
         addEditPane.setVgap(10);
         addEditPane.setPadding(new Insets(10, 10, 10, 10));
-        Label addEditRecitationLabel = new Label(props.getProperty(TAManagerProp.ADDEDIT_TEXT.toString()));
+        Label addEditRecitationLabel = new Label(props.getProperty(CourseSiteGeneratorProp.ADDEDIT_TEXT.toString()));
         addEditRecitationLabel.getStyleClass().add("section-subheader");
         addEditPane.add(addEditRecitationLabel, 0, 0, 2, 1);
-        addEditPane.add(new Label(props.getProperty(TAManagerProp.SECTION_TEXT.toString())+":"), 0, 1, 1, 1);
-        addEditPane.add(new Label(props.getProperty(TAManagerProp.INSTRUCTOR_TEXT.toString())+":"), 0, 2, 1, 1);
-        addEditPane.add(new Label(props.getProperty(TAManagerProp.DAYTIME_TEXT.toString())+":"), 0, 3, 1, 1);
-        addEditPane.add(new Label(props.getProperty(TAManagerProp.LOCATION_TEXT.toString())+":"), 0, 4, 1, 1);
-        addEditPane.add(new Label(props.getProperty(TAManagerProp.SUPERVISING_TA_TEXT.toString())+":"), 0, 5, 1, 1);
-        addEditPane.add(new Label(props.getProperty(TAManagerProp.SUPERVISING_TA_TEXT.toString())+":"), 0, 6, 1, 1);
+        addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SECTION_TEXT.toString())+":"), 0, 1, 1, 1);
+        addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_TEXT.toString())+":"), 0, 2, 1, 1);
+        addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.DAYTIME_TEXT.toString())+":"), 0, 3, 1, 1);
+        addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LOCATION_TEXT.toString())+":"), 0, 4, 1, 1);
+        addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SUPERVISING_TA_TEXT.toString())+":"), 0, 5, 1, 1);
+        addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SUPERVISING_TA_TEXT.toString())+":"), 0, 6, 1, 1);
         
         addEditPane.add(new TextField(), 1, 1, 10, 1);
         addEditPane.add(new TextField(), 1, 2, 10, 1);
@@ -490,8 +490,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         addEditPane.setStyle("-fx-background-color: #EBEBEB");
         
-        Button addUpdateRecitationButton = new Button(props.getProperty(TAManagerProp.ADDUPDATE_TEXT.toString()));
-        Button clearAddEditRecitationButton = new Button(props.getProperty(TAManagerProp.CLEAR_BUTTON_TEXT.toString()));
+        Button addUpdateRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        Button clearAddEditRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateRecitationButton.setPrefWidth(110);
         clearAddEditRecitationButton.setPrefWidth(110);
         
@@ -503,19 +503,19 @@ public class TAWorkspace extends AppWorkspaceComponent {
         /******* SCHEDULE DATA *******/
         VBox schedulePane = new VBox(10);
         schedulePane.setPadding(new Insets(10, 10, 10, 10));
-        Label scheduleTabHeader = new Label(props.getProperty(TAManagerProp.SCHEDULE_TEXT.toString()));
+        Label scheduleTabHeader = new Label(props.getProperty(CourseSiteGeneratorProp.SCHEDULE_TEXT.toString()));
         scheduleTabHeader.getStyleClass().add("tab-header");
         schedulePane.getChildren().add(scheduleTabHeader);
         GridPane calBoundariesPane = new GridPane();
         calBoundariesPane.setHgap(10);
         calBoundariesPane.setVgap(10);
         calBoundariesPane.setStyle("-fx-background-color: #EBEBEB");
-        Label calBoundsLabel = new Label(props.getProperty(TAManagerProp.CAL_BOUNDS_TEXT.toString()));
+        Label calBoundsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.CAL_BOUNDS_TEXT.toString()));
         calBoundsLabel.getStyleClass().add("section-subheader");
         calBoundariesPane.add(calBoundsLabel, 0, 0, 2, 1);
-        calBoundariesPane.add(new Label(props.getProperty(TAManagerProp.STARTING_MON_TEXT.toString())+":"), 0, 1, 1, 1);
+        calBoundariesPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.STARTING_MON_TEXT.toString())+":"), 0, 1, 1, 1);
         calBoundariesPane.add(new DatePicker(), 1, 1, 1, 1);
-        calBoundariesPane.add(new Label(props.getProperty(TAManagerProp.ENDING_FRI_TEXT.toString())+":"), 2, 1, 1, 1);
+        calBoundariesPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.ENDING_FRI_TEXT.toString())+":"), 2, 1, 1, 1);
         calBoundariesPane.add(new DatePicker(), 3, 1, 1, 1);
         calBoundariesPane.setPadding(new Insets(10, 10, 10, 10));
         
@@ -526,18 +526,18 @@ public class TAWorkspace extends AppWorkspaceComponent {
         HBox scheduleItemsHeader = new HBox(10);
         scheduleItemsHeader.setAlignment(Pos.CENTER_LEFT);
         
-        Button deleteScheduleItemButton = new Button(props.getProperty(TAManagerProp.DELETE_TEXT.toString()));
+        Button deleteScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
         
-        Label scheduleItemsLabel = new Label(props.getProperty(TAManagerProp.SCHEDULE_ITEMS_TEXT.toString()));
+        Label scheduleItemsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.SCHEDULE_ITEMS_TEXT.toString()));
         scheduleItemsLabel.getStyleClass().add("section-subheader");
         scheduleItemsHeader.getChildren().addAll(scheduleItemsLabel, deleteScheduleItemButton);
         
         scheduleItemsPane.getChildren().add(scheduleItemsHeader);
         
-        TableColumn typeColumn = new TableColumn(props.getProperty(TAManagerProp.TYPE_TEXT.toString()));
-        TableColumn dateColumn = new TableColumn(props.getProperty(TAManagerProp.DATE_TEXT.toString()));
-        TableColumn titleColumn = new TableColumn(props.getProperty(TAManagerProp.TITLE_TEXT.toString()));
-        TableColumn topicColumn = new TableColumn(props.getProperty(TAManagerProp.TOPIC_TEXT.toString()));
+        TableColumn typeColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TYPE_TEXT.toString()));
+        TableColumn dateColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.DATE_TEXT.toString()));
+        TableColumn titleColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TITLE_TEXT.toString()));
+        TableColumn topicColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TOPIC_TEXT.toString()));
         TableView scheduleItemsTable = new TableView();
         scheduleItemsTable.getColumns().addAll(typeColumn, dateColumn, titleColumn, topicColumn);
         
@@ -547,16 +547,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditSchedulePane.setHgap(10);
         addEditSchedulePane.setVgap(10);
         
-        Label addEditScheduleItemsLabel = new Label(props.getProperty(TAManagerProp.ADDEDIT_TEXT.toString()));
+        Label addEditScheduleItemsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.ADDEDIT_TEXT.toString()));
         addEditScheduleItemsLabel.getStyleClass().add("section-subheader");
         addEditSchedulePane.add(addEditScheduleItemsLabel, 0, 0, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.TYPE_TEXT.toString())+":"), 0, 1, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.DATE_TEXT.toString())+":"), 0, 2, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.TIME_TEXT.toString())+":"), 0, 3, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.TITLE_TEXT.toString())+":"), 0, 4, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.TOPIC_TEXT.toString())+":"), 0, 5, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.LINK_TEXT.toString())+":"), 0, 6, 1, 1);
-        addEditSchedulePane.add(new Label(props.getProperty(TAManagerProp.CRITERIA_TEXT.toString())+":"), 0, 7, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TYPE_TEXT.toString())+":"), 0, 1, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.DATE_TEXT.toString())+":"), 0, 2, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TIME_TEXT.toString())+":"), 0, 3, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TITLE_TEXT.toString())+":"), 0, 4, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TOPIC_TEXT.toString())+":"), 0, 5, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LINK_TEXT.toString())+":"), 0, 6, 1, 1);
+        addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.CRITERIA_TEXT.toString())+":"), 0, 7, 1, 1);
         
         ComboBox typeComboBox = new ComboBox();
         typeComboBox.setPrefWidth(100);
@@ -569,8 +569,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditSchedulePane.add(new TextField(), 1, 6, 30, 1);
         addEditSchedulePane.add(new TextField(), 1, 7, 30, 1);
         
-        Button addUpdateScheduleItemButton = new Button(props.getProperty(TAManagerProp.ADDUPDATE_TEXT.toString()));
-        Button clearScheduleItemButton = new Button(props.getProperty(TAManagerProp.CLEAR_BUTTON_TEXT.toString()));
+        Button addUpdateScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        Button clearScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateScheduleItemButton.setPrefWidth(100);
         clearScheduleItemButton.setPrefWidth(100);
         
@@ -592,17 +592,17 @@ public class TAWorkspace extends AppWorkspaceComponent {
         HBox projectDataHeader = new HBox(10);
         projectDataHeader.setAlignment(Pos.CENTER_LEFT);
         
-        Button deleteTeamButton = new Button(props.getProperty(TAManagerProp.DELETE_TEXT.toString()));
-        Label teamsHeaderLabel = new Label(props.getProperty(TAManagerProp.TEAMS_TEXT.toString()));
+        Button deleteTeamButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
+        Label teamsHeaderLabel = new Label(props.getProperty(CourseSiteGeneratorProp.TEAMS_TEXT.toString()));
         teamsHeaderLabel.getStyleClass().add("section-subheader");
         projectDataHeader.getChildren().addAll(teamsHeaderLabel, deleteTeamButton);   
         
         teamPane.getChildren().add(projectDataHeader);
         
-        TableColumn teamNameColumn = new TableColumn(props.getProperty(TAManagerProp.NAME_TEXT.toString()));
-        TableColumn colorColumn = new TableColumn(props.getProperty(TAManagerProp.COLOR_TEXT.toString())+" (hex#)");
-        TableColumn textColorColumn = new TableColumn(props.getProperty(TAManagerProp.TEXT_COLOR_TEXT.toString())+" (hex#)");
-        TableColumn linkColumn = new TableColumn(props.getProperty(TAManagerProp.LINK_TEXT.toString()));
+        TableColumn teamNameColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.NAME_TEXT.toString()));
+        TableColumn colorColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.COLOR_TEXT.toString())+" (hex#)");
+        TableColumn textColorColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TEXT_COLOR_TEXT.toString())+" (hex#)");
+        TableColumn linkColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.LINK_TEXT.toString()));
         TableView teamTable = new TableView();
         teamTable.getColumns().addAll(teamNameColumn, colorColumn, textColorColumn, linkColumn);
         
@@ -612,22 +612,22 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditProjectPane.setHgap(10);
         addEditProjectPane.setVgap(10);
         
-        Label addEditTeamsLabel = new Label(props.getProperty(TAManagerProp.ADDEDIT_TEXT.toString()));
+        Label addEditTeamsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.ADDEDIT_TEXT.toString()));
         addEditTeamsLabel.getStyleClass().add("section-subheader");
         addEditProjectPane.add(addEditTeamsLabel, 0, 0, 1, 1);
-        addEditProjectPane.add(new Label(props.getProperty(TAManagerProp.NAME_TEXT.toString())+":"), 0, 1, 1, 1);
-        addEditProjectPane.add(new Label(props.getProperty(TAManagerProp.COLOR_TEXT.toString())+":"), 0, 2, 1, 1);
-        addEditProjectPane.add(new Label(props.getProperty(TAManagerProp.LINK_TEXT.toString())+":"), 0, 3, 1, 1);
+        addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.NAME_TEXT.toString())+":"), 0, 1, 1, 1);
+        addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.COLOR_TEXT.toString())+":"), 0, 2, 1, 1);
+        addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LINK_TEXT.toString())+":"), 0, 3, 1, 1);
         
         addEditProjectPane.add(new TextField(), 1, 1, 1, 1);
         addEditProjectPane.add(new ColorPicker(), 1, 2, 1, 1);
         addEditProjectPane.add(new TextField(), 1, 3, 3, 1);
         
-        addEditProjectPane.add(new Label(props.getProperty(TAManagerProp.TEXT_COLOR_TEXT.toString())+":"), 2, 2, 1, 1);
+        addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TEXT_COLOR_TEXT.toString())+":"), 2, 2, 1, 1);
         addEditProjectPane.add(new ColorPicker(), 3, 2, 1, 1);
         
-        Button addUpdateProjectButton = new Button(props.getProperty(TAManagerProp.ADDUPDATE_TEXT.toString()));
-        Button clearProjectButton = new Button(props.getProperty(TAManagerProp.CLEAR_BUTTON_TEXT.toString()));
+        Button addUpdateProjectButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        Button clearProjectButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateProjectButton.setPrefWidth(100);
         clearProjectButton.setPrefWidth(100);
         
@@ -643,17 +643,17 @@ public class TAWorkspace extends AppWorkspaceComponent {
         HBox studentDataHeader = new HBox(10);
         studentDataHeader.setAlignment(Pos.CENTER_LEFT);
         
-        Button deleteStudentButton = new Button(props.getProperty(TAManagerProp.DELETE_TEXT.toString()));
-        Label studentsLabel = new Label(props.getProperty(TAManagerProp.STUDENTS_TEXT.toString()));
+        Button deleteStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
+        Label studentsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.STUDENTS_TEXT.toString()));
         studentsLabel.getStyleClass().add("section-subheader");
         studentDataHeader.getChildren().addAll(studentsLabel, deleteStudentButton);   
         
         studentPane.getChildren().add(studentDataHeader);
         
-        TableColumn firstNameColumn = new TableColumn(props.getProperty(TAManagerProp.FIRSTNAME_TEXT.toString()));
-        TableColumn lastNameColumn = new TableColumn(props.getProperty(TAManagerProp.LASTNAME_TEXT.toString()));
-        TableColumn teamColumn = new TableColumn(props.getProperty(TAManagerProp.TEAM_TEXT.toString()));
-        TableColumn roleColumn = new TableColumn(props.getProperty(TAManagerProp.ROLE_TEXT.toString()));
+        TableColumn firstNameColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.FIRSTNAME_TEXT.toString()));
+        TableColumn lastNameColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.LASTNAME_TEXT.toString()));
+        TableColumn teamColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TEAM_TEXT.toString()));
+        TableColumn roleColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.ROLE_TEXT.toString()));
         TableView studentTable = new TableView();
         studentTable.getColumns().addAll(firstNameColumn, lastNameColumn, teamColumn, roleColumn);
         
@@ -663,13 +663,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditStudentPane.setHgap(10);
         addEditStudentPane.setVgap(10);
         
-        Label addEditStudentsLabel = new Label(props.getProperty(TAManagerProp.ADDEDIT_TEXT.toString()));
+        Label addEditStudentsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.ADDEDIT_TEXT.toString()));
         addEditStudentsLabel.getStyleClass().add("section-subheader");
         addEditStudentPane.add(addEditStudentsLabel, 0, 0, 1, 1);
-        addEditStudentPane.add(new Label(props.getProperty(TAManagerProp.FIRSTNAME_TEXT.toString())+":"), 0, 1, 1, 1);
-        addEditStudentPane.add(new Label(props.getProperty(TAManagerProp.LASTNAME_TEXT.toString())+":"), 0, 2, 1, 1);
-        addEditStudentPane.add(new Label(props.getProperty(TAManagerProp.TEAM_TEXT.toString())+":"), 0, 3, 1, 1);
-        addEditStudentPane.add(new Label(props.getProperty(TAManagerProp.ROLE_TEXT.toString())+":"), 0, 4, 1, 1);
+        addEditStudentPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.FIRSTNAME_TEXT.toString())+":"), 0, 1, 1, 1);
+        addEditStudentPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LASTNAME_TEXT.toString())+":"), 0, 2, 1, 1);
+        addEditStudentPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TEAM_TEXT.toString())+":"), 0, 3, 1, 1);
+        addEditStudentPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.ROLE_TEXT.toString())+":"), 0, 4, 1, 1);
         
         addEditStudentPane.add(new TextField(), 1, 1, 10, 1);
         addEditStudentPane.add(new TextField(), 1, 2, 10, 1);
@@ -680,8 +680,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         addEditStudentPane.add(teamComboBox, 1, 3, 10, 1);
         
-        Button addUpdateStudentButton = new Button(props.getProperty(TAManagerProp.ADDUPDATE_TEXT.toString()));
-        Button clearStudentButton = new Button(props.getProperty(TAManagerProp.CLEAR_BUTTON_TEXT.toString()));
+        Button addUpdateStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        Button clearStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateStudentButton.setPrefWidth(100);
         clearStudentButton.setPrefWidth(100);
         
@@ -693,27 +693,27 @@ public class TAWorkspace extends AppWorkspaceComponent {
         teamTable.setMaxHeight(150);
         studentTable.setMaxHeight(150);
         
-        Label projectsHeader = new Label(props.getProperty(TAManagerProp.PROJECTS_TEXT.toString()));
+        Label projectsHeader = new Label(props.getProperty(CourseSiteGeneratorProp.PROJECTS_TEXT.toString()));
         projectsHeader.getStyleClass().add("tab-header");
         projectDataPane.getChildren().addAll(projectsHeader, teamPane, studentPane);
         
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);
         
-        Tab courseDetailsTab = new Tab(props.getProperty(TAManagerProp.COURSE_DETAILS_TEXT.toString()));
+        Tab courseDetailsTab = new Tab(props.getProperty(CourseSiteGeneratorProp.COURSE_DETAILS_TEXT.toString()));
         courseDetailsTab.setContent(courseDetailsPane);
         
-        Tab taDataTab = new Tab(props.getProperty(TAManagerProp.TA_DATA_TEXT.toString()));
+        Tab taDataTab = new Tab(props.getProperty(CourseSiteGeneratorProp.TA_DATA_TEXT.toString()));
         sPane.setPadding(new Insets(10, 10, 10, 10));
         taDataTab.setContent(sPane);
         
-        Tab recitationDataTab = new Tab(props.getProperty(TAManagerProp.RECITATION_DATA_TEXT.toString()));
+        Tab recitationDataTab = new Tab(props.getProperty(CourseSiteGeneratorProp.RECITATION_DATA_TEXT.toString()));
         recitationDataTab.setContent(recitationDataPane);
         
-        Tab scheduleDataTab = new Tab(props.getProperty(TAManagerProp.SCHEDULE_DATA_TEXT.toString()));
+        Tab scheduleDataTab = new Tab(props.getProperty(CourseSiteGeneratorProp.SCHEDULE_DATA_TEXT.toString()));
         scheduleDataTab.setContent(schedulePane);
         
-        Tab projectDataTab = new Tab(props.getProperty(TAManagerProp.PROJECT_DATA_TEXT.toString()));
+        Tab projectDataTab = new Tab(props.getProperty(CourseSiteGeneratorProp.PROJECT_DATA_TEXT.toString()));
         projectDataTab.setContent(projectDataPane);
         
         BorderPane appPane = new BorderPane();
@@ -780,7 +780,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         c.setOnAction(e -> {
             HashMap<String, Label> kk = (HashMap<String, Label>) officeHoursGridTACellLabels.clone();
-            TAData taData = (TAData) app.getDataComponent();
+            Data taData = (Data) app.getDataComponent();
             String f = (String) c.getSelectionModel().getSelectedItem();
             String[] z = f.split(":");
             int k = 0;
@@ -850,7 +850,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         a.setOnAction(e -> {
             HashMap<String, Label> kk = (HashMap<String, Label>) officeHoursGridTACellLabels.clone();
-            TAData taData = (TAData) app.getDataComponent();
+            Data taData = (Data) app.getDataComponent();
             String f = (String) a.getSelectionModel().getSelectedItem();
             int oldbeg = taData.getStartHour();
             String[] z = f.split(":");
@@ -1066,14 +1066,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
 
     @Override
     public void reloadWorkspace(AppDataComponent dataComponent) {
-        TAData taData = (TAData) dataComponent;
+        Data taData = (Data) dataComponent;
         reloadOfficeHoursGrid(taData);
 
     }
 
-    public void reloadOfficeHoursGrid(TAData dataComponent) {
+    public void reloadOfficeHoursGrid(Data dataComponent) {
         ArrayList<String> gridHeaders = dataComponent.getGridHeaders();
-
         // ADD THE TIME HEADERS
         for (int i = 0; i < 2; i++) {
             addCellToGrid(dataComponent, officeHoursGridTimeHeaderPanes, officeHoursGridTimeHeaderLabels, i, 0);
@@ -1136,7 +1135,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         taStyle.initOfficeHoursGridStyle();
     }
 
-    public void addCellToGrid(TAData dataComponent, HashMap<String, Pane> panes, HashMap<String, Label> labels, int col, int row) {
+    public void addCellToGrid(Data dataComponent, HashMap<String, Pane> panes, HashMap<String, Label> labels, int col, int row) {
         // MAKE THE LABEL IN A PANE
         Label cellLabel = new Label("");
         HBox cellPane = new HBox();

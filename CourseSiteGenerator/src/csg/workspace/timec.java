@@ -9,24 +9,24 @@ import java.util.HashMap;
 import java.util.Set;
 import javafx.scene.control.Label;
 import jtps.jTPS_Transaction;
-import csg.TAManagerApp;
-import csg.data.TAData;
+import csg.CourseSiteGeneratorApp;
+import csg.data.Data;
 
 /**
  *
  * @author moham_000
  */
 public class timec implements jTPS_Transaction {
-TAManagerApp app;
+CourseSiteGeneratorApp app;
  HashMap<String, Label> officeHoursGridTACellLabels;
  HashMap<String,Label>clone;
- TAData taData;
+ Data taData;
  boolean big;
  int k;
  int dif;
  int oldHour;
  HashMap<String,Label>kk;
-    public timec(TAManagerApp app,HashMap<String, Label> officeHoursGridTACellLabels,TAData ta,boolean big,int k,int dif,HashMap<String,Label>kk){
+    public timec(CourseSiteGeneratorApp app,HashMap<String, Label> officeHoursGridTACellLabels,Data ta,boolean big,int k,int dif,HashMap<String,Label>kk){
         this.app=app;
         clone=(HashMap<String, Label>) officeHoursGridTACellLabels.clone();
         this.officeHoursGridTACellLabels=officeHoursGridTACellLabels;
