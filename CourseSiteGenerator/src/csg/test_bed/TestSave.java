@@ -63,19 +63,15 @@ public class TestSave {
         /* ADD TAS TO OFFICE HOURS GRID */
         for (int row = 1; row < data.getNumRows(); row++) {
             for (int col = 2; col < 7; col++) {
-                double rand = Math.random();
-                if(rand < 0.90)
-                    data.setCellProperty(col, row, new SimpleStringProperty(""));
-                else if(rand < 0.95)
-                    data.setCellProperty(col, row, new SimpleStringProperty("Timothy Hart"));
-                else
-                    data.setCellProperty(col, row, new SimpleStringProperty("Hikari Oshiro"));
+                data.setCellProperty(col, row, new SimpleStringProperty(""));
             }
         }
+        data.setCellProperty(6, 6, new SimpleStringProperty("Timothy Hart"));
+        data.setCellProperty(3, 9, new SimpleStringProperty("Hikari Oshiro"));
         
         /* RECITATIONS */
-        data.addRecitation("R01", "McKenna", "Wed 3:30-4:23pm", "Old CS 2114", data.getTA("Timothy Hart"), data.getTA("Hikari Oshiro"));
-        data.addRecitation("R02", "McKenna", "Fri 1:30-2:23pm", "Old CS 2114", data.getTA("Timothy Hart"), data.getTA("Hikari Oshiro"));
+        data.addRecitation("R01", "McKenna", "Wed 3:30-4:23pm", "Old CS 2114", "Timothy Hart", "Hikari Oshiro");
+        data.addRecitation("R02", "McKenna", "Fri 1:30-2:23pm", "Old CS 2114", "Timothy Hart", "Hikari Oshiro");
         
         /* SCHEDULE */
         DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
@@ -84,7 +80,7 @@ public class TestSave {
             data.setEndingFriday(format.parse("August 25, 2017"));
             
             data.addScheduledItem("Holiday", format.parse("July 4, 2017"), "Independence Day", "", "", "");
-            data.addScheduledItem("Lecture", format.parse("July 12, 2017"), "Lecutre 3", "Event Programming", "https://eventprogramming.com/", "");
+            data.addScheduledItem("Lecture", format.parse("July 12, 2017"), "Lecture 3", "Event Programming", "https://eventprogramming.com/", "");
             data.addScheduledItem("Holiday", format.parse("August 1, 2017"), "NO LECTURE", "", "", "");
             data.addScheduledItem("Homework", format.parse("August 8, 2017"), "HW3", "UML", "https://umlhelp.org/", "");
         }catch(java.text.ParseException pe){
@@ -96,9 +92,9 @@ public class TestSave {
         data.addTeam("C4 Comics", Color.web("0x235399"), Color.web("0xFFFFFF"), "https://c4-comics.appspot.com");
         
         /* STUDENTS */
-        data.addStudent("Beau", "Brummell", (Team)(data.getTeams().get(0)), "Lead Designer");
-        data.addStudent("Jane", "Doe", (Team)(data.getTeams().get(1)), "Lead Programmer");
-        data.addStudent("Nooian", "Soong", (Team)(data.getTeams().get(0)), "Data Designer");
+        data.addStudent("Beau", "Brummell", "Atomic Comics", "Lead Designer");
+        data.addStudent("Jane", "Doe", "C4 Comics", "Lead Programmer");
+        data.addStudent("Nooian", "Soong", "Atomic Comics", "Data Designer");
         
         /* SAVE DATA */
         try{

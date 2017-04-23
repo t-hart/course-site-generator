@@ -83,6 +83,8 @@ public abstract class AppTemplate extends Application {
     public AppGUI getGUI() { return gui; }
     
     public String getLangChoice(){ return langChoice; }
+    
+    public void setLangChoice(String langChoice){ this.langChoice = langChoice; }
 
     /**
      * This is where our Application begins its initialization, it will load

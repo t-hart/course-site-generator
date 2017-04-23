@@ -31,6 +31,9 @@ import csg.data.SitePage;
 import csg.data.ScheduledItem;
 import csg.data.Team;
 import csg.data.Student;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import javafx.scene.paint.Color;
 
 /**
  * This class serves as the file component for the TA manager app. It provides
@@ -109,22 +112,47 @@ public class TAFiles implements AppFileComponent {
 
         // LOAD THE JSON FILE WITH ALL THE DATA
         JsonObject json = loadJSONFile(filePath);
-
-        // LOAD THE START AND END HOURS
-        String startHour = json.getString(JSON_START_HOUR);
-        String endHour = json.getString(JSON_END_HOUR);
-        System.out.print(endHour);
-        TAWorkspace workspaceComponent = (TAWorkspace) app.getWorkspaceComponent();
-        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        ComboBox a = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(2);
-        ComboBox c = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(4);
-        a.getSelectionModel().select(Integer.parseInt(startHour));
-        c.getSelectionModel().select(Integer.parseInt(endHour));
-        dataManager.initHours(startHour, endHour);
-
-        // NOW RELOAD THE WORKSPACE WITH THE LOADED DATA
-        app.getWorkspaceComponent().reloadWorkspace(app.getDataComponent());
-
+        
+        String subject = json.getString(JSON_COURSE_SUBJECT);
+        String number = json.getString(JSON_COURSE_NUMBER);
+        String semester = json.getString(JSON_COURSE_SEMESTER);
+        String year = json.getString(JSON_COURSE_YEAR);
+        String title = json.getString(JSON_COURSE_TITLE);
+        String instructorName = json.getString(JSON_COURSE_INSTRUCTOR_NAME);
+        String instructorHome = json.getString(JSON_COURSE_INSTRUCTOR_HOME);
+        String courseExportDir = json.getString(JSON_COURSE_EXPORT_DIR);
+        
+        dataManager.setSubject(subject);
+        dataManager.setNumber(number);
+        dataManager.setSemester(semester);
+        dataManager.setYear(year);
+        dataManager.setTitle(title);
+        dataManager.setInstructorName(instructorName);
+        dataManager.setInstructorHome(instructorHome);
+        dataManager.setExportDir(courseExportDir);
+        
+        String siteTemplateDir = json.getString(JSON_SITETEMPLATE_DIR);
+        dataManager.setSiteTemplateDir(siteTemplateDir);
+        JsonArray jsonSitePagesArray = json.getJsonArray(JSON_SITEPAGES);
+        for(int i = 0; i < jsonSitePagesArray.size(); i++){
+            JsonObject jsonSitePage = jsonSitePagesArray.getJsonObject(i);
+            boolean use = Boolean.parseBoolean(jsonSitePage.getString(JSON_SITEPAGE_USE));
+            String navbarTitle = jsonSitePage.getString(JSON_SITEPAGE_NAVBARTITLE);
+            String fileName = jsonSitePage.getString(JSON_SITEPAGE_FILENAME);
+            String script = jsonSitePage.getString(JSON_SITEPAGE_SCRIPT);
+            dataManager.addSitePage(use, navbarTitle, fileName, script);
+        }
+        
+        String bannerSchoolImageDir = json.getString(JSON_PAGESTYLE_BANNERSCHOOL_DIR);
+        String leftFooterImageDir = json.getString(JSON_PAGESTYLE_LEFTFOOTER_DIR);
+        String rightFooterImageDir = json.getString(JSON_PAGESTYLE_RIGHTFOOTER_DIR);
+        String stylesheetDir = json.getString(JSON_PAGESTYLE_STYLESHEET_DIR);
+        
+        dataManager.setBannerSchoolImageDir(bannerSchoolImageDir);
+        dataManager.setLeftFooterImageDir(leftFooterImageDir);
+        dataManager.setRightFooterImageDir(rightFooterImageDir);
+        dataManager.setStylesheetDir(stylesheetDir);
+        
         // NOW LOAD ALL THE UNDERGRAD TAs
         JsonArray jsonTAArray = json.getJsonArray(JSON_UNDERGRAD_TAS);
         for (int i = 0; i < jsonTAArray.size(); i++) {
@@ -148,6 +176,21 @@ public class TAFiles implements AppFileComponent {
                 }
             }
         }
+        
+        // LOAD THE START AND END HOURS
+        String startHour = json.getString(JSON_START_HOUR);
+        String endHour = json.getString(JSON_END_HOUR);
+        TAWorkspace workspaceComponent = (TAWorkspace) app.getWorkspaceComponent();
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+        ComboBox a = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(2);
+        ComboBox c = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(4);
+        a.getSelectionModel().select(Integer.parseInt(startHour));
+        c.getSelectionModel().select(Integer.parseInt(endHour));
+        dataManager.initHours(startHour, endHour);
+
+        // NOW RELOAD THE WORKSPACE WITH THE LOADED DATA
+        app.getWorkspaceComponent().reloadWorkspace(app.getDataComponent());
+
 
         // AND THEN ALL THE OFFICE HOURS
         JsonArray jsonOfficeHoursArray = json.getJsonArray(JSON_OFFICE_HOURS);
@@ -157,6 +200,64 @@ public class TAFiles implements AppFileComponent {
             String time = jsonOfficeHours.getString(JSON_TIME);
             String name = jsonOfficeHours.getString(JSON_NAME);
             dataManager.addOfficeHoursReservation(day, time, name);
+        }
+        
+        JsonArray jsonRecitationsArray = json.getJsonArray(JSON_REC);
+        for(int i = 0; i < jsonRecitationsArray.size(); i++){
+            JsonObject jsonRecitation = jsonRecitationsArray.getJsonObject(i);
+            String section = jsonRecitation.getString(JSON_REC_SECTION);
+            String instructor = jsonRecitation.getString(JSON_REC_INSTRUCTOR);
+            String dayTime = jsonRecitation.getString(JSON_REC_DAYTIME);
+            String location = jsonRecitation.getString(JSON_REC_LOCATION);
+            String supervisingTA_1 = jsonRecitation.getString(JSON_REC_SUPERVISINGTA_1);
+            String supervisingTA_2 = jsonRecitation.getString(JSON_REC_SUPERVISINGTA_2);
+            dataManager.addRecitation(section, instructor, dayTime, location, supervisingTA_1, supervisingTA_2);
+        }
+        
+        String startingMonday = json.getString(JSON_SCHEDULE_STARTINGMONDAY);
+        String endingFriday = json.getString(JSON_SCHEDULE_ENDINGFRIDAY);
+        
+        try{
+            dataManager.setStartingMonday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(startingMonday));
+            dataManager.setEndingFriday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(endingFriday));   
+        }catch(java.text.ParseException pe){
+            pe.printStackTrace();
+        }
+        
+        JsonArray jsonScheduledItemsArray = json.getJsonArray(JSON_SCHEDULEDITEMS);
+        for(int i = 0; i < jsonScheduledItemsArray.size(); i++){
+            JsonObject jsonScheduledItem = jsonScheduledItemsArray.getJsonObject(i);
+            String type = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TYPE);
+            String date = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_DATE);
+            String itemTitle = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TITLE);
+            String topic = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TOPIC);
+            String link = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_LINK);
+            String criteria = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_CRITERIA);
+            try{
+                dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTitle, topic, link, criteria);
+            }catch(java.text.ParseException pe){
+                pe.printStackTrace();
+            }
+        }
+        
+        JsonArray jsonTeamsArray = json.getJsonArray(JSON_TEAMS);
+        for(int i = 0; i < jsonTeamsArray.size(); i++){
+            JsonObject jsonTeam = jsonTeamsArray.getJsonObject(i);
+            String name = jsonTeam.getString(JSON_TEAM_NAME);
+            String color = jsonTeam.getString(JSON_TEAM_COLOR);
+            String textColor = jsonTeam.getString(JSON_TEAM_TEXTCOLOR);
+            String link = jsonTeam.getString(JSON_TEAM_LINK);
+            dataManager.addTeam(name, Color.web(color), Color.web(textColor), link);
+        }
+        
+        JsonArray jsonStudentsArray = json.getJsonArray(JSON_STUDENTS);
+        for(int i = 0; i < jsonStudentsArray.size(); i++){
+            JsonObject jsonStudent = jsonStudentsArray.getJsonObject(i);
+            String firstName = jsonStudent.getString(JSON_STUDENT_FIRSTNAME);
+            String lastName = jsonStudent.getString(JSON_STUDENT_LASTNAME);
+            String team = jsonStudent.getString(JSON_STUDENT_TEAM);
+            String role = jsonStudent.getString(JSON_STUDENT_ROLE);
+            dataManager.addStudent(firstName, lastName, team, role);
         }
     }
 
@@ -207,8 +308,8 @@ public class TAFiles implements AppFileComponent {
                     .add(JSON_REC_INSTRUCTOR, rec.getInstructor().getValue())
                     .add(JSON_REC_DAYTIME, rec.getDayTime().getValue())
                     .add(JSON_REC_LOCATION, rec.getLocation().getValue())
-                    .add(JSON_REC_SUPERVISINGTA_1, rec.getSupervisingTA_1().getName())
-                    .add(JSON_REC_SUPERVISINGTA_2, rec.getSupervisingTA_2().getName()).build();
+                    .add(JSON_REC_SUPERVISINGTA_1, rec.getSupervisingTA_1().getValue())
+                    .add(JSON_REC_SUPERVISINGTA_2, rec.getSupervisingTA_2().getValue()).build();
             recitationArrayBuilder.add(recJson);
         }
         JsonArray recitationArray = recitationArrayBuilder.build();
@@ -257,7 +358,7 @@ public class TAFiles implements AppFileComponent {
             JsonObject sJson = Json.createObjectBuilder()
                     .add(JSON_STUDENT_FIRSTNAME, s.getFirstName().getValue())
                     .add(JSON_STUDENT_LASTNAME, s.getLastName().getValue())
-                    .add(JSON_STUDENT_TEAM, s.getTeam().getName().getValue())
+                    .add(JSON_STUDENT_TEAM, s.getTeam().getValue())
                     .add(JSON_STUDENT_ROLE, s.getRole().getValue()).build();
             studentsArrayBuilder.add(sJson);
         }

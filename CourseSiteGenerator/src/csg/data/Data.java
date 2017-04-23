@@ -343,7 +343,12 @@ public class Data implements AppDataComponent {
         Collections.sort(teachingAssistants);
     }
     
-    public void addRecitation(String initSection, String initInstructor, String initDayTime, String initLocation, TeachingAssistant initSupervisingTA_1, TeachingAssistant initSupervisingTA_2){
+    public void addSitePage(boolean initUse, String initNavbarTitle, String initFileName, String initScript){
+        SitePage sp = new SitePage(initUse, initNavbarTitle, initFileName, initScript);
+        sitePages.add(sp);
+    }
+    
+    public void addRecitation(String initSection, String initInstructor, String initDayTime, String initLocation, String initSupervisingTA_1, String initSupervisingTA_2){
         Recitation rec = new Recitation(initSection, initInstructor, initDayTime, initLocation, initSupervisingTA_1, initSupervisingTA_2);
         recitations.add(rec);
     }
@@ -358,7 +363,7 @@ public class Data implements AppDataComponent {
         teams.add(team);
     }
     
-    public void addStudent(String initFirstName, String initLastName, Team initTeam, String initRole){
+    public void addStudent(String initFirstName, String initLastName, String initTeam, String initRole){
         Student stu = new Student(initFirstName, initLastName, initTeam, initRole);
         students.add(stu);
     }
