@@ -20,6 +20,11 @@ import csg.data.Team;
  *
  * @author tjhha
  */
+
+/*************************** NOTE *********************************/
+/* LINES 140-161 in AppTemplate.java must be commented out first! */
+/******************************************************************/
+
 public class TestSave {
     
     public static void main(String[] args){
@@ -88,8 +93,8 @@ public class TestSave {
         }
         
         /* TEAMS */
-        data.addTeam("Atomic Comics", Color.web("0x552211"), Color.web("0xFFFFFF"), "http://atomicomic.com");
-        data.addTeam("C4 Comics", Color.web("0x235399"), Color.web("0xFFFFFF"), "https://c4-comics.appspot.com");
+        data.addTeam("Atomic Comics", "552211", "FFFFFF", "http://atomicomic.com");
+        data.addTeam("C4 Comics", "235399", "FFFFFF", "https://c4-comics.appspot.com");
         
         /* STUDENTS */
         data.addStudent("Beau", "Brummell", "Atomic Comics", "Lead Designer");

@@ -20,20 +20,20 @@ public class Student {
         role = new SimpleStringProperty(initRole);
     }
 
-    public StringProperty getFirstName() {
-        return firstName;
+    public String getFirstName() {
+        return firstName.get();
     }
 
-    public StringProperty getLastName() {
-        return lastName;
+    public String getLastName() {
+        return lastName.get();
     }
 
-    public StringProperty getTeam() {
-        return team;
+    public String getTeam() {
+        return team.get();
     }
 
-    public StringProperty getRole() {
-        return role;
+    public String getRole() {
+        return role.get();
     }
     
     

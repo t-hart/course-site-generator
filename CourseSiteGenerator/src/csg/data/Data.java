@@ -358,7 +358,7 @@ public class Data implements AppDataComponent {
         scheduledItems.add(si);
     }
     
-    public void addTeam(String initName, Color initColor, Color initTextColor, String initLink){
+    public void addTeam(String initName, String initColor, String initTextColor, String initLink){
         Team team = new Team(initName, initColor, initTextColor, initLink);
         teams.add(team);
     }

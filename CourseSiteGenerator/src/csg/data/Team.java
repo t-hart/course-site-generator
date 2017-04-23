@@ -10,31 +10,31 @@ import javafx.scene.paint.Color;
  */
 public class Team {
     private final StringProperty name;
-    private final Color color;
-    private final Color textColor;
+    private final StringProperty color;
+    private final StringProperty textColor;
     private final StringProperty link;
     
-    public Team(String initName, Color initColor, Color initTextColor, String initLink){
+    public Team(String initName, String initColor, String initTextColor, String initLink){
         name = new SimpleStringProperty(initName);
-        color = initColor;
-        textColor = initTextColor;
+        color = new SimpleStringProperty(initColor);
+        textColor = new SimpleStringProperty(initTextColor);
         link = new SimpleStringProperty(initLink);
     }
 
-    public StringProperty getName() {
-        return name;
+    public String getName() {
+        return name.get();
     }
 
-    public Color getColor() {
-        return color;
+    public String getColor() {
+        return color.get();
     }
 
-    public Color getTextColor() {
-        return textColor;
+    public String getTextColor() {
+        return textColor.get();
     }
 
-    public StringProperty getLink() {
-        return link;
+    public String getLink() {
+        return link.get();
     }
     
     

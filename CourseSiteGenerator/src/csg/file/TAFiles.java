@@ -34,6 +34,16 @@ import csg.data.Student;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import javafx.scene.paint.Color;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.scene.control.DatePicker;
+import java.time.LocalDate;
+import java.time.Month;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * This class serves as the file component for the TA manager app. It provides
@@ -109,7 +119,7 @@ public class TAFiles implements AppFileComponent {
     public void loadData(AppDataComponent data, String filePath) throws IOException {
         // CLEAR THE OLD DATA OUT
         Data dataManager = (Data) data;
-
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
         // LOAD THE JSON FILE WITH ALL THE DATA
         JsonObject json = loadJSONFile(filePath);
         
@@ -131,8 +141,27 @@ public class TAFiles implements AppFileComponent {
         dataManager.setInstructorHome(instructorHome);
         dataManager.setExportDir(courseExportDir);
         
+        ComboBox subjectComboBox = workspace.getSubjectComboBox();
+        subjectComboBox.getSelectionModel().select(subject);
+        ComboBox sesmterComboBox = workspace.getSemesterComboBox();
+        sesmterComboBox.getSelectionModel().select(semester);
+        ComboBox numberComboBox = workspace.getNumberComboBox();
+        numberComboBox.getSelectionModel().select(number);
+        ComboBox yearComboBox = workspace.getYearComboBox();
+        yearComboBox.getSelectionModel().select(year);
+        TextField courseTitleField = workspace.getCourseTitle();
+        courseTitleField.setText(title);
+        TextField instructorHomeField = workspace.getInstructorHome();
+        instructorHomeField.setText(instructorHome);
+        TextField instructorNameField = workspace.getInstructorName();
+        instructorNameField.setText(instructorName);
+        Label exportDirLabel = workspace.getExportDir();
+        exportDirLabel.setText(courseExportDir);
+        
         String siteTemplateDir = json.getString(JSON_SITETEMPLATE_DIR);
         dataManager.setSiteTemplateDir(siteTemplateDir);
+        Label siteTemplatDirLabel = workspace.getSiteTemplateDir();
+        siteTemplatDirLabel.setText(siteTemplateDir);
         JsonArray jsonSitePagesArray = json.getJsonArray(JSON_SITEPAGES);
         for(int i = 0; i < jsonSitePagesArray.size(); i++){
             JsonObject jsonSitePage = jsonSitePagesArray.getJsonObject(i);
@@ -153,35 +182,28 @@ public class TAFiles implements AppFileComponent {
         dataManager.setRightFooterImageDir(rightFooterImageDir);
         dataManager.setStylesheetDir(stylesheetDir);
         
+        ImageView bannerSchool = workspace.getBannerSchool();
+        bannerSchool.setImage(new Image("file:"+bannerSchoolImageDir));
+        ImageView rightFooter = workspace.getRightFooter();
+        rightFooter.setImage(new Image("file:"+rightFooterImageDir));
+        ImageView leftFooter = workspace.getLeftFooter();
+        leftFooter.setImage(new Image("file:"+leftFooterImageDir));
+        ComboBox style = workspace.getStylesheet();
+        style.getSelectionModel().select(stylesheetDir);
+        
         // NOW LOAD ALL THE UNDERGRAD TAs
         JsonArray jsonTAArray = json.getJsonArray(JSON_UNDERGRAD_TAS);
         for (int i = 0; i < jsonTAArray.size(); i++) {
             JsonObject jsonTA = jsonTAArray.getJsonObject(i);
             String name = jsonTA.getString(JSON_NAME);
             String email = jsonTA.getString(JSON_EMAIL);
-            String ug = new String("");
-            boolean success = false;
-            try {
-                ug = jsonTA.getString(JSON_UG);
-                success = true;
-            } catch (Exception e) {
-            }
-            if (!success) {
-                dataManager.addTA(name, email, false);
-            } else {
-                if (ug.equals("false")) {
-                    dataManager.addTA(name, email, false);
-                } else {
-                    dataManager.addTA(name, email, true);
-                }
-            }
+            String ug = jsonTA.getString(JSON_UG);
+            dataManager.addTA(name, email, Boolean.valueOf(ug));
         }
         
         // LOAD THE START AND END HOURS
         String startHour = json.getString(JSON_START_HOUR);
         String endHour = json.getString(JSON_END_HOUR);
-        TAWorkspace workspaceComponent = (TAWorkspace) app.getWorkspaceComponent();
-        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
         ComboBox a = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(2);
         ComboBox c = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(4);
         a.getSelectionModel().select(Integer.parseInt(startHour));
@@ -217,6 +239,21 @@ public class TAFiles implements AppFileComponent {
         String startingMonday = json.getString(JSON_SCHEDULE_STARTINGMONDAY);
         String endingFriday = json.getString(JSON_SCHEDULE_ENDINGFRIDAY);
         
+        try {
+            DatePicker startingMondayPicker = workspace.getStartingMonday();
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
+            Date startingDate = sdf.parse(startingMonday);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startingDate);
+            startingMondayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
+            DatePicker endingFridayPicker = workspace.getEndingFriday();
+            Date endingDate = sdf.parse(endingFriday);
+            cal.setTime(endingDate);
+            endingFridayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
+        } catch (java.text.ParseException pe) {
+            pe.printStackTrace();
+        }
+        
         try{
             dataManager.setStartingMonday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(startingMonday));
             dataManager.setEndingFriday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(endingFriday));   
@@ -247,7 +284,7 @@ public class TAFiles implements AppFileComponent {
             String color = jsonTeam.getString(JSON_TEAM_COLOR);
             String textColor = jsonTeam.getString(JSON_TEAM_TEXTCOLOR);
             String link = jsonTeam.getString(JSON_TEAM_LINK);
-            dataManager.addTeam(name, Color.web(color), Color.web(textColor), link);
+            dataManager.addTeam(name, color, textColor, link);
         }
         
         JsonArray jsonStudentsArray = json.getJsonArray(JSON_STUDENTS);
@@ -304,12 +341,12 @@ public class TAFiles implements AppFileComponent {
         ObservableList<Recitation> recs = dataManager.getRecitations();
         for(Recitation rec : recs){
             JsonObject recJson = Json.createObjectBuilder()
-                    .add(JSON_REC_SECTION, rec.getSection().getValue())
-                    .add(JSON_REC_INSTRUCTOR, rec.getInstructor().getValue())
-                    .add(JSON_REC_DAYTIME, rec.getDayTime().getValue())
-                    .add(JSON_REC_LOCATION, rec.getLocation().getValue())
-                    .add(JSON_REC_SUPERVISINGTA_1, rec.getSupervisingTA_1().getValue())
-                    .add(JSON_REC_SUPERVISINGTA_2, rec.getSupervisingTA_2().getValue()).build();
+                    .add(JSON_REC_SECTION, rec.getSection())
+                    .add(JSON_REC_INSTRUCTOR, rec.getInstructor())
+                    .add(JSON_REC_DAYTIME, rec.getDayTime())
+                    .add(JSON_REC_LOCATION, rec.getLocation())
+                    .add(JSON_REC_SUPERVISINGTA_1, rec.getSupervisingTA_1())
+                    .add(JSON_REC_SUPERVISINGTA_2, rec.getSupervisingTA_2()).build();
             recitationArrayBuilder.add(recJson);
         }
         JsonArray recitationArray = recitationArrayBuilder.build();
@@ -330,12 +367,12 @@ public class TAFiles implements AppFileComponent {
         ObservableList<ScheduledItem> scheduledItems = dataManager.getScheduledItems();
         for(ScheduledItem si : scheduledItems){
             JsonObject siJson = Json.createObjectBuilder()
-                    .add(JSON_SCHEDULEDITEM_TYPE, si.getType().getValue())
+                    .add(JSON_SCHEDULEDITEM_TYPE, si.getType())
                     .add(JSON_SCHEDULEDITEM_DATE, si.getDate().toString())
-                    .add(JSON_SCHEDULEDITEM_TITLE, si.getTitle().getValue())
-                    .add(JSON_SCHEDULEDITEM_TOPIC, si.getTopic().getValue())
-                    .add(JSON_SCHEDULEDITEM_LINK, si.getLink().getValue())
-                    .add(JSON_SCHEDULEDITEM_CRITERIA, si.getCriteria().getValue()).build();
+                    .add(JSON_SCHEDULEDITEM_TITLE, si.getTitle())
+                    .add(JSON_SCHEDULEDITEM_TOPIC, si.getTopic())
+                    .add(JSON_SCHEDULEDITEM_LINK, si.getLink())
+                    .add(JSON_SCHEDULEDITEM_CRITERIA, si.getCriteria()).build();
             scheduledItemsArrayBuilder.add(siJson);
         }
         JsonArray scheduledItemsArray = scheduledItemsArrayBuilder.build();
@@ -344,10 +381,10 @@ public class TAFiles implements AppFileComponent {
         ObservableList<Team> teams = dataManager.getTeams();
         for(Team t : teams){
             JsonObject tJson = Json.createObjectBuilder()
-                    .add(JSON_TEAM_NAME, t.getName().getValue())
+                    .add(JSON_TEAM_NAME, t.getName())
                     .add(JSON_TEAM_COLOR, t.getColor().toString())
                     .add(JSON_TEAM_TEXTCOLOR, t.getTextColor().toString())
-                    .add(JSON_TEAM_LINK, t.getLink().getValue()).build();
+                    .add(JSON_TEAM_LINK, t.getLink()).build();
             teamsArrayBuilder.add(tJson);
         }
         JsonArray teamsArray = teamsArrayBuilder.build();
@@ -356,10 +393,10 @@ public class TAFiles implements AppFileComponent {
         ObservableList<Student> students = dataManager.getStudents();
         for(Student s : students){
             JsonObject sJson = Json.createObjectBuilder()
-                    .add(JSON_STUDENT_FIRSTNAME, s.getFirstName().getValue())
-                    .add(JSON_STUDENT_LASTNAME, s.getLastName().getValue())
-                    .add(JSON_STUDENT_TEAM, s.getTeam().getValue())
-                    .add(JSON_STUDENT_ROLE, s.getRole().getValue()).build();
+                    .add(JSON_STUDENT_FIRSTNAME, s.getFirstName())
+                    .add(JSON_STUDENT_LASTNAME, s.getLastName())
+                    .add(JSON_STUDENT_TEAM, s.getTeam())
+                    .add(JSON_STUDENT_ROLE, s.getRole()).build();
             studentsArrayBuilder.add(sJson);
         }
         JsonArray studentsArray = studentsArrayBuilder.build();

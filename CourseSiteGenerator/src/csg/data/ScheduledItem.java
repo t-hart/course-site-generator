@@ -3,6 +3,7 @@ package csg.data;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -25,29 +26,54 @@ public class ScheduledItem {
         criteria = new SimpleStringProperty(initCriteria);
     }
 
-    public StringProperty getType() {
-        return type;
+    public String getType() {
+        return type.get();
     }
 
     public Date getDate() {
         return date;
     }
-
-    public StringProperty getTitle() {
-        return title;
+    
+    public String getDateString(){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        return sdf.format(date);
     }
 
-    public StringProperty getTopic() {
-        return topic;
+    public String getTitle() {
+        return title.get();
     }
 
-    public StringProperty getLink() {
-        return link;
+    public String getTopic() {
+        return topic.get();
     }
 
-    public StringProperty getCriteria() {
-        return criteria;
+    public String getLink() {
+        return link.get();
+    }
+
+    public String getCriteria() {
+        return criteria.get();
     }
     
+    public int getYear(){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        String dateString = sdf.format(date);
+        String[] dateStringArray = dateString.split("/");
+        return Integer.parseInt(dateStringArray[2]);
+    }
+    
+    public int getMonth(){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        String dateString = sdf.format(date);
+        String[] dateStringArray = dateString.split("/");
+        return Integer.parseInt(dateStringArray[0]);        
+    }
+    
+    public int getDay(){
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        String dateString = sdf.format(date);
+        String[] dateStringArray = dateString.split("/");
+        return Integer.parseInt(dateStringArray[1]);        
+    }
     
 }

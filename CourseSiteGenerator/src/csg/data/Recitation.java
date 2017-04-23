@@ -25,27 +25,27 @@ public class Recitation {
         supervisingTA_2 = new SimpleStringProperty(initSupervisingTA_2);
     }
 
-    public StringProperty getSection() {
-        return section;
+    public String getSection() {
+        return section.get();
     }
 
-    public StringProperty getInstructor() {
-        return instructor;
+    public String getInstructor() {
+        return instructor.get();
     }
 
-    public StringProperty getDayTime() {
-        return dayTime;
+    public String getDayTime() {
+        return dayTime.get();
     }
 
-    public StringProperty getLocation() {
-        return location;
+    public String getLocation() {
+        return location.get();
     }
 
-    public StringProperty getSupervisingTA_1() {
-        return supervisingTA_1;
+    public String getSupervisingTA_1() {
+        return supervisingTA_1.get();
     }
 
-    public StringProperty getSupervisingTA_2() {
-        return supervisingTA_2;
+    public String getSupervisingTA_2() {
+        return supervisingTA_2.get();
     }
 }

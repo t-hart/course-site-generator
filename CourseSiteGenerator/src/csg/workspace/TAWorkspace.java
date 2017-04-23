@@ -71,6 +71,11 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.util.Callback;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.beans.value.ObservableValue;
+import csg.data.*;
+import java.util.Date;
+import java.time.LocalDate;
+import javafx.util.StringConverter;
+import java.time.format.DateTimeFormatter;
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -126,6 +131,25 @@ public class TAWorkspace extends AppWorkspaceComponent {
     HashMap<String, Label> officeHoursGridTACellLabels;
     
     boolean fullyLoaded = false;
+    
+    ComboBox subjectComboBox;
+    ComboBox semesterComboBox;
+    ComboBox numberComboBox;
+    ComboBox yearComboBox;
+    TextField courseTitle = new TextField();
+    TextField instructorHome = new TextField();
+    TextField instructorName = new TextField();;
+    Label exportDir = new Label();
+    
+    Label siteTemplateDir = new Label();
+    
+    ImageView bannerSchool = new ImageView();
+    ImageView rightFooter = new ImageView();
+    ImageView leftFooter = new ImageView();
+    ComboBox stylesheetComboBox;
+    
+    DatePicker startingMonday = new DatePicker();
+    DatePicker endingFriday = new DatePicker();
 
     /**
      * The constructor initializes the user interface, except for the full
@@ -326,34 +350,34 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_NAME_TEXT.toString())+":"), 0, 4, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_HOME_TEXT.toString())+":"), 0, 5, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.EXPORT_DIR_TEXT.toString())+":"), 0, 6, 1, 1);
-        courseInfoPane.add(new Label("..\\courses\\CSE219\\Summer2017\\public"), 1, 6, 1, 1);
+        courseInfoPane.add(exportDir, 1, 6, 1, 1);
         
-        ObservableList subjectList = FXCollections.observableArrayList("CSE");
-        ComboBox subjectComboBox = new ComboBox(subjectList);
+        ObservableList subjectList = FXCollections.observableArrayList("CME", "ESE", "CSE");
+        subjectComboBox = new ComboBox(subjectList);
         subjectComboBox.setPrefWidth(80);
         subjectComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(subjectComboBox, 1, 1, 2, 1);
         
         ObservableList semesterList = FXCollections.observableArrayList(props.getProperty(CourseSiteGeneratorProp.SEMESTER_LIST.toString()));
-        ComboBox semesterComboBox = new ComboBox(semesterList);
+        semesterComboBox = new ComboBox(semesterList);
         semesterComboBox.setPrefWidth(80);
         semesterComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(semesterComboBox, 1, 2, 2, 1);
         
-        courseInfoPane.add(new TextField(), 1, 3, 5, 1);
-        courseInfoPane.add(new TextField(), 1, 4, 5, 1);
-        courseInfoPane.add(new TextField(), 1, 5, 5, 1);
+        courseInfoPane.add(courseTitle, 1, 3, 5, 1);
+        courseInfoPane.add(instructorName, 1, 4, 5, 1);
+        courseInfoPane.add(instructorHome, 1, 5, 5, 1);
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.NUMBER_TEXT.toString())+":"), 3, 1, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.YEAR_TEXT.toString())+":"), 3, 2, 1, 1);
         
-        ObservableList numberList = FXCollections.observableArrayList("219");
-        ComboBox numberComboBox = new ComboBox(numberList);
+        ObservableList numberList = FXCollections.observableArrayList("101", "114", "214", "219");
+        numberComboBox = new ComboBox(numberList);
         numberComboBox.setPrefWidth(80);
         numberComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(numberComboBox, 5, 1, 1, 1);
         
-        ObservableList yearList = FXCollections.observableArrayList("2017");
-        ComboBox yearComboBox = new ComboBox(yearList);
+        ObservableList yearList = FXCollections.observableArrayList("2017", "2018", "2019");
+        yearComboBox = new ComboBox(yearList);
         yearComboBox.setPrefWidth(80);
         yearComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(yearComboBox, 5, 2, 1, 1);
@@ -370,7 +394,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         siteTemplatePane.getChildren().add(siteTemplateTitle);
         siteTemplatePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.SITE_TEMPLATE_DISC_TEXT.toString())));
-        siteTemplatePane.getChildren().add(new Label("..\\templates\\CSE219"));
+        siteTemplatePane.getChildren().add(siteTemplateDir);
         
         Button selectTemplateButton = new Button(props.getProperty(CourseSiteGeneratorProp.SELECT_TEMPLATE_BUTTON_TEXT.toString()));
         siteTemplatePane.getChildren().add(selectTemplateButton);
@@ -378,10 +402,31 @@ public class TAWorkspace extends AppWorkspaceComponent {
         siteTemplatePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.SITE_PAGES_TEXT.toString())+":"));
         
         TableView sitePagesTable = new TableView();
+        ObservableList<SitePage> sitePageData = data.getSitePages();
+        sitePagesTable.setEditable(true);
+        sitePagesTable.setItems(sitePageData);
         TableColumn useColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.USE_COLUMN_TEXT.toString()));
         TableColumn navbarTitleColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.NAVBAR_COLUMN_TEXT.toString()));
         TableColumn fileNameColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.FILENAME_COLUMN_TEXT.toString()));
         TableColumn scriptColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.SCRIPT_COLUMN_TEXT.toString()));
+        useColumn.setCellValueFactory(
+                new Callback<CellDataFeatures<SitePage, Boolean>, ObservableValue<Boolean>>() {
+            
+            @Override
+            public ObservableValue<Boolean> call(CellDataFeatures<SitePage, Boolean> param) {
+                return param.getValue().isUse();
+            }
+        });
+        useColumn.setCellFactory( CheckBoxTableCell.forTableColumn(useColumn) );
+        navbarTitleColumn.setCellValueFactory(
+                new PropertyValueFactory<SitePage, String>("navbarTitle")
+        );
+        fileNameColumn.setCellValueFactory(
+                new PropertyValueFactory<SitePage, String>("fileName")
+        );
+        scriptColumn.setCellValueFactory(
+                new PropertyValueFactory<SitePage, String>("script")
+        );
         sitePagesTable.getColumns().addAll(useColumn, navbarTitleColumn, fileNameColumn, scriptColumn);
         sitePagesTable.setMaxWidth(550);
         sitePagesTable.setPrefHeight(200);
@@ -399,24 +444,20 @@ public class TAWorkspace extends AppWorkspaceComponent {
         pageStyleTitle.getStyleClass().add("section-subheader");
         
         pageStyleGridPane.add(pageStyleTitle, 0, 0, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.BANNER_SCHOOL_IMAGE_TEXT.toString())+":"), 0, 1, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LEFT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 2, 2, 1);
-        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 2, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.BANNER_SCHOOL_IMAGE_TEXT.toString())+":"), 0, 1, 1, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LEFT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 2, 1, 1);
+        pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 1, 1);
         pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.STYLESHEET_TEXT.toString())+":"), 0, 4, 1, 1);
         
-        ObservableList stylesheetList = FXCollections.observableArrayList("sea_wolf.css");
-        ComboBox stylesheetComboBox = new ComboBox(stylesheetList);
+        ObservableList stylesheetList = FXCollections.observableArrayList("bolb_wolf.css", "sea_wolf.css");
+        stylesheetComboBox = new ComboBox(stylesheetList);
         stylesheetComboBox.setPrefWidth(160);
         stylesheetComboBox.getSelectionModel().selectFirst();
         pageStyleGridPane.add(stylesheetComboBox, 1, 4, 1, 1);
         
-        ImageView bannerSchoolImageView = new ImageView();
-        ImageView leftFooterImageView = new ImageView();
-        ImageView rightFooterImageView = new ImageView();
-        
-        pageStyleGridPane.add(bannerSchoolImageView, 1, 1, 1, 1);
-        pageStyleGridPane.add(leftFooterImageView, 1, 2, 1, 1);
-        pageStyleGridPane.add(rightFooterImageView, 1, 3, 1, 1);
+        pageStyleGridPane.add(bannerSchool, 1, 1, 1, 1);
+        pageStyleGridPane.add(leftFooter, 1, 2, 1, 1);
+        pageStyleGridPane.add(rightFooter, 1, 3, 1, 1);
         
         Button changeBannerSchoolImageButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
         Button changeLeftFooterImageButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
@@ -450,15 +491,34 @@ public class TAWorkspace extends AppWorkspaceComponent {
         recitationDataHeader.setAlignment(Pos.CENTER_LEFT);
         
         recitationDataPane.getChildren().add(recitationDataHeader);
-        
         TableColumn sectionColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.SECTION_TEXT.toString()));
         TableColumn instructorColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.INSTRUCTOR_TEXT.toString()));
         TableColumn dayTimeColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.DAYTIME_TEXT.toString()));
         TableColumn locationColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.LOCATION_TEXT.toString()));
         TableColumn TA1Column = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TA_TEXT.toString()));
         TableColumn TA2Column = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TA_TEXT.toString()));
-        
+        sectionColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("section")
+        );
+        instructorColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("instructor")
+        );
+        dayTimeColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("dayTime")
+        );
+        locationColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("location")
+        );
+        TA1Column.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("supervisingTA_1")
+        );
+        TA2Column.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("supervisingTA_2")
+        );
         TableView recitationTable = new TableView();
+        ObservableList<Recitation> recitationData = data.getRecitations();
+        recitationTable.setEditable(true);
+        recitationTable.setItems(recitationData);
         recitationTable.getColumns().addAll(sectionColumn, instructorColumn, dayTimeColumn, locationColumn, TA1Column, TA2Column);
         
         recitationDataPane.getChildren().add(recitationTable);
@@ -501,6 +561,46 @@ public class TAWorkspace extends AppWorkspaceComponent {
         recitationDataPane.getChildren().add(addEditPane);
         
         /******* SCHEDULE DATA *******/
+        startingMonday.setConverter(new StringConverter<LocalDate>() {
+            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+            @Override
+            public String toString(LocalDate localDate) {
+                if (localDate == null) {
+                    return "";
+                }
+                return dateTimeFormatter.format(localDate);
+            }
+
+            @Override
+            public LocalDate fromString(String dateString) {
+                if (dateString == null || dateString.trim().isEmpty()) {
+                    return null;
+                }
+                return LocalDate.parse(dateString, dateTimeFormatter);
+            }
+        });
+        
+        endingFriday.setConverter(new StringConverter<LocalDate>() {
+            private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+            @Override
+            public String toString(LocalDate localDate) {
+                if (localDate == null) {
+                    return "";
+                }
+                return dateTimeFormatter.format(localDate);
+            }
+
+            @Override
+            public LocalDate fromString(String dateString) {
+                if (dateString == null || dateString.trim().isEmpty()) {
+                    return null;
+                }
+                return LocalDate.parse(dateString, dateTimeFormatter);
+            }
+        });
+        
         VBox schedulePane = new VBox(10);
         schedulePane.setPadding(new Insets(10, 10, 10, 10));
         Label scheduleTabHeader = new Label(props.getProperty(CourseSiteGeneratorProp.SCHEDULE_TEXT.toString()));
@@ -514,9 +614,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         calBoundsLabel.getStyleClass().add("section-subheader");
         calBoundariesPane.add(calBoundsLabel, 0, 0, 2, 1);
         calBoundariesPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.STARTING_MON_TEXT.toString())+":"), 0, 1, 1, 1);
-        calBoundariesPane.add(new DatePicker(), 1, 1, 1, 1);
+        calBoundariesPane.add(startingMonday, 1, 1, 1, 1);
         calBoundariesPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.ENDING_FRI_TEXT.toString())+":"), 2, 1, 1, 1);
-        calBoundariesPane.add(new DatePicker(), 3, 1, 1, 1);
+        calBoundariesPane.add(endingFriday, 3, 1, 1, 1);
         calBoundariesPane.setPadding(new Insets(10, 10, 10, 10));
         
         VBox scheduleItemsPane = new VBox(10);
@@ -538,7 +638,23 @@ public class TAWorkspace extends AppWorkspaceComponent {
         TableColumn dateColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.DATE_TEXT.toString()));
         TableColumn titleColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TITLE_TEXT.toString()));
         TableColumn topicColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TOPIC_TEXT.toString()));
+        typeColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("type")
+        );
+        dateColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("dateString")
+        );
+        titleColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("title")
+        );
+        topicColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("topic")
+        );
         TableView scheduleItemsTable = new TableView();
+        ObservableList<ScheduledItem> scheduleData = data.getScheduledItems();
+        scheduleItemsTable.setEditable(true);
+        scheduleItemsTable.setItems(scheduleData);
+        
         scheduleItemsTable.getColumns().addAll(typeColumn, dateColumn, titleColumn, topicColumn);
         
         scheduleItemsPane.getChildren().add(scheduleItemsTable);
@@ -603,7 +719,23 @@ public class TAWorkspace extends AppWorkspaceComponent {
         TableColumn colorColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.COLOR_TEXT.toString())+" (hex#)");
         TableColumn textColorColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TEXT_COLOR_TEXT.toString())+" (hex#)");
         TableColumn linkColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.LINK_TEXT.toString()));
+        teamNameColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("name")
+        );
+        colorColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("color")
+        );
+        textColorColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("textColor")
+        );
+        linkColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("link")
+        );
         TableView teamTable = new TableView();
+        ObservableList<Team> teamData = data.getTeams();
+        teamTable.setEditable(true);
+        teamTable.setItems(teamData);
+        
         teamTable.getColumns().addAll(teamNameColumn, colorColumn, textColorColumn, linkColumn);
         
         teamPane.getChildren().add(teamTable);
@@ -654,7 +786,23 @@ public class TAWorkspace extends AppWorkspaceComponent {
         TableColumn lastNameColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.LASTNAME_TEXT.toString()));
         TableColumn teamColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.TEAM_TEXT.toString()));
         TableColumn roleColumn = new TableColumn(props.getProperty(CourseSiteGeneratorProp.ROLE_TEXT.toString()));
+        firstNameColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("firstName")
+        );
+        lastNameColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("lastName")
+        );
+        teamColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("team")
+        );
+        roleColumn.setCellValueFactory(
+                new PropertyValueFactory<Recitation, String>("role")
+        );
         TableView studentTable = new TableView();
+        ObservableList<Student> studentData = data.getStudents();
+        studentTable.setEditable(true);
+        studentTable.setItems(studentData);
+        
         studentTable.getColumns().addAll(firstNameColumn, lastNameColumn, teamColumn, roleColumn);
         
         studentPane.getChildren().add(studentTable);
@@ -1183,5 +1331,65 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     public TAController getController(){
         return controller;
+    }
+
+    public ComboBox getSubjectComboBox() {
+        return subjectComboBox;
+    }
+
+    public ComboBox getSemesterComboBox() {
+        return semesterComboBox;
+    }
+
+    public ComboBox getNumberComboBox() {
+        return numberComboBox;
+    }
+
+    public ComboBox getYearComboBox() {
+        return yearComboBox;
+    }
+
+    public TextField getCourseTitle(){
+        return courseTitle;
+    }
+    
+    public TextField getInstructorHome() {
+        return instructorHome;
+    }
+
+    public TextField getInstructorName() {
+        return instructorName;
+    }
+
+    public Label getExportDir() {
+        return exportDir;
+    }
+    
+    public Label getSiteTemplateDir(){
+        return siteTemplateDir;
+    }
+
+    public ImageView getBannerSchool() {
+        return bannerSchool;
+    }
+
+    public ImageView getRightFooter() {
+        return rightFooter;
+    }
+
+    public ImageView getLeftFooter() {
+        return leftFooter;
+    }
+    
+    public ComboBox getStylesheet(){
+        return stylesheetComboBox;
+    }
+    
+    public DatePicker getStartingMonday(){
+        return startingMonday;
+    }
+    
+    public DatePicker getEndingFriday(){
+        return endingFriday;
     }
 }
