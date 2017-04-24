@@ -23,4 +23,6 @@ public interface AppDataComponent {
     public String getRightFooterDirForExport();
     
     public String getExportDir();
+    
+    public String getSiteTemplateDir();
 }

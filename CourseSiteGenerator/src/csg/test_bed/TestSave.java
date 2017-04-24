@@ -47,7 +47,7 @@ public class TestSave {
         data.setExportDir("C:\\wamp64\\www\\CSE380\\CSE219");
         
         /* SITE TEMPLATE */
-        data.setSiteTemplateDir("C:\\Users\\rmckenna\\Documents\\Courses\\Templates\\CSE219");
+        data.setSiteTemplateDir("C:\\Users\\tjhha\\Desktop\\Applications\\Spring2017\\CSE219\\CourseSiteGenerator\\SiteFiles\\public_html");
         SitePage sp1 = new SitePage(true, "Home", "index.html", "HomeBuilder.js");
         SitePage sp2 = new SitePage(true, "Syllabus", "syllabus.html", "SyllabusBuilder.js");
         SitePage sp3 = new SitePage(true, "Schedule", "schedule.html", "ScheduleBuilder.js");

@@ -166,7 +166,8 @@ public class AppFileController {
 //        System.out.println(selectedDirectory.getPath());
         File selectedDirectory = new File(app.getDataComponent().getExportDir());
         if (selectedDirectory != null) {
-            File source = new File("../SiteFiles/public_html");
+//            File source = new File("../SiteFiles/public_html");
+            File source = new File(app.getDataComponent().getSiteTemplateDir());
             
             File cssSource = new File("../CourseSiteGenerator/work/css/"+(app.getDataComponent().getCSSDirForExport()));
             File cssDestination = new File(selectedDirectory.getPath()+"/css/"+(app.getDataComponent().getCSSDirForExport()));

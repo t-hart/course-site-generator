@@ -27,6 +27,17 @@ import csg.data.ScheduledItem;
 import java.util.ArrayList;
 import csg.data.Team;
 import csg.data.Student;
+import csg.file.TAFiles;
+import csg.workspace.TAWorkspace;
+import static djf.settings.AppStartupConstants.APP_PROPERTIES_FILE_NAME;
+import java.time.LocalDate;
+import java.util.Calendar;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 /**
@@ -45,13 +56,13 @@ public class LoadDataJUnitTest {
     static final String JSON_UNDERGRAD_TAS = "undergrad_tas";
     static final String JSON_EMAIL = "email";
     static final String JSON_UG = "ug";
-    static final String JSON_REC = "recitaions";
-    static final String JSON_REC_SECTION = "rec_section";
-    static final String JSON_REC_INSTRUCTOR = "rec_instructor";
-    static final String JSON_REC_DAYTIME = "rec_daytime";
-    static final String JSON_REC_LOCATION = "rec_location";
-    static final String JSON_REC_SUPERVISINGTA_1 = "supervisingTA_1";
-    static final String JSON_REC_SUPERVISINGTA_2 = "supervisingTA_2";
+    static final String JSON_REC = "recitations";
+    static final String JSON_REC_SECTION = "section";
+    static final String JSON_REC_INSTRUCTOR = "instructor";
+    static final String JSON_REC_DAYTIME = "day_time";
+    static final String JSON_REC_LOCATION = "location";
+    static final String JSON_REC_SUPERVISINGTA_1 = "ta_1";
+    static final String JSON_REC_SUPERVISINGTA_2 = "ta_2";
     static final String JSON_COURSE_SUBJECT = "subject";
     static final String JSON_COURSE_NUMBER = "number";
     static final String JSON_COURSE_SEMESTER = "semester";
@@ -70,8 +81,12 @@ public class LoadDataJUnitTest {
     static final String JSON_PAGESTYLE_LEFTFOOTER_DIR = "left_footer_image_dir";
     static final String JSON_PAGESTYLE_RIGHTFOOTER_DIR = "right_footer_image_dir";
     static final String JSON_PAGESTYLE_STYLESHEET_DIR = "stylesheet_dir";
-    static final String JSON_SCHEDULE_STARTINGMONDAY = "starting_monday";
-    static final String JSON_SCHEDULE_ENDINGFRIDAY = "ending_friday";
+    static final String JSON_SCHEDULE_STARTINGMONDAYMONTH = "startingMondayMonth";
+    static final String JSON_SCHEDULE_STARTINGMONDAYDAY = "startingMondayDay";
+    static final String JSON_SCHEDULE_STARTINGMONDAYYEAR = "startingMondayYear";   
+    static final String JSON_SCHEDULE_ENDINGFRIDAYMONTH = "endingFridayMonth";
+    static final String JSON_SCHEDULE_ENDINGFRIDAYDAY = "endingFridayDay";
+    static final String JSON_SCHEDULE_ENDINGFRIDAYYEAR = "endingFridayYear";
     static final String JSON_SCHEDULEDITEMS = "scheduled_items";
     static final String JSON_SCHEDULEDITEM_TYPE = "type";
     static final String JSON_SCHEDULEDITEM_DATE = "date";
@@ -96,146 +111,159 @@ public class LoadDataJUnitTest {
     
     @Before
     public void LoadDataJUnitTest() {
-        try {
-
-            app = new CourseSiteGeneratorApp();
-            app.loadProperties(APP_PROPERTIES_FILE_NAME);
-            app.setLangChoice("eng");
+        try{
             
-            // CLEAR THE OLD DATA OUT
-            dataManager = new Data(app);
-          
+           
+        app = new CourseSiteGeneratorApp();
+        app.loadProperties(APP_PROPERTIES_FILE_NAME);
+        dataManager = new Data(app);
+        app.setLangChoice("eng");
+        setCellProps();
+        JsonObject json = loadJSONFile("C:\\Users\\tjhha\\Desktop\\SiteSaveTest.json");
+        
+        String subject = json.getString(JSON_COURSE_SUBJECT);
+        String number = json.getString(JSON_COURSE_NUMBER);
+        String semester = json.getString(JSON_COURSE_SEMESTER);
+        String year = json.getString(JSON_COURSE_YEAR);
+        String title = json.getString(JSON_COURSE_TITLE);
+        String instructorName = json.getString(JSON_COURSE_INSTRUCTOR_NAME);
+        String instructorHome = json.getString(JSON_COURSE_INSTRUCTOR_HOME);
+        String courseExportDir = json.getString(JSON_COURSE_EXPORT_DIR);
+        
+        dataManager.setSubject(subject);
+        dataManager.setNumber(number);
+        dataManager.setSemester(semester);
+        dataManager.setYear(year);
+        dataManager.setTitle(title);
+        dataManager.setInstructorName(instructorName);
+        dataManager.setInstructorHome(instructorHome);
+        dataManager.setExportDir(courseExportDir);
+        
+        String siteTemplateDir = json.getString(JSON_SITETEMPLATE_DIR);
+        dataManager.setSiteTemplateDir(siteTemplateDir);
 
-            // LOAD THE JSON FILE WITH ALL THE DATA
-            JsonObject json = loadJSONFile("C:\\Users\\tjhha\\Desktop\\SiteSaveTest.json");
+        JsonArray jsonSitePagesArray = json.getJsonArray(JSON_SITEPAGES);
+        for(int i = 0; i < jsonSitePagesArray.size(); i++){
+            JsonObject jsonSitePage = jsonSitePagesArray.getJsonObject(i);
+            boolean use = Boolean.parseBoolean(jsonSitePage.getString(JSON_SITEPAGE_USE));
+            String navbarTitle = jsonSitePage.getString(JSON_SITEPAGE_NAVBARTITLE);
+            String fileName = jsonSitePage.getString(JSON_SITEPAGE_FILENAME);
+            String script = jsonSitePage.getString(JSON_SITEPAGE_SCRIPT);
+            dataManager.addSitePage(use, navbarTitle, fileName, script);
+        }
+        
+        String bannerSchoolImageDir = json.getString(JSON_PAGESTYLE_BANNERSCHOOL_DIR);
+        String leftFooterImageDir = json.getString(JSON_PAGESTYLE_LEFTFOOTER_DIR);
+        String rightFooterImageDir = json.getString(JSON_PAGESTYLE_RIGHTFOOTER_DIR);
+        String stylesheetDir = json.getString(JSON_PAGESTYLE_STYLESHEET_DIR);
+        
+        dataManager.setBannerSchoolImageDir(bannerSchoolImageDir);
+        dataManager.setLeftFooterImageDir(leftFooterImageDir);
+        dataManager.setRightFooterImageDir(rightFooterImageDir);
+        dataManager.setStylesheetDir(stylesheetDir);
+        
+        // NOW LOAD ALL THE UNDERGRAD TAs
+        JsonArray jsonTAArray = json.getJsonArray(JSON_UNDERGRAD_TAS);
+        for (int i = 0; i < jsonTAArray.size(); i++) {
+            JsonObject jsonTA = jsonTAArray.getJsonObject(i);
+            String name = jsonTA.getString(JSON_NAME);
+            String email = jsonTA.getString(JSON_EMAIL);
+            String ug = jsonTA.getString(JSON_UG);
+            dataManager.addTA(name, email, Boolean.valueOf(ug));
+        }
+        
+        // LOAD THE START AND END HOURS
+        String startHour = json.getString(JSON_START_HOUR);
+        String endHour = json.getString(JSON_END_HOUR);
+        dataManager.setStartHour(Integer.parseInt(startHour));
+        dataManager.setEndHour(Integer.parseInt(endHour));
 
-            String subject = json.getString(JSON_COURSE_SUBJECT);
-            String number = json.getString(JSON_COURSE_NUMBER);
-            String semester = json.getString(JSON_COURSE_SEMESTER);
-            String year = json.getString(JSON_COURSE_YEAR);
-            String title = json.getString(JSON_COURSE_TITLE);
-            String instructorName = json.getString(JSON_COURSE_INSTRUCTOR_NAME);
-            String instructorHome = json.getString(JSON_COURSE_INSTRUCTOR_HOME);
-            String courseExportDir = json.getString(JSON_COURSE_EXPORT_DIR);
 
-            dataManager.setSubject(subject);
-            dataManager.setNumber(number);
-            dataManager.setSemester(semester);
-            dataManager.setYear(year);
-            dataManager.setTitle(title);
-            dataManager.setInstructorName(instructorName);
-            dataManager.setInstructorHome(instructorHome);
-            dataManager.setExportDir(courseExportDir);
-
-            String siteTemplateDir = json.getString(JSON_SITETEMPLATE_DIR);
-            dataManager.setSiteTemplateDir(siteTemplateDir);
-            JsonArray jsonSitePagesArray = json.getJsonArray(JSON_SITEPAGES);
-            for (int i = 0; i < jsonSitePagesArray.size(); i++) {
-                JsonObject jsonSitePage = jsonSitePagesArray.getJsonObject(i);
-                boolean use = Boolean.parseBoolean(jsonSitePage.getString(JSON_SITEPAGE_USE));
-                String navbarTitle = jsonSitePage.getString(JSON_SITEPAGE_NAVBARTITLE);
-                String fileName = jsonSitePage.getString(JSON_SITEPAGE_FILENAME);
-                String script = jsonSitePage.getString(JSON_SITEPAGE_SCRIPT);
-                dataManager.addSitePage(use, navbarTitle, fileName, script);
+        // AND THEN ALL THE OFFICE HOURS
+        JsonArray jsonOfficeHoursArray = json.getJsonArray(JSON_OFFICE_HOURS);
+        for (int i = 0; i < jsonOfficeHoursArray.size(); i++) {
+            JsonObject jsonOfficeHours = jsonOfficeHoursArray.getJsonObject(i);
+            String day = jsonOfficeHours.getString(JSON_DAY);
+            String time = jsonOfficeHours.getString(JSON_TIME);
+            String name = jsonOfficeHours.getString(JSON_NAME);
+            dataManager.addOfficeHoursReservation(day, time, name);
+        }
+        
+        JsonArray jsonRecitationsArray = json.getJsonArray(JSON_REC);
+        for(int i = 0; i < jsonRecitationsArray.size(); i++){
+            JsonObject jsonRecitation = jsonRecitationsArray.getJsonObject(i);
+            String section = jsonRecitation.getString(JSON_REC_SECTION);
+            String instructor = jsonRecitation.getString(JSON_REC_INSTRUCTOR);
+            String dayTime = jsonRecitation.getString(JSON_REC_DAYTIME);
+            String location = jsonRecitation.getString(JSON_REC_LOCATION);
+            String supervisingTA_1 = jsonRecitation.getString(JSON_REC_SUPERVISINGTA_1);
+            String supervisingTA_2 = jsonRecitation.getString(JSON_REC_SUPERVISINGTA_2);
+            dataManager.addRecitation(section, instructor, dayTime, location, supervisingTA_1, supervisingTA_2);
+        }
+        
+        String startingMondayMonth = json.getString(JSON_SCHEDULE_STARTINGMONDAYMONTH);
+        String startingMondayDay = json.getString(JSON_SCHEDULE_STARTINGMONDAYDAY);
+        String startingMondayYear = json.getString(JSON_SCHEDULE_STARTINGMONDAYYEAR);
+        String startingMonday = startingMondayMonth+"/"+startingMondayDay+"/"+startingMondayYear;
+        String endingFridayMonth = json.getString(JSON_SCHEDULE_ENDINGFRIDAYMONTH);
+        String endingFridayDay = json.getString(JSON_SCHEDULE_ENDINGFRIDAYDAY);
+        String endingFridayYear = json.getString(JSON_SCHEDULE_ENDINGFRIDAYYEAR);
+        String endingFriday = endingFridayMonth+"/"+endingFridayDay+"/"+endingFridayYear;
+        
+        Date startingDate = new Date();
+        Date endingDate = new Date();
+        try {
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            startingDate = df.parse(startingMonday);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startingDate);
+            endingDate = df.parse(endingFriday);
+            cal.setTime(endingDate);
+        } catch (java.text.ParseException pe) {
+            pe.printStackTrace();
+        }
+        
+        dataManager.setStartingMonday(startingDate);
+        dataManager.setEndingFriday(endingDate);
+        
+        JsonArray jsonScheduledItemsArray = json.getJsonArray(JSON_SCHEDULEDITEMS);
+        for(int i = 0; i < jsonScheduledItemsArray.size(); i++){
+            JsonObject jsonScheduledItem = jsonScheduledItemsArray.getJsonObject(i);
+            String type = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TYPE);
+            String date = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_DATE);
+            String itemTitle = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TITLE);
+            String topic = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TOPIC);
+            String link = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_LINK);
+            String criteria = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_CRITERIA);
+            try{
+                dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTitle, topic, link, criteria);
+            }catch(java.text.ParseException pe){
+                pe.printStackTrace();
             }
-
-            String bannerSchoolImageDir = json.getString(JSON_PAGESTYLE_BANNERSCHOOL_DIR);
-            String leftFooterImageDir = json.getString(JSON_PAGESTYLE_LEFTFOOTER_DIR);
-            String rightFooterImageDir = json.getString(JSON_PAGESTYLE_RIGHTFOOTER_DIR);
-            String stylesheetDir = json.getString(JSON_PAGESTYLE_STYLESHEET_DIR);
-
-            dataManager.setBannerSchoolImageDir(bannerSchoolImageDir);
-            dataManager.setLeftFooterImageDir(leftFooterImageDir);
-            dataManager.setRightFooterImageDir(rightFooterImageDir);
-            dataManager.setStylesheetDir(stylesheetDir);
-
-            // NOW LOAD ALL THE UNDERGRAD TAs
-            JsonArray jsonTAArray = json.getJsonArray(JSON_UNDERGRAD_TAS);
-            for (int i = 0; i < jsonTAArray.size(); i++) {
-                JsonObject jsonTA = jsonTAArray.getJsonObject(i);
-                String name = jsonTA.getString(JSON_NAME);
-                String email = jsonTA.getString(JSON_EMAIL);
-                String ug = jsonTA.getString(JSON_UG);
-                dataManager.addTA(name, email, Boolean.valueOf(ug));
-            }
-
-            // LOAD THE START AND END HOURS
-            String startHour = json.getString(JSON_START_HOUR);
-            String endHour = json.getString(JSON_END_HOUR);  
-            dataManager.initHours(startHour, endHour);
-              
-            setCellProps();
-
-
-            // AND THEN ALL THE OFFICE HOURS
-            JsonArray jsonOfficeHoursArray = json.getJsonArray(JSON_OFFICE_HOURS);
-            for (int i = 0; i < jsonOfficeHoursArray.size(); i++) {
-                JsonObject jsonOfficeHours = jsonOfficeHoursArray.getJsonObject(i);
-                String day = jsonOfficeHours.getString(JSON_DAY);
-                String time = jsonOfficeHours.getString(JSON_TIME);
-                String name = jsonOfficeHours.getString(JSON_NAME);
-                dataManager.addOfficeHoursReservation(day, time, name);
-            }
-
-            JsonArray jsonRecitationsArray = json.getJsonArray(JSON_REC);
-            for (int i = 0; i < jsonRecitationsArray.size(); i++) {
-                JsonObject jsonRecitation = jsonRecitationsArray.getJsonObject(i);
-                String section = jsonRecitation.getString(JSON_REC_SECTION);
-                String instructor = jsonRecitation.getString(JSON_REC_INSTRUCTOR);
-                String dayTime = jsonRecitation.getString(JSON_REC_DAYTIME);
-                String location = jsonRecitation.getString(JSON_REC_LOCATION);
-                String supervisingTA_1 = jsonRecitation.getString(JSON_REC_SUPERVISINGTA_1);
-                String supervisingTA_2 = jsonRecitation.getString(JSON_REC_SUPERVISINGTA_2);
-                dataManager.addRecitation(section, instructor, dayTime, location, supervisingTA_1, supervisingTA_2);
-            }
-
-            String startingMonday = json.getString(JSON_SCHEDULE_STARTINGMONDAY);
-            String endingFriday = json.getString(JSON_SCHEDULE_ENDINGFRIDAY);
-
-            try {
-                dataManager.setStartingMonday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(startingMonday));
-                dataManager.setEndingFriday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(endingFriday));
-            } catch (java.text.ParseException pe) {
-                fail("Starting/ending dates incorrectly parsed!");
-            }
-
-            JsonArray jsonScheduledItemsArray = json.getJsonArray(JSON_SCHEDULEDITEMS);
-            for (int i = 0; i < jsonScheduledItemsArray.size(); i++) {
-                JsonObject jsonScheduledItem = jsonScheduledItemsArray.getJsonObject(i);
-                String type = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TYPE);
-                String date = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_DATE);
-                String itemTitle = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TITLE);
-                String topic = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TOPIC);
-                String link = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_LINK);
-                String criteria = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_CRITERIA);
-                try {
-                    dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTitle, topic, link, criteria);
-                } catch (java.text.ParseException pe) {
-                    fail("Schedule date incorrectly parsed!");
-                }
-            }
-
-            JsonArray jsonTeamsArray = json.getJsonArray(JSON_TEAMS);
-            for (int i = 0; i < jsonTeamsArray.size(); i++) {
-                JsonObject jsonTeam = jsonTeamsArray.getJsonObject(i);
-                String name = jsonTeam.getString(JSON_TEAM_NAME);
-                String color = jsonTeam.getString(JSON_TEAM_COLOR);
-                String textColor = jsonTeam.getString(JSON_TEAM_TEXTCOLOR);
-                String link = jsonTeam.getString(JSON_TEAM_LINK);
-                dataManager.addTeam(name, Color.web(color), Color.web(textColor), link);
-            }
-
-            JsonArray jsonStudentsArray = json.getJsonArray(JSON_STUDENTS);
-            for (int i = 0; i < jsonStudentsArray.size(); i++) {
-                JsonObject jsonStudent = jsonStudentsArray.getJsonObject(i);
-                String firstName = jsonStudent.getString(JSON_STUDENT_FIRSTNAME);
-                String lastName = jsonStudent.getString(JSON_STUDENT_LASTNAME);
-                String team = jsonStudent.getString(JSON_STUDENT_TEAM);
-                String role = jsonStudent.getString(JSON_STUDENT_ROLE);
-                dataManager.addStudent(firstName, lastName, team, role);
-            }
-        } catch (IOException ioe) {
-            fail("IOException encountered!");
+        }
+        
+        JsonArray jsonTeamsArray = json.getJsonArray(JSON_TEAMS);
+        for(int i = 0; i < jsonTeamsArray.size(); i++){
+            JsonObject jsonTeam = jsonTeamsArray.getJsonObject(i);
+            String name = jsonTeam.getString(JSON_TEAM_NAME);
+            String color = jsonTeam.getString(JSON_TEAM_COLOR);
+            String textColor = jsonTeam.getString(JSON_TEAM_TEXTCOLOR);
+            String link = jsonTeam.getString(JSON_TEAM_LINK);
+            dataManager.addTeam(name, color, textColor, link);
+        }
+        
+        JsonArray jsonStudentsArray = json.getJsonArray(JSON_STUDENTS);
+        for(int i = 0; i < jsonStudentsArray.size(); i++){
+            JsonObject jsonStudent = jsonStudentsArray.getJsonObject(i);
+            String firstName = jsonStudent.getString(JSON_STUDENT_FIRSTNAME);
+            String lastName = jsonStudent.getString(JSON_STUDENT_LASTNAME);
+            String team = jsonStudent.getString(JSON_STUDENT_TEAM);
+            String role = jsonStudent.getString(JSON_STUDENT_ROLE);
+            dataManager.addStudent(firstName, lastName, team, role);
+        }
+        }catch(Exception e){
+            e.printStackTrace();
+            fail("Exception encountered!");
         }
     }
 
@@ -307,12 +335,12 @@ public class LoadDataJUnitTest {
     
     @Test
     public void testSubject(){
-        assertEquals("CSE", dataManager.getSubject());
+        assertEquals("CME", dataManager.getSubject());
     }
     
     @Test
     public void testNumber(){
-        assertEquals("219", dataManager.getNumber());
+        assertEquals("101", dataManager.getNumber());
     }
     
     @Test
@@ -327,27 +355,27 @@ public class LoadDataJUnitTest {
     
     @Test
     public void testTitle(){
-        assertEquals("Computer Science III", dataManager.getTitle());
+        assertEquals("Chemical Enigneering Fundamentals", dataManager.getTitle());
     }
     
     @Test
     public void testInstructorName(){
-        assertEquals("Richard McKenna", dataManager.getInstructorName());
+        assertEquals("Rickey Bobby", dataManager.getInstructorName());
     }
     
     @Test
     public void testInstructorHome(){
-        assertEquals("http://www.cs.stonybrook.edu/~richard", dataManager.getInstructorHome());
+        assertEquals("http://www.google.com", dataManager.getInstructorHome());
     }
     
     @Test
     public void testExportDir(){
-        assertEquals("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\public", dataManager.getExportDir());
+        assertEquals("C:\\wamp64\\www\\CSE380\\CSE219", dataManager.getExportDir());
     }
     
     @Test
     public void testSiteTemplateDir(){
-        assertEquals("C:\\Users\\rmckenna\\Documents\\Courses\\Templates\\CSE219", dataManager.getSiteTemplateDir());
+        assertEquals("C:\\Users\\tjhha\\Desktop\\Applications\\Spring2017\\CSE219\\CourseSiteGenerator\\SiteFiles\\public_html", dataManager.getSiteTemplateDir());
     }
     
     @Test
@@ -361,7 +389,7 @@ public class LoadDataJUnitTest {
         sitePages.addAll(sp1, sp2, sp3, sp4, sp5);
         for(int i = 0; i < dataManager.getSitePages().size(); i++){
             SitePage sp = dataManager.getSitePages().get(i);
-            assertEquals(sitePages.get(i).isUse(), sp.isUse());
+            assertEquals(sitePages.get(i).isUse().getValue(), sp.isUse().getValue());
             assertEquals(sitePages.get(i).getNavbarTitle(), sp.getNavbarTitle());
             assertEquals(sitePages.get(i).getFileName(), sp.getFileName());
             assertEquals(sitePages.get(i).getScript(), sp.getScript());
@@ -370,22 +398,22 @@ public class LoadDataJUnitTest {
     
     @Test
     public void testBannerSchoolImageDir(){
-        assertEquals("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\images\\banner_school.png", dataManager.getBannerSchoolImageDir());
+        assertEquals("C:\\Users\\tjhha\\Desktop\\Applications\\Spring2017\\CSE219\\CourseSiteGenerator\\CourseSiteGenerator\\images\\SBUDarkRedShieldLogo.png", dataManager.getBannerSchoolImageDir());
     }
     
     @Test
     public void testLeftFooterImageDir(){
-        assertEquals("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\images\\left_footer.png", dataManager.getLeftFooterImageDir());
+        assertEquals("C:\\Users\\tjhha\\Desktop\\Applications\\Spring2017\\CSE219\\CourseSiteGenerator\\CourseSiteGenerator\\images\\SBUWhiteShieldLogo.jpg", dataManager.getLeftFooterImageDir());
     }
     
     @Test
     public void testRightFooterImageDir(){
-        assertEquals("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\images\\right_footer.png", dataManager.getRightFooterImageDir());
+        assertEquals("C:\\Users\\tjhha\\Desktop\\cat.png", dataManager.getRightFooterImageDir());
     }
     
     @Test
     public void testStylesheetDir(){
-        assertEquals("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\work\\css\\sea_wolf.css", dataManager.getStylesheetDir());
+        assertEquals("sea_cat.css", dataManager.getStylesheetDir());
     }
     
     @Test
@@ -409,7 +437,7 @@ public class LoadDataJUnitTest {
     
     @Test
     public void testEndHour(){
-        assertEquals(24, dataManager.getEndHour());
+        assertEquals(6, dataManager.getEndHour());
     }
     
     @Test
@@ -428,19 +456,19 @@ public class LoadDataJUnitTest {
         Recitation rec2 = new Recitation("R02", "McKenna", "Fri 1:30-2:23pm", "Old CS 2114", "Timothy Hart", "Hikari Oshiro");
         ObservableList<Recitation> recitations = dataManager.getRecitations();
         
-        assertEquals(rec1.getSection().getValue(), recitations.get(0).getSection().getValue());
-        assertEquals(rec1.getInstructor().getValue(), recitations.get(0).getInstructor().getValue());
-        assertEquals(rec1.getDayTime().getValue(), recitations.get(0).getDayTime().getValue());
-        assertEquals(rec1.getLocation().getValue(), recitations.get(0).getLocation().getValue());
-        assertEquals(rec1.getSupervisingTA_1().getValue(), recitations.get(0).getSupervisingTA_1().getValue());
-        assertEquals(rec1.getSupervisingTA_2().getValue(), recitations.get(0).getSupervisingTA_2().getValue());
+        assertEquals(rec1.getSection(), recitations.get(0).getSection());
+        assertEquals(rec1.getInstructor(), recitations.get(0).getInstructor());
+        assertEquals(rec1.getDayTime(), recitations.get(0).getDayTime());
+        assertEquals(rec1.getLocation(), recitations.get(0).getLocation());
+        assertEquals(rec1.getSupervisingTA_1(), recitations.get(0).getSupervisingTA_1());
+        assertEquals(rec1.getSupervisingTA_2(), recitations.get(0).getSupervisingTA_2());
         
-        assertEquals(rec2.getSection().getValue(), recitations.get(1).getSection().getValue());
-        assertEquals(rec2.getInstructor().getValue(), recitations.get(1).getInstructor().getValue());
-        assertEquals(rec2.getDayTime().getValue(), recitations.get(1).getDayTime().getValue());
-        assertEquals(rec2.getLocation().getValue(), recitations.get(1).getLocation().getValue());
-        assertEquals(rec2.getSupervisingTA_1().getValue(), recitations.get(1).getSupervisingTA_1().getValue());
-        assertEquals(rec2.getSupervisingTA_2().getValue(), recitations.get(1).getSupervisingTA_2().getValue());
+        assertEquals(rec2.getSection(), recitations.get(1).getSection());
+        assertEquals(rec2.getInstructor(), recitations.get(1).getInstructor());
+        assertEquals(rec2.getDayTime(), recitations.get(1).getDayTime());
+        assertEquals(rec2.getLocation(), recitations.get(1).getLocation());
+        assertEquals(rec2.getSupervisingTA_1(), recitations.get(1).getSupervisingTA_1());
+        assertEquals(rec2.getSupervisingTA_2(), recitations.get(1).getSupervisingTA_2());
     }
     
     @Test
@@ -485,29 +513,29 @@ public class LoadDataJUnitTest {
         
         ObservableList<ScheduledItem> items = dataManager.getScheduledItems();
         for(int i = 0; i < items.size(); i++){
-            assertEquals(scheduledItems.get(i).getType().getValue(), items.get(i).getType().getValue());
+            assertEquals(scheduledItems.get(i).getType(), items.get(i).getType());
             assertEquals(scheduledItems.get(i).getDate(), items.get(i).getDate());
-            assertEquals(scheduledItems.get(i).getTitle().getValue(), items.get(i).getTitle().getValue());
-            assertEquals(scheduledItems.get(i).getTopic().getValue(), items.get(i).getTopic().getValue());
-            assertEquals(scheduledItems.get(i).getLink().getValue(), items.get(i).getLink().getValue());
-            assertEquals(scheduledItems.get(i).getCriteria().getValue(), items.get(i).getCriteria().getValue());  
+            assertEquals(scheduledItems.get(i).getTitle(), items.get(i).getTitle());
+            assertEquals(scheduledItems.get(i).getTopic(), items.get(i).getTopic());
+            assertEquals(scheduledItems.get(i).getLink(), items.get(i).getLink());
+            assertEquals(scheduledItems.get(i).getCriteria(), items.get(i).getCriteria());  
         }
     }
     
     @Test
     public void testTeams(){
-        Team t1 = new Team("Atomic Comics", Color.web("0x552211"), Color.web("0xffffff"), "http://atomicomic.com");
-        Team t2 = new Team("C4 Comics", Color.web("0x235399"), Color.web("0xffffff"), "https://c4-comics.appspot.com");
+        Team t1 = new Team("Atomic Comics", "552211", "FFFFFF", "http://atomicomic.com");
+        Team t2 = new Team("C4 Comics", "235399", "FFFFFF", "https://c4-comics.appspot.com");
         ArrayList<Team> teams = new ArrayList();
         teams.add(t1);
         teams.add(t2);
         
         ObservableList<Team> ts = dataManager.getTeams();
         for(int i = 0; i < ts.size(); i++){
-            assertEquals(teams.get(i).getName().getValue(), ts.get(i).getName().getValue());
+            assertEquals(teams.get(i).getName(), ts.get(i).getName());
             assertEquals(teams.get(i).getColor(), ts.get(i).getColor());
             assertEquals(teams.get(i).getTextColor(), ts.get(i).getTextColor());
-            assertEquals(teams.get(i).getLink().getValue(), ts.get(i).getLink().getValue());  
+            assertEquals(teams.get(i).getLink(), ts.get(i).getLink());  
         }
     }
     
@@ -523,10 +551,10 @@ public class LoadDataJUnitTest {
         
         ObservableList<Student> ss = dataManager.getStudents();
         for(int i = 0; i < ss.size(); i++){
-            assertEquals(students.get(i).getFirstName().getValue(), ss.get(i).getFirstName().getValue());
-            assertEquals(students.get(i).getLastName().getValue(), ss.get(i).getLastName().getValue());
-            assertEquals(students.get(i).getTeam().getValue(), ss.get(i).getTeam().getValue());
-            assertEquals(students.get(i).getRole().getValue(), ss.get(i).getRole().getValue());       
+            assertEquals(students.get(i).getFirstName(), ss.get(i).getFirstName());
+            assertEquals(students.get(i).getLastName(), ss.get(i).getLastName());
+            assertEquals(students.get(i).getTeam(), ss.get(i).getTeam());
+            assertEquals(students.get(i).getRole(), ss.get(i).getRole());       
         }
     }
 }

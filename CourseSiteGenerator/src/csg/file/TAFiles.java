@@ -94,8 +94,7 @@ public class TAFiles implements AppFileComponent {
     static final String JSON_PAGESTYLE_STYLESHEET_DIR = "stylesheet_dir";
     static final String JSON_SCHEDULE_STARTINGMONDAYMONTH = "startingMondayMonth";
     static final String JSON_SCHEDULE_STARTINGMONDAYDAY = "startingMondayDay";
-    static final String JSON_SCHEDULE_STARTINGMONDAYYEAR = "startingMondayYear";
-    
+    static final String JSON_SCHEDULE_STARTINGMONDAYYEAR = "startingMondayYear";   
     static final String JSON_SCHEDULE_ENDINGFRIDAYMONTH = "endingFridayMonth";
     static final String JSON_SCHEDULE_ENDINGFRIDAYDAY = "endingFridayDay";
     static final String JSON_SCHEDULE_ENDINGFRIDAYYEAR = "endingFridayYear";
@@ -259,11 +258,11 @@ public class TAFiles implements AppFileComponent {
             startingDate = df.parse(startingMonday);
             Calendar cal = Calendar.getInstance();
             cal.setTime(startingDate);
-            startingMondayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
+            startingMondayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH)));
             DatePicker endingFridayPicker = workspace.getEndingFriday();
             endingDate = df.parse(endingFriday);
             cal.setTime(endingDate);
-            endingFridayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
+            endingFridayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH)));
         } catch (java.text.ParseException pe) {
             pe.printStackTrace();
         }
@@ -414,11 +413,11 @@ public class TAFiles implements AppFileComponent {
         // THEN PUT IT ALL TOGETHER IN A JsonObject
         Calendar cal = Calendar.getInstance();
         cal.setTime(dataManager.getStartingMonday());
-        String startingMondayMonth = ""+cal.get(Calendar.MONTH);
+        String startingMondayMonth = ""+(cal.get(Calendar.MONTH)+1);
         String startingMondayDay = ""+cal.get(Calendar.DAY_OF_MONTH);
         String startingMondayYear = ""+cal.get(Calendar.YEAR);
         cal.setTime(dataManager.getEndingFriday());
-        String endingFridayMonth = ""+cal.get(Calendar.MONTH);
+        String endingFridayMonth = ""+(cal.get(Calendar.MONTH)+1);
         String endingFridayDay = ""+cal.get(Calendar.DAY_OF_MONTH);
         String endingFridayYear = ""+cal.get(Calendar.YEAR);
         
@@ -545,11 +544,11 @@ public class TAFiles implements AppFileComponent {
         
         Calendar cal = Calendar.getInstance();
         cal.setTime(dataManager.getStartingMonday());
-        String startingMondayMonth = ""+(cal.get(Calendar.MONTH)+2);
-        String startingMondayDay = ""+(cal.get(Calendar.DAY_OF_MONTH)+1);
+        String startingMondayMonth = ""+(cal.get(Calendar.MONTH)+1);
+        String startingMondayDay = ""+(cal.get(Calendar.DAY_OF_MONTH));
         cal.setTime(dataManager.getEndingFriday());
-        String endingFridayMonth = ""+(cal.get(Calendar.MONTH)+2);
-        String endingFridayDay = ""+(cal.get(Calendar.DAY_OF_MONTH)+1);
+        String endingFridayMonth = ""+(cal.get(Calendar.MONTH)+1);
+        String endingFridayDay = ""+(cal.get(Calendar.DAY_OF_MONTH));
         
         JsonObject dataManagerJSO_sch = Json.createObjectBuilder()
                 .add(JSON_PAGESTYLE_STYLESHEET_DIR, dataManager.getStylesheetDir())
