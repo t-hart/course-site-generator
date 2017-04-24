@@ -37,14 +37,14 @@ public class TestSave {
         initTimes(data);
         
         /* COURSE INFO */
-        data.setSubject("CSE");
-        data.setNumber("219");
+        data.setSubject("CME");
+        data.setNumber("101");
         data.setSemester("Fall");
         data.setYear("2017");
-        data.setTitle("Computer Science III");
-        data.setInstructorName("Richard McKenna");
-        data.setInstructorHome("http://www.cs.stonybrook.edu/~richard");
-        data.setExportDir("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\public");
+        data.setTitle("Chemical Enigneering Fundamentals");
+        data.setInstructorName("Rickey Bobby");
+        data.setInstructorHome("http://www.google.com");
+        data.setExportDir("C:\\wamp64\\www\\CSE380\\CSE219");
         
         /* SITE TEMPLATE */
         data.setSiteTemplateDir("C:\\Users\\rmckenna\\Documents\\Courses\\Templates\\CSE219");
@@ -56,10 +56,10 @@ public class TestSave {
         data.getSitePages().addAll(sp1, sp2, sp3, sp4, sp5);
         
         /* PAGE STYLE */
-        data.setBannerSchoolImageDir("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\images\\banner_school.png");
-        data.setLeftFooterImageDir("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\images\\left_footer.png");
-        data.setRightFooterImageDir("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\images\\right_footer.png");
-        data.setStylesheetDir("C:\\Users\\rmckenna\\Documents\\Courses\\CSE219\\Summer2017\\work\\css\\sea_wolf.css");
+        data.setBannerSchoolImageDir("C:\\Users\\tjhha\\Desktop\\Applications\\Spring2017\\CSE219\\CourseSiteGenerator\\CourseSiteGenerator\\images\\SBUDarkRedShieldLogo.png");
+        data.setLeftFooterImageDir("C:\\Users\\tjhha\\Desktop\\Applications\\Spring2017\\CSE219\\CourseSiteGenerator\\CourseSiteGenerator\\images\\SBUWhiteShieldLogo.jpg");
+        data.setRightFooterImageDir("C:\\Users\\tjhha\\Desktop\\cat.png");
+        data.setStylesheetDir("sea_cat.css");
         
         /* TAS */
         data.addTA("Timothy Hart", "tjh.hart@gmail.com", true);
@@ -73,6 +73,7 @@ public class TestSave {
         }
         data.setCellProperty(6, 6, new SimpleStringProperty("Timothy Hart"));
         data.setCellProperty(3, 9, new SimpleStringProperty("Hikari Oshiro"));
+        data.setEndHour(6);
         
         /* RECITATIONS */
         data.addRecitation("R01", "McKenna", "Wed 3:30-4:23pm", "Old CS 2114", "Timothy Hart", "Hikari Oshiro");

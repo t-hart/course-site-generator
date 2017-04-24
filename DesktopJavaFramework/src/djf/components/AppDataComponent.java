@@ -13,4 +13,14 @@ public interface AppDataComponent {
      * This function would be called when initializing data.
      */
     public void resetData();
+    
+    public String getCSSDirForExport();
+    
+    public String getSchoolBannerDirForExport();
+    
+    public String getLeftFooterDirForExport();
+    
+    public String getRightFooterDirForExport();
+    
+    public String getExportDir();
 }

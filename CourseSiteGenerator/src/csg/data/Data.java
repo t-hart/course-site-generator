@@ -574,5 +574,19 @@ public class Data implements AppDataComponent {
         this.endingFriday = endingFriday;
     }
     
+    public String getCSSDirForExport(){
+        return stylesheetDir;
+    }
     
+    public String getSchoolBannerDirForExport(){
+        return bannerSchoolImageDir;
+    }
+    
+    public String getLeftFooterDirForExport(){
+        return leftFooterImageDir;
+    }
+    
+    public String getRightFooterDirForExport(){
+        return rightFooterImageDir;
+    }
 }

@@ -74,6 +74,8 @@
 		<property name="EXPORT_WORK_TITLE"      value="Wielt Plaz ze exportéieren"></property>
 		<property name="WORK_FILE_EXT"			value=".json"></property>
 		<property name="WORK_FILE_EXT_DESC"		value="GA Büro Stonnen"></property>
+		<property name="EXPORT_SUCCESS_TITLE"	value="Succès!"></property>
+		<property name="EXPORT_SUCCESS_MESSAGE"	value="Websäit virzezéien zu ausgewielt dossier exportéiert!"></property>
 
 		<!-- WORKSPACE CONTROLS STUFF -->        
 		<property name="TAS_HEADER_TEXT"                value="Geléiert Assistenten"></property>
@@ -92,6 +94,8 @@
 		<property name="MISSING_TA_EMAIL_MESSAGE"       value="Dir musst e GA Email déi"></property>
 		<property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_TITLE"     value="GA Numm an Email Net Eenzegaarteg"></property>
 		<property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_MESSAGE"   value="Dir musst eng eenzegaarteg GA Numm gëtt an Email"></property>
+		<property name="EXPORT_ERROR_TITLE"			value="Exportéieren Feeler!"></property>
+		<property name="EXPORT_ERROR_MESSAGE"		value="Eppes ass falsch. Net ausgewielt dossier ze exportéieren!"></property>
 
 		<property name="DELETE_TEXT"                 value="Läschen"></property>
 		<property name="CLEAR_BUTTON_TEXT"              value="Kloer"></property>

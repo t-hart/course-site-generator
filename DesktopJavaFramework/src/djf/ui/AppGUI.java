@@ -177,11 +177,8 @@ public class AppGUI {
             fileController.handleExitRequest();
         });	
         exportButton.setOnAction(e -> {
-            try {
-                fileController.handleExportRequest();
-            } catch (IOException ex) {
-                Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            fileController.handleExportRequest();
+
         });	
            saveAsButton.setOnAction(e -> {
             try {

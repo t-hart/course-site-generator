@@ -31,6 +31,7 @@ import csg.data.SitePage;
 import csg.data.ScheduledItem;
 import csg.data.Team;
 import csg.data.Student;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import javafx.scene.paint.Color;
@@ -66,13 +67,13 @@ public class TAFiles implements AppFileComponent {
     static final String JSON_UNDERGRAD_TAS = "undergrad_tas";
     static final String JSON_EMAIL = "email";
     static final String JSON_UG = "ug";
-    static final String JSON_REC = "recitaions";
-    static final String JSON_REC_SECTION = "rec_section";
-    static final String JSON_REC_INSTRUCTOR = "rec_instructor";
-    static final String JSON_REC_DAYTIME = "rec_daytime";
-    static final String JSON_REC_LOCATION = "rec_location";
-    static final String JSON_REC_SUPERVISINGTA_1 = "supervisingTA_1";
-    static final String JSON_REC_SUPERVISINGTA_2 = "supervisingTA_2";
+    static final String JSON_REC = "recitations";
+    static final String JSON_REC_SECTION = "section";
+    static final String JSON_REC_INSTRUCTOR = "instructor";
+    static final String JSON_REC_DAYTIME = "day_time";
+    static final String JSON_REC_LOCATION = "location";
+    static final String JSON_REC_SUPERVISINGTA_1 = "ta_1";
+    static final String JSON_REC_SUPERVISINGTA_2 = "ta_2";
     static final String JSON_COURSE_SUBJECT = "subject";
     static final String JSON_COURSE_NUMBER = "number";
     static final String JSON_COURSE_SEMESTER = "semester";
@@ -91,8 +92,13 @@ public class TAFiles implements AppFileComponent {
     static final String JSON_PAGESTYLE_LEFTFOOTER_DIR = "left_footer_image_dir";
     static final String JSON_PAGESTYLE_RIGHTFOOTER_DIR = "right_footer_image_dir";
     static final String JSON_PAGESTYLE_STYLESHEET_DIR = "stylesheet_dir";
-    static final String JSON_SCHEDULE_STARTINGMONDAY = "starting_monday";
-    static final String JSON_SCHEDULE_ENDINGFRIDAY = "ending_friday";
+    static final String JSON_SCHEDULE_STARTINGMONDAYMONTH = "startingMondayMonth";
+    static final String JSON_SCHEDULE_STARTINGMONDAYDAY = "startingMondayDay";
+    static final String JSON_SCHEDULE_STARTINGMONDAYYEAR = "startingMondayYear";
+    
+    static final String JSON_SCHEDULE_ENDINGFRIDAYMONTH = "endingFridayMonth";
+    static final String JSON_SCHEDULE_ENDINGFRIDAYDAY = "endingFridayDay";
+    static final String JSON_SCHEDULE_ENDINGFRIDAYYEAR = "endingFridayYear";
     static final String JSON_SCHEDULEDITEMS = "scheduled_items";
     static final String JSON_SCHEDULEDITEM_TYPE = "type";
     static final String JSON_SCHEDULEDITEM_DATE = "date";
@@ -236,30 +242,34 @@ public class TAFiles implements AppFileComponent {
             dataManager.addRecitation(section, instructor, dayTime, location, supervisingTA_1, supervisingTA_2);
         }
         
-        String startingMonday = json.getString(JSON_SCHEDULE_STARTINGMONDAY);
-        String endingFriday = json.getString(JSON_SCHEDULE_ENDINGFRIDAY);
+        String startingMondayMonth = json.getString(JSON_SCHEDULE_STARTINGMONDAYMONTH);
+        String startingMondayDay = json.getString(JSON_SCHEDULE_STARTINGMONDAYDAY);
+        String startingMondayYear = json.getString(JSON_SCHEDULE_STARTINGMONDAYYEAR);
+        String startingMonday = startingMondayMonth+"/"+startingMondayDay+"/"+startingMondayYear;
+        String endingFridayMonth = json.getString(JSON_SCHEDULE_ENDINGFRIDAYMONTH);
+        String endingFridayDay = json.getString(JSON_SCHEDULE_ENDINGFRIDAYDAY);
+        String endingFridayYear = json.getString(JSON_SCHEDULE_ENDINGFRIDAYYEAR);
+        String endingFriday = endingFridayMonth+"/"+endingFridayDay+"/"+endingFridayYear;
         
+        Date startingDate = new Date();
+        Date endingDate = new Date();
         try {
             DatePicker startingMondayPicker = workspace.getStartingMonday();
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
-            Date startingDate = sdf.parse(startingMonday);
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            startingDate = df.parse(startingMonday);
             Calendar cal = Calendar.getInstance();
             cal.setTime(startingDate);
             startingMondayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
             DatePicker endingFridayPicker = workspace.getEndingFriday();
-            Date endingDate = sdf.parse(endingFriday);
+            endingDate = df.parse(endingFriday);
             cal.setTime(endingDate);
             endingFridayPicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)));
         } catch (java.text.ParseException pe) {
             pe.printStackTrace();
         }
         
-        try{
-            dataManager.setStartingMonday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(startingMonday));
-            dataManager.setEndingFriday(new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(endingFriday));   
-        }catch(java.text.ParseException pe){
-            pe.printStackTrace();
-        }
+        dataManager.setStartingMonday(startingDate);
+        dataManager.setEndingFriday(endingDate);
         
         JsonArray jsonScheduledItemsArray = json.getJsonArray(JSON_SCHEDULEDITEMS);
         for(int i = 0; i < jsonScheduledItemsArray.size(); i++){
@@ -355,7 +365,7 @@ public class TAFiles implements AppFileComponent {
         ObservableList<SitePage> sitePages = dataManager.getSitePages();
         for(SitePage sp : sitePages){
             JsonObject spJson = Json.createObjectBuilder()
-                    .add(JSON_SITEPAGE_USE, String.valueOf(sp.isUse()))
+                    .add(JSON_SITEPAGE_USE, String.valueOf(sp.isUse().getValue()))
                     .add(JSON_SITEPAGE_NAVBARTITLE, sp.getNavbarTitle())
                     .add(JSON_SITEPAGE_FILENAME, sp.getFileName())
                     .add(JSON_SITEPAGE_SCRIPT, sp.getScript()).build();
@@ -402,6 +412,16 @@ public class TAFiles implements AppFileComponent {
         JsonArray studentsArray = studentsArrayBuilder.build();
         
         // THEN PUT IT ALL TOGETHER IN A JsonObject
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dataManager.getStartingMonday());
+        String startingMondayMonth = ""+cal.get(Calendar.MONTH);
+        String startingMondayDay = ""+cal.get(Calendar.DAY_OF_MONTH);
+        String startingMondayYear = ""+cal.get(Calendar.YEAR);
+        cal.setTime(dataManager.getEndingFriday());
+        String endingFridayMonth = ""+cal.get(Calendar.MONTH);
+        String endingFridayDay = ""+cal.get(Calendar.DAY_OF_MONTH);
+        String endingFridayYear = ""+cal.get(Calendar.YEAR);
+        
         JsonObject dataManagerJSO = Json.createObjectBuilder()
                 .add(JSON_COURSE_SUBJECT, dataManager.getSubject())
                 .add(JSON_COURSE_NUMBER, dataManager.getNumber())
@@ -422,8 +442,12 @@ public class TAFiles implements AppFileComponent {
                 .add(JSON_END_HOUR, "" + dataManager.getEndHour())
                 .add(JSON_OFFICE_HOURS, timeSlotsArray)
                 .add(JSON_REC, recitationArray)
-                .add(JSON_SCHEDULE_STARTINGMONDAY, dataManager.getStartingMonday().toString())
-                .add(JSON_SCHEDULE_ENDINGFRIDAY, dataManager.getEndingFriday().toString())
+                .add(JSON_SCHEDULE_STARTINGMONDAYMONTH, startingMondayMonth)
+                .add(JSON_SCHEDULE_STARTINGMONDAYDAY, startingMondayDay)
+                .add(JSON_SCHEDULE_STARTINGMONDAYYEAR, startingMondayYear)
+                .add(JSON_SCHEDULE_ENDINGFRIDAYMONTH, endingFridayMonth)
+                .add(JSON_SCHEDULE_ENDINGFRIDAYDAY, endingFridayDay)
+                .add(JSON_SCHEDULE_ENDINGFRIDAYYEAR, endingFridayYear)  
                 .add(JSON_SCHEDULEDITEMS, scheduledItemsArray)
                 .add(JSON_TEAMS, teamsArray)
                 .add(JSON_STUDENTS, studentsArray)
@@ -447,7 +471,7 @@ public class TAFiles implements AppFileComponent {
         pw.write(prettyPrinted);
         pw.close();
     }
-
+    
     // IMPORTING/EXPORTING DATA IS USED WHEN WE READ/WRITE DATA IN AN
     // ADDITIONAL FORMAT USEFUL FOR ANOTHER PURPOSE, LIKE ANOTHER APPLICATION
     @Override
@@ -457,6 +481,170 @@ public class TAFiles implements AppFileComponent {
 
     @Override
     public void exportData(AppDataComponent data, String filePath) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Data dataManager = (Data) data;
+        JsonArrayBuilder recitationArrayBuilder = Json.createArrayBuilder();
+        ObservableList<Recitation> recs = dataManager.getRecitations();
+        for(Recitation rec : recs){
+            JsonObject recJson = Json.createObjectBuilder()
+                    .add(JSON_REC_SECTION, "<strong>"+rec.getSection()+"</strong> ("+rec.getInstructor()+")")
+                    .add(JSON_REC_DAYTIME, rec.getDayTime())
+                    .add(JSON_REC_LOCATION, rec.getLocation())
+                    .add(JSON_REC_SUPERVISINGTA_1, rec.getSupervisingTA_1())
+                    .add(JSON_REC_SUPERVISINGTA_2, rec.getSupervisingTA_2()).build();
+            recitationArrayBuilder.add(recJson);
+        }
+        JsonArray recitationArray = recitationArrayBuilder.build();
+        
+        JsonObject dataManagerJSO_rec = Json.createObjectBuilder()
+                .add(JSON_REC, recitationArray)
+                .build();
+        
+        // AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
+        Map<String, Object> properties_rec = new HashMap<>(1);
+        properties_rec.put(JsonGenerator.PRETTY_PRINTING, true);
+        JsonWriterFactory writerFactory_rec = Json.createWriterFactory(properties_rec);
+        StringWriter sw_rec = new StringWriter();
+        JsonWriter jsonWriter_rec = writerFactory_rec.createWriter(sw_rec);
+        jsonWriter_rec.writeObject(dataManagerJSO_rec);
+        jsonWriter_rec.close();
+
+        // INIT THE WRITER
+        OutputStream os_rec = new FileOutputStream(filePath+"RecitationsData.json");
+        JsonWriter jsonFileWriter_rec = Json.createWriter(os_rec);
+        jsonFileWriter_rec.writeObject(dataManagerJSO_rec);
+        String prettyPrinted_rec = sw_rec.toString();
+        PrintWriter pw_rec = new PrintWriter(filePath+"RecitationsData.json");
+        pw_rec.write(prettyPrinted_rec);
+        pw_rec.close();
+        
+        JsonArrayBuilder scheduledItemsArrayBuilder = Json.createArrayBuilder();
+        ObservableList<ScheduledItem> scheduledItems = dataManager.getScheduledItems();
+        for(ScheduledItem si : scheduledItems){
+            JsonObject siJson = Json.createObjectBuilder()
+                    .add(JSON_SCHEDULEDITEM_TYPE, si.getType())
+                    .add(JSON_SCHEDULEDITEM_DATE, si.getDate().toString())
+                    .add(JSON_SCHEDULEDITEM_TITLE, si.getTitle())
+                    .add(JSON_SCHEDULEDITEM_TOPIC, si.getTopic())
+                    .add(JSON_SCHEDULEDITEM_LINK, si.getLink())
+                    .add(JSON_SCHEDULEDITEM_CRITERIA, si.getCriteria()).build();
+            scheduledItemsArrayBuilder.add(siJson);
+        }
+        JsonArray scheduledItemsArray = scheduledItemsArrayBuilder.build();
+        
+        JsonArrayBuilder sitePagesArrayBuilder = Json.createArrayBuilder();
+        ObservableList<SitePage> sitePages = dataManager.getSitePages();
+        for(SitePage sp : sitePages){
+            JsonObject spJson = Json.createObjectBuilder()
+                    .add(JSON_SITEPAGE_USE, String.valueOf(sp.isUse().getValue()))
+                    .add(JSON_SITEPAGE_NAVBARTITLE, sp.getNavbarTitle())
+                    .add(JSON_SITEPAGE_FILENAME, sp.getFileName())
+                    .add(JSON_SITEPAGE_SCRIPT, sp.getScript()).build();
+            sitePagesArrayBuilder.add(spJson);
+        }
+        JsonArray sitePageArray = sitePagesArrayBuilder.build();
+        
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dataManager.getStartingMonday());
+        String startingMondayMonth = ""+(cal.get(Calendar.MONTH)+2);
+        String startingMondayDay = ""+(cal.get(Calendar.DAY_OF_MONTH)+1);
+        cal.setTime(dataManager.getEndingFriday());
+        String endingFridayMonth = ""+(cal.get(Calendar.MONTH)+2);
+        String endingFridayDay = ""+(cal.get(Calendar.DAY_OF_MONTH)+1);
+        
+        JsonObject dataManagerJSO_sch = Json.createObjectBuilder()
+                .add(JSON_PAGESTYLE_STYLESHEET_DIR, dataManager.getStylesheetDir())
+                .add(JSON_PAGESTYLE_BANNERSCHOOL_DIR, dataManager.getBannerSchoolImageDir())
+                .add(JSON_PAGESTYLE_LEFTFOOTER_DIR, dataManager.getLeftFooterImageDir())
+                .add(JSON_PAGESTYLE_RIGHTFOOTER_DIR, dataManager.getRightFooterImageDir())
+                .add(JSON_SITEPAGES, sitePageArray)
+                .add(JSON_COURSE_SUBJECT, dataManager.getSubject())
+                .add(JSON_COURSE_NUMBER, dataManager.getNumber())
+                .add(JSON_COURSE_SEMESTER, dataManager.getSemester())
+                .add(JSON_COURSE_YEAR, dataManager.getYear())
+                .add(JSON_COURSE_TITLE, dataManager.getTitle())
+                .add(JSON_COURSE_SUBJECT, dataManager.getSubject())
+                .add(JSON_COURSE_NUMBER, dataManager.getNumber())
+                .add(JSON_SCHEDULE_STARTINGMONDAYMONTH, startingMondayMonth)
+                .add(JSON_SCHEDULE_STARTINGMONDAYDAY, startingMondayDay)
+                .add(JSON_SCHEDULE_ENDINGFRIDAYMONTH, endingFridayMonth)
+                .add(JSON_SCHEDULE_ENDINGFRIDAYDAY, endingFridayDay)
+                .add(JSON_SCHEDULEDITEMS, scheduledItemsArray)
+                .build();
+        
+        // AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
+        Map<String, Object> properties_sch = new HashMap<>(1);
+        properties_sch.put(JsonGenerator.PRETTY_PRINTING, true);
+        JsonWriterFactory writerFactory_sch = Json.createWriterFactory(properties_sch);
+        StringWriter sw_sch = new StringWriter();
+        JsonWriter jsonWriter_sch = writerFactory_sch.createWriter(sw_sch);
+        jsonWriter_sch.writeObject(dataManagerJSO_sch);
+        jsonWriter_sch.close();
+
+        // INIT THE WRITER
+        OutputStream os_sch = new FileOutputStream(filePath+"ScheduleData.json");
+        JsonWriter jsonFileWriter_sch = Json.createWriter(os_sch);
+        jsonFileWriter_sch.writeObject(dataManagerJSO_sch);
+        String prettyPrinted_sch = sw_sch.toString();
+        PrintWriter pw_sch = new PrintWriter(filePath+"ScheduleData.json");
+        pw_sch.write(prettyPrinted_sch);
+        pw_sch.close();
+        
+        JsonArrayBuilder teamsArrayBuilder = Json.createArrayBuilder();
+        ObservableList<Team> teams = dataManager.getTeams();
+        for(Team t : teams){
+            JsonObject tJson = Json.createObjectBuilder()
+                    .add(JSON_TEAM_NAME, t.getName())
+                    .add(JSON_TEAM_COLOR, t.getColor().toString())
+                    .add(JSON_TEAM_TEXTCOLOR, t.getTextColor().toString())
+                    .add(JSON_TEAM_LINK, t.getLink()).build();
+            teamsArrayBuilder.add(tJson);
+        }
+        JsonArray teamsArray = teamsArrayBuilder.build();
+        
+        JsonArrayBuilder studentsArrayBuilder = Json.createArrayBuilder();
+        ObservableList<Student> students = dataManager.getStudents();
+        for(Student s : students){
+            JsonObject sJson = Json.createObjectBuilder()
+                    .add(JSON_STUDENT_FIRSTNAME, s.getFirstName())
+                    .add(JSON_STUDENT_LASTNAME, s.getLastName())
+                    .add(JSON_STUDENT_TEAM, s.getTeam())
+                    .add(JSON_STUDENT_ROLE, s.getRole()).build();
+            studentsArrayBuilder.add(sJson);
+        }
+        JsonArray studentsArray = studentsArrayBuilder.build();
+        
+        JsonObject dataManagerJSO_pro = Json.createObjectBuilder()
+                .add(JSON_PAGESTYLE_STYLESHEET_DIR, dataManager.getStylesheetDir())
+                .add(JSON_PAGESTYLE_BANNERSCHOOL_DIR, dataManager.getBannerSchoolImageDir())
+                .add(JSON_PAGESTYLE_LEFTFOOTER_DIR, dataManager.getLeftFooterImageDir())
+                .add(JSON_PAGESTYLE_RIGHTFOOTER_DIR, dataManager.getRightFooterImageDir())
+                .add(JSON_SITEPAGES, sitePageArray)
+                .add(JSON_COURSE_SUBJECT, dataManager.getSubject())
+                .add(JSON_COURSE_NUMBER, dataManager.getNumber())
+                .add(JSON_COURSE_SEMESTER, dataManager.getSemester())
+                .add(JSON_COURSE_YEAR, dataManager.getYear())
+                .add(JSON_COURSE_TITLE, dataManager.getTitle())
+                .add(JSON_COURSE_YEAR, dataManager.getYear())
+                .add(JSON_TEAMS, teamsArray)
+                .add(JSON_STUDENTS, studentsArray)
+                .build();
+        
+        // AND NOW OUTPUT IT TO A JSON FILE WITH PRETTY PRINTING
+        Map<String, Object> properties_pro = new HashMap<>(1);
+        properties_pro.put(JsonGenerator.PRETTY_PRINTING, true);
+        JsonWriterFactory writerFactory_pro = Json.createWriterFactory(properties_pro);
+        StringWriter sw_pro = new StringWriter();
+        JsonWriter jsonWriter_pro = writerFactory_pro.createWriter(sw_pro);
+        jsonWriter_pro.writeObject(dataManagerJSO_pro);
+        jsonWriter_pro.close();
+
+        // INIT THE WRITER
+        OutputStream os_pro = new FileOutputStream(filePath+"ProjectsData.json");
+        JsonWriter jsonFileWriter_pro = Json.createWriter(os_pro);
+        jsonFileWriter_pro.writeObject(dataManagerJSO_pro);
+        String prettyPrinted_pro = sw_pro.toString();
+        PrintWriter pw_pro = new PrintWriter(filePath+"ProjectsData.json");
+        pw_pro.write(prettyPrinted_pro);
+        pw_pro.close();
     }
 }

@@ -10,22 +10,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import properties_manager.PropertiesManager;
 import djf.AppTemplate;
-import static djf.settings.AppPropertyType.LOAD_ERROR_MESSAGE;
-import static djf.settings.AppPropertyType.LOAD_ERROR_TITLE;
-import static djf.settings.AppPropertyType.LOAD_WORK_TITLE;
-import static djf.settings.AppPropertyType.WORK_FILE_EXT;
-import static djf.settings.AppPropertyType.WORK_FILE_EXT_DESC;
-import static djf.settings.AppPropertyType.NEW_COMPLETED_MESSAGE;
-import static djf.settings.AppPropertyType.NEW_COMPLETED_TITLE;
-import static djf.settings.AppPropertyType.NEW_ERROR_MESSAGE;
-import static djf.settings.AppPropertyType.NEW_ERROR_TITLE;
-import static djf.settings.AppPropertyType.SAVE_COMPLETED_MESSAGE;
-import static djf.settings.AppPropertyType.SAVE_COMPLETED_TITLE;
-import static djf.settings.AppPropertyType.SAVE_ERROR_MESSAGE;
-import static djf.settings.AppPropertyType.SAVE_ERROR_TITLE;
-import static djf.settings.AppPropertyType.SAVE_UNSAVED_WORK_MESSAGE;
-import static djf.settings.AppPropertyType.SAVE_UNSAVED_WORK_TITLE;
-import static djf.settings.AppPropertyType.SAVE_WORK_TITLE;
+import static djf.settings.AppPropertyType.*;
 import static djf.settings.AppStartupConstants.PATH_WORK;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -173,28 +158,54 @@ public class AppFileController {
 	    dialog.show(props.getProperty(LOAD_ERROR_TITLE), props.getProperty(LOAD_ERROR_MESSAGE));
         }    
     }
-    public void handleExportRequest() throws IOException{
-     PropertiesManager props = PropertiesManager.getPropertiesManager();
-      
-	    // MAYBE WE ALREADY KNOW THE FILE
-	 
-		// PROMPT THE USER FOR A FILE NAME
-		FileChooser fc = new FileChooser();
-		fc.setInitialDirectory(new File(PATH_WORK));
-	//	fc.getExtensionFilters().addAll(
-	//	new ExtensionFilter(props.getProperty(WORK_FILE_EXT_DESC), props.getProperty(WORK_FILE_EXT)));
-                DirectoryChooser a=new DirectoryChooser();
-		File selectedFile = a.showDialog(app.getGUI().getWindow());
-                saveas=selectedFile;
-                System.out.print(selectedFile.getAbsolutePath());
-                URL url = getClass().getResource("TAManagerTester");
-                String url2=url.getPath()+"/files/public_html/js/OfficeHoursGridData.json";
-         System.out.print(url2);
-        saveWork(new File(url2));
-        System.out.print("\n "+url2+"\n");
-          File src = new File(url.getPath());
-        FileUtils.copyDirectory(src,selectedFile);
-
+     public void handleExportRequest() {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+//        DirectoryChooser dc = new DirectoryChooser();
+//        dc.setTitle(props.getProperty(SAVE_WORK_TITLE));
+//        File selectedDirectory = dc.showDialog(app.getGUI().getWindow());
+//        System.out.println(selectedDirectory.getPath());
+        File selectedDirectory = new File(app.getDataComponent().getExportDir());
+        if (selectedDirectory != null) {
+            File source = new File("../SiteFiles/public_html");
+            
+            File cssSource = new File("../CourseSiteGenerator/work/css/"+(app.getDataComponent().getCSSDirForExport()));
+            File cssDestination = new File(selectedDirectory.getPath()+"/css/"+(app.getDataComponent().getCSSDirForExport()));
+            
+            String[] bannerExtArr = (app.getDataComponent().getSchoolBannerDirForExport()).split("\\\\");
+            String bannerExt = bannerExtArr[bannerExtArr.length-1];
+            File schoolBannerSource = new File((app.getDataComponent().getSchoolBannerDirForExport()));
+            File schoolBannerDestination = new File(selectedDirectory.getPath()+"/images/"+bannerExt);
+            
+            String[] leftExtArr = (app.getDataComponent().getLeftFooterDirForExport()).split("\\\\");
+            String leftExt = leftExtArr[leftExtArr.length-1];
+            File leftFooterSource = new File((app.getDataComponent().getLeftFooterDirForExport()));
+            File leftFooterDestination = new File(selectedDirectory.getPath()+"/images/"+leftExt);
+            
+            String[] rightExtArr = (app.getDataComponent().getRightFooterDirForExport()).split("\\\\");
+            String rightExt = rightExtArr[rightExtArr.length-1];
+            File rightFooterSource = new File((app.getDataComponent().getRightFooterDirForExport()));
+            File rightFooterDestination = new File(selectedDirectory.getPath()+"/images/"+rightExt);
+            
+            try {
+                FileUtils.copyDirectory(source, selectedDirectory);
+                app.getFileComponent().saveData(app.getDataComponent(), selectedDirectory.getPath() + "/js/OfficeHoursGridData.json");
+                app.getFileComponent().exportData(app.getDataComponent(), selectedDirectory.getPath() + "/js/");
+                
+                /* COPY CSS AND IMAGES */
+                FileUtils.copyFile(cssSource, cssDestination);
+                FileUtils.copyFile(schoolBannerSource, schoolBannerDestination);
+                FileUtils.copyFile(leftFooterSource, leftFooterDestination);
+                FileUtils.copyFile(rightFooterSource, rightFooterDestination);
+                
+                
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(EXPORT_SUCCESS_TITLE), props.getProperty(EXPORT_SUCCESS_MESSAGE));
+            } catch (Exception e) {
+                e.printStackTrace();
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(EXPORT_ERROR_TITLE), props.getProperty(EXPORT_ERROR_MESSAGE));
+            }
+        }
     }
     /**
      * This method will save the current course to a file. Note that we already

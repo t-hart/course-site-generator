@@ -74,6 +74,8 @@
 		<property name="EXPORT_WORK_TITLE"      value="Select location to export"></property>
 		<property name="WORK_FILE_EXT"			value=".json"></property>
 		<property name="WORK_FILE_EXT_DESC"		value="TA Office Hours"></property>
+		<property name="EXPORT_SUCCESS_TITLE"	value="Success!"></property>
+		<property name="EXPORT_SUCCESS_MESSAGE"	value="Website sucessfully exported to selected folder!"></property>
 
 		<!-- WORKSPACE CONTROLS STUFF -->        
 		<property name="TAS_HEADER_TEXT"                value="Teaching Assistants"></property>
@@ -92,6 +94,8 @@
 		<property name="MISSING_TA_EMAIL_MESSAGE"       value="You must provide a TA Email"></property>
 		<property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_TITLE"     value="TA Name and Email Not Unique"></property>
 		<property name="TA_NAME_AND_EMAIL_NOT_UNIQUE_MESSAGE"   value="You must provide a unique TA Name and Email"></property>
+		<property name="EXPORT_ERROR_TITLE"			value="Export Error!"></property>
+		<property name="EXPORT_ERROR_MESSAGE"		value="Something went wrong. Unable to export to selected folder!"></property>
 
 		<property name="DELETE_TEXT"                 value="Delete"></property>
 		<property name="CLEAR_BUTTON_TEXT"              value="Clear"></property>
