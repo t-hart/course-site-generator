@@ -145,6 +145,13 @@ public class Data implements AppDataComponent {
         endHour = MAX_END_HOUR;
         teachingAssistants.clear();
         officeHours.clear();
+        
+        sitePages.clear();
+        teams.clear();
+        students.clear();
+        recitations.clear();
+        scheduledItems.clear();
+        
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
         ComboBox a = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(2);
         ComboBox c = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(4);
@@ -353,8 +360,8 @@ public class Data implements AppDataComponent {
         recitations.add(rec);
     }
     
-    public void addScheduledItem(String initType, Date initDate, String initTitle, String initTopic, String initLink, String initCriteria){
-        ScheduledItem si = new ScheduledItem(initType, initDate, initTitle, initTopic, initLink, initCriteria);
+    public void addScheduledItem(String initType, Date initDate, String initTime, String initTitle, String initTopic, String initLink, String initCriteria){
+        ScheduledItem si = new ScheduledItem(initType, initDate, initTime, initTitle, initTopic, initLink, initCriteria);
         scheduledItems.add(si);
     }
     

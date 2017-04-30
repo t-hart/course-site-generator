@@ -30,6 +30,22 @@ import static csg.style.TAStyle.CLASS_HIGHLIGHTED_GRID_CELL;
 import static csg.style.TAStyle.CLASS_HIGHLIGHTED_GRID_ROW_OR_COLUMN;
 import static csg.style.TAStyle.CLASS_OFFICE_HOURS_GRID_TA_CELL_PANE;
 import csg.workspace.TAWorkspace;
+import csg.data.ScheduledItem;
+import csg.data.Recitation;
+import csg.data.SitePage;
+import csg.data.Student;
+import csg.data.Team;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.DatePicker;
+import javafx.scene.paint.Color;
+import javafx.collections.ObservableList;
+
 
 /**
  * This class provides responses to all workspace interactions, meaning
@@ -158,6 +174,101 @@ jTPS j=new jTPS();
                 workspace.getAddButton().setText("Update TA");
             }
    
+    }
+    
+    public void checkTeamSelected(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TableView teamTable = workspace.getTeamTable();
+        Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            Team team = (Team)selectedItem;
+            workspace.getTeamName().setText(team.getName());
+            workspace.getTeamLink().setText(team.getLink());
+            workspace.getTeamColor().setValue(hexToRGB(team.getColor()));
+            workspace.getTeamTextColor().setValue(hexToRGB(team.getTextColor()));
+        }
+    }
+    public Color hexToRGB(String hex){
+        int r = Integer.valueOf(hex.substring(0,2),16);
+        int g = Integer.valueOf(hex.substring(2,4),16);
+        int b = Integer.valueOf(hex.substring(4,6),16);
+        Color color = Color.rgb(r, g, b);
+        return color;
+    }
+    
+    public void checkStudentSelected(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TableView studentTable = workspace.getStudentTable();
+        Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            Student student = (Student)selectedItem;
+            workspace.getStudentFirstName().setText(student.getFirstName());
+            workspace.getStudentLastName().setText(student.getLastName());
+            workspace.getStudentRole().setText(student.getRole());
+            
+            ObservableList<Team> teams = ((Data)app.getDataComponent()).getTeams();
+            String teamName = student.getTeam();
+            for(int i = 0; i < teams.size(); i++){
+                Team team = teams.get(i);
+                if(teamName.equals(team.getName())){
+                    workspace.getTeamComboBox().setValue(team);
+                }
+            }
+        }
+    }
+    public void checkScheduleItemSelected(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TableView scheduleItemTable = workspace.getScheduleItemsTable();
+        Object selectedItem = scheduleItemTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            ScheduledItem item = (ScheduledItem)selectedItem;
+            workspace.getScheduleItemType().setValue(item.getType());
+            
+            String dateString = Integer.toString(item.getMonth()) + "/" + Integer.toString(item.getDay()) + "/" + Integer.toString(item.getYear());
+            
+            Date date = new Date();
+            try {
+                DatePicker datePicker = workspace.getScheduleItemDate();
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                date = df.parse(dateString);
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(date);
+                datePicker.setValue(LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH)+1, cal.get(Calendar.DAY_OF_MONTH)));
+            } catch (java.text.ParseException pe) {
+                pe.printStackTrace();
+            }
+            
+            workspace.getScheduleItemTime().setText(item.getTime());
+            workspace.getScheduleItemTitle().setText(item.getTitle());
+            workspace.getScheduleItemTopic().setText(item.getTopic());
+            workspace.getScheduleItemLink().setText(item.getLink());
+            workspace.getScheduleItemCriteria().setText(item.getCriteria());   
+        }
+    }
+    public void checkRecitationSelected(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TableView recitationTable = workspace.getRecitationTable();
+        Object selectedItem = recitationTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            Recitation rec = (Recitation)selectedItem;
+            workspace.getRecSection().setText(rec.getSection());
+            workspace.getRecInstructor().setText(rec.getInstructor());
+            workspace.getRecDayTime().setText(rec.getDayTime());
+            workspace.getRecLocation().setText(rec.getLocation());
+            
+            ObservableList<TeachingAssistant> tas = ((Data)app.getDataComponent()).getTeachingAssistants();
+            String ta1Name = rec.getSupervisingTA_1();
+            String ta2Name = rec.getSupervisingTA_2();
+            for(int i = 0; i < tas.size(); i++){
+                TeachingAssistant ta = tas.get(i);
+                if(ta1Name.equals(ta.getName())){
+                    workspace.getRecSupervisingTA1().setValue(ta);
+                }
+                if(ta2Name.equals(ta.getName())){
+                    workspace.getRecSupervisingTA2().setValue(ta);
+                }
+            }
+        }
     }
     public void undoTransaction(){
         j.undoTransaction();

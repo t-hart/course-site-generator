@@ -176,5 +176,12 @@
 			<option>THURSDAY</option>
 			<option>FRIDAY</option>
 		</property_options>
+		<property_options name = "SCHEDULE_ITEM_TYPES">
+			<option>Holiday</option>
+			<option>Homework</option>
+			<option>Lecture</option>
+			<option>Recitation</option>
+			<option>Reference</option>
+		</property_options>
 	</property_options_list>
 </properties>

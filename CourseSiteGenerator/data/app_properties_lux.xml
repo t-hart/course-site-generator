@@ -176,5 +176,12 @@
 			<option>DONNESCHDEG</option>
 			<option>FREIDEG</option>
 		</property_options>
+		<property_options name = "SCHEDULE_ITEM_TYPES">
+			<option>Vakanz</option>
+			<option>Hausaufgab</option>
+			<option>Virliesung</option>
+			<option>Endlech</option>
+			<option>Referenz</option>
+		</property_options>
 	</property_options_list>
 </properties>

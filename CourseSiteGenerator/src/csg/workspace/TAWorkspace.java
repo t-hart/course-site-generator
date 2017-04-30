@@ -150,7 +150,38 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     DatePicker startingMonday = new DatePicker();
     DatePicker endingFriday = new DatePicker();
-
+    
+    TableView teamTable;
+    TextField teamName;
+    TextField teamLink;
+    ColorPicker teamColor;
+    ColorPicker teamTextColor;
+    
+    TableView studentTable;
+    TextField studentFirstName;
+    TextField studentLastName;
+    ComboBox teamComboBox;
+    TextField studentRole;
+    
+    TableView scheduleItemsTable;
+    ComboBox scheduleItemType;
+    DatePicker scheduleItemDate;
+    TextField scheduleItemTime;
+    TextField scheduleItemTitle;
+    TextField scheduleItemTopic;
+    TextField scheduleItemLink;
+    TextField scheduleItemCriteria;
+    
+    TableView recitationTable;
+    TextField recSection;
+    TextField recInstructor;
+    TextField recDayTime;
+    TextField recLocation;
+    ComboBox recSupervisingTA1;
+    ComboBox recSupervisingTA2;
+    
+    Button deleteTeamButton;
+    
     /**
      * The constructor initializes the user interface, except for the full
      * office hours grid, since it doesn't yet know what the hours will be until
@@ -455,6 +486,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         stylesheetComboBox.getSelectionModel().selectFirst();
         pageStyleGridPane.add(stylesheetComboBox, 1, 4, 1, 1);
         
+        bannerSchool.setPreserveRatio(true);
+        bannerSchool.setFitHeight(45);
+        leftFooter.setPreserveRatio(true);
+        leftFooter.setFitHeight(45);
+        rightFooter.setPreserveRatio(true);
+        rightFooter.setFitHeight(45);
+        
         pageStyleGridPane.add(bannerSchool, 1, 1, 1, 1);
         pageStyleGridPane.add(leftFooter, 1, 2, 1, 1);
         pageStyleGridPane.add(rightFooter, 1, 3, 1, 1);
@@ -515,7 +553,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         TA2Column.setCellValueFactory(
                 new PropertyValueFactory<Recitation, String>("supervisingTA_2")
         );
-        TableView recitationTable = new TableView();
+        recitationTable = new TableView();
         ObservableList<Recitation> recitationData = data.getRecitations();
         recitationTable.setEditable(true);
         recitationTable.setItems(recitationData);
@@ -537,16 +575,23 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SUPERVISING_TA_TEXT.toString())+":"), 0, 5, 1, 1);
         addEditPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.SUPERVISING_TA_TEXT.toString())+":"), 0, 6, 1, 1);
         
-        addEditPane.add(new TextField(), 1, 1, 10, 1);
-        addEditPane.add(new TextField(), 1, 2, 10, 1);
-        addEditPane.add(new TextField(), 1, 3, 10, 1);
-        addEditPane.add(new TextField(), 1, 4, 10, 1);
-        ComboBox ta1ComboBox = new ComboBox();
-        ComboBox ta2ComboBox = new ComboBox();
-        ta1ComboBox.setPrefWidth(200);
-        ta2ComboBox.setPrefWidth(200);
-        addEditPane.add(ta1ComboBox, 1, 5, 10, 1);
-        addEditPane.add(ta2ComboBox, 1, 6, 10, 1);
+        recSection = new TextField();
+        recInstructor = new TextField();
+        recDayTime = new TextField();
+        recLocation = new TextField();
+        
+        addEditPane.add(recSection, 1, 1, 10, 1);
+        addEditPane.add(recInstructor, 1, 2, 10, 1);
+        addEditPane.add(recDayTime, 1, 3, 10, 1);
+        addEditPane.add(recLocation, 1, 4, 10, 1);
+        recSupervisingTA1 = new ComboBox();
+        recSupervisingTA1.setItems(data.getTeachingAssistants());
+        recSupervisingTA2 = new ComboBox();
+        recSupervisingTA2.setItems(data.getTeachingAssistants());
+        recSupervisingTA1.setPrefWidth(200);
+        recSupervisingTA2.setPrefWidth(200);
+        addEditPane.add(recSupervisingTA1, 1, 5, 10, 1);
+        addEditPane.add(recSupervisingTA2, 1, 6, 10, 1);
         
         addEditPane.setStyle("-fx-background-color: #EBEBEB");
         
@@ -650,7 +695,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         topicColumn.setCellValueFactory(
                 new PropertyValueFactory<Recitation, String>("topic")
         );
-        TableView scheduleItemsTable = new TableView();
+        scheduleItemsTable = new TableView();
         ObservableList<ScheduledItem> scheduleData = data.getScheduledItems();
         scheduleItemsTable.setEditable(true);
         scheduleItemsTable.setItems(scheduleData);
@@ -674,16 +719,26 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LINK_TEXT.toString())+":"), 0, 6, 1, 1);
         addEditSchedulePane.add(new Label(props.getProperty(CourseSiteGeneratorProp.CRITERIA_TEXT.toString())+":"), 0, 7, 1, 1);
         
-        ComboBox typeComboBox = new ComboBox();
-        typeComboBox.setPrefWidth(100);
+        scheduleItemType = new ComboBox();
+        scheduleItemType.setPrefWidth(100);
+        ArrayList<String> scheduleItemTypes = props.getPropertyOptionsList(CourseSiteGeneratorProp.SCHEDULE_ITEM_TYPES);
+        ObservableList<String> oListTypes = FXCollections.observableArrayList(scheduleItemTypes);
+        scheduleItemType.setItems(oListTypes);
         
-        addEditSchedulePane.add(typeComboBox, 1, 1, 1, 1);
-        addEditSchedulePane.add(new DatePicker(), 1, 2, 1, 1);
-        addEditSchedulePane.add(new TextField(), 1, 3, 1, 1);
-        addEditSchedulePane.add(new TextField(), 1, 4, 30, 1);
-        addEditSchedulePane.add(new TextField(), 1, 5, 30, 1);
-        addEditSchedulePane.add(new TextField(), 1, 6, 30, 1);
-        addEditSchedulePane.add(new TextField(), 1, 7, 30, 1);
+        scheduleItemDate = new DatePicker();
+        scheduleItemTime = new TextField();
+        scheduleItemTitle = new TextField();
+        scheduleItemTopic = new TextField();
+        scheduleItemLink = new TextField();
+        scheduleItemCriteria = new TextField();
+        
+        addEditSchedulePane.add(scheduleItemType, 1, 1, 1, 1);
+        addEditSchedulePane.add(scheduleItemDate, 1, 2, 1, 1);
+        addEditSchedulePane.add(scheduleItemTime, 1, 3, 1, 1);
+        addEditSchedulePane.add(scheduleItemTitle, 1, 4, 30, 1);
+        addEditSchedulePane.add(scheduleItemTopic, 1, 5, 30, 1);
+        addEditSchedulePane.add(scheduleItemLink, 1, 6, 30, 1);
+        addEditSchedulePane.add(scheduleItemCriteria, 1, 7, 30, 1);
         
         Button addUpdateScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
         Button clearScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
@@ -708,7 +763,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         HBox projectDataHeader = new HBox(10);
         projectDataHeader.setAlignment(Pos.CENTER_LEFT);
         
-        Button deleteTeamButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
+        deleteTeamButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
         Label teamsHeaderLabel = new Label(props.getProperty(CourseSiteGeneratorProp.TEAMS_TEXT.toString()));
         teamsHeaderLabel.getStyleClass().add("section-subheader");
         projectDataHeader.getChildren().addAll(teamsHeaderLabel, deleteTeamButton);   
@@ -731,7 +786,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         linkColumn.setCellValueFactory(
                 new PropertyValueFactory<Recitation, String>("link")
         );
-        TableView teamTable = new TableView();
+        teamTable = new TableView();
         ObservableList<Team> teamData = data.getTeams();
         teamTable.setEditable(true);
         teamTable.setItems(teamData);
@@ -751,12 +806,18 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.COLOR_TEXT.toString())+":"), 0, 2, 1, 1);
         addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.LINK_TEXT.toString())+":"), 0, 3, 1, 1);
         
-        addEditProjectPane.add(new TextField(), 1, 1, 1, 1);
-        addEditProjectPane.add(new ColorPicker(), 1, 2, 1, 1);
-        addEditProjectPane.add(new TextField(), 1, 3, 3, 1);
+        teamName = new TextField();
+        teamLink = new TextField();
+        
+        teamColor = new ColorPicker();
+        teamTextColor = new ColorPicker();
+        
+        addEditProjectPane.add(teamName, 1, 1, 1, 1);
+        addEditProjectPane.add(teamColor, 1, 2, 1, 1);
+        addEditProjectPane.add(teamLink, 1, 3, 3, 1);
         
         addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TEXT_COLOR_TEXT.toString())+":"), 2, 2, 1, 1);
-        addEditProjectPane.add(new ColorPicker(), 3, 2, 1, 1);
+        addEditProjectPane.add(teamTextColor, 3, 2, 1, 1);
         
         Button addUpdateProjectButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
         Button clearProjectButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
@@ -798,7 +859,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         roleColumn.setCellValueFactory(
                 new PropertyValueFactory<Recitation, String>("role")
         );
-        TableView studentTable = new TableView();
+        studentTable = new TableView();
         ObservableList<Student> studentData = data.getStudents();
         studentTable.setEditable(true);
         studentTable.setItems(studentData);
@@ -819,11 +880,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditStudentPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TEAM_TEXT.toString())+":"), 0, 3, 1, 1);
         addEditStudentPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.ROLE_TEXT.toString())+":"), 0, 4, 1, 1);
         
-        addEditStudentPane.add(new TextField(), 1, 1, 10, 1);
-        addEditStudentPane.add(new TextField(), 1, 2, 10, 1);
-        addEditStudentPane.add(new TextField(), 1, 4, 10, 1);
+        studentFirstName = new TextField();
+        studentLastName = new TextField();
+        studentRole = new TextField();
         
-        ComboBox teamComboBox = new ComboBox();
+        addEditStudentPane.add(studentFirstName, 1, 1, 10, 1);
+        addEditStudentPane.add(studentLastName, 1, 2, 10, 1);
+        addEditStudentPane.add(studentRole, 1, 4, 10, 1);
+        
+        teamComboBox = new ComboBox();
+        teamComboBox.setItems(data.getTeams());
         teamComboBox.setPrefWidth(200);
         
         addEditStudentPane.add(teamComboBox, 1, 3, 10, 1);
@@ -1065,7 +1131,18 @@ public class TAWorkspace extends AppWorkspaceComponent {
                 }
             }
         });
-
+        teamTable.setOnMouseClicked(e -> {
+            controller.checkTeamSelected();
+        });
+        studentTable.setOnMouseClicked(e -> {
+            controller.checkStudentSelected();
+        });
+        scheduleItemsTable.setOnMouseClicked(e -> {
+            controller.checkScheduleItemSelected();
+        });
+        recitationTable.setOnMouseClicked(e -> {
+            controller.checkRecitationSelected();
+        });
     }
 
     // WE'LL PROVIDE AN ACCESSOR METHOD FOR EACH VISIBLE COMPONENT
@@ -1392,4 +1469,104 @@ public class TAWorkspace extends AppWorkspaceComponent {
     public DatePicker getEndingFriday(){
         return endingFriday;
     }
+    
+    public TableView getTeamTable(){
+        return teamTable;
+    }
+
+    public TextField getTeamName() {
+        return teamName;
+    }
+
+    public TextField getTeamLink() {
+        return teamLink;
+    }
+
+    public ColorPicker getTeamColor() {
+        return teamColor;
+    }
+
+    public ColorPicker getTeamTextColor() {
+        return teamTextColor;
+    }
+
+    public TextField getStudentFirstName() {
+        return studentFirstName;
+    }
+
+    public TextField getStudentLastName() {
+        return studentLastName;
+    }
+
+    public ComboBox getTeamComboBox() {
+        return teamComboBox;
+    }
+
+    public TextField getStudentRole() {
+        return studentRole;
+    }
+    public TableView getStudentTable(){
+        return studentTable;
+    }
+
+    public TableView getScheduleItemsTable() {
+        return scheduleItemsTable;
+    }
+
+    public ComboBox getScheduleItemType() {
+        return scheduleItemType;
+    }
+
+    public DatePicker getScheduleItemDate() {
+        return scheduleItemDate;
+    }
+
+    public TextField getScheduleItemTime() {
+        return scheduleItemTime;
+    }
+
+    public TextField getScheduleItemTitle() {
+        return scheduleItemTitle;
+    }
+
+    public TextField getScheduleItemTopic() {
+        return scheduleItemTopic;
+    }
+
+    public TextField getScheduleItemLink() {
+        return scheduleItemLink;
+    }
+
+    public TextField getScheduleItemCriteria() {
+        return scheduleItemCriteria;
+    }
+
+    public TableView getRecitationTable() {
+        return recitationTable;
+    }
+
+    public TextField getRecSection() {
+        return recSection;
+    }
+
+    public TextField getRecInstructor() {
+        return recInstructor;
+    }
+
+    public TextField getRecDayTime() {
+        return recDayTime;
+    }
+
+    public TextField getRecLocation() {
+        return recLocation;
+    }
+
+    public ComboBox getRecSupervisingTA1() {
+        return recSupervisingTA1;
+    }
+
+    public ComboBox getRecSupervisingTA2() {
+        return recSupervisingTA2;
+    }
+    
 }

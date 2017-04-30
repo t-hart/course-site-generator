@@ -37,5 +37,9 @@ public class Team {
         return link.get();
     }
     
+    @Override
+    public String toString(){
+        return name.get();
+    }
     
 }

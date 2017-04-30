@@ -90,6 +90,7 @@ public class LoadDataJUnitTest {
     static final String JSON_SCHEDULEDITEMS = "scheduled_items";
     static final String JSON_SCHEDULEDITEM_TYPE = "type";
     static final String JSON_SCHEDULEDITEM_DATE = "date";
+    static final String JSON_SCHEDULEDITEM_TIME = "time";
     static final String JSON_SCHEDULEDITEM_TITLE = "title";
     static final String JSON_SCHEDULEDITEM_TOPIC = "topic";
     static final String JSON_SCHEDULEDITEM_LINK = "link";
@@ -231,12 +232,13 @@ public class LoadDataJUnitTest {
             JsonObject jsonScheduledItem = jsonScheduledItemsArray.getJsonObject(i);
             String type = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TYPE);
             String date = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_DATE);
+            String itemTime = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TIME);
             String itemTitle = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TITLE);
             String topic = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TOPIC);
             String link = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_LINK);
             String criteria = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_CRITERIA);
             try{
-                dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTitle, topic, link, criteria);
+                dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTime ,itemTitle, topic, link, criteria);
             }catch(java.text.ParseException pe){
                 pe.printStackTrace();
             }
@@ -501,10 +503,10 @@ public class LoadDataJUnitTest {
         }catch(java.text.ParseException pe){
             fail("ParseException thrown!");
         }
-        ScheduledItem si1 = new ScheduledItem("Holiday", d1, "Independence Day", "", "", "" );
-        ScheduledItem si2 = new ScheduledItem("Lecture", d2, "Lecture 3", "Event Programming", "https://eventprogramming.com/", "" );
-        ScheduledItem si3 = new ScheduledItem("Holiday", d3, "NO LECTURE", "", "", "" );
-        ScheduledItem si4 = new ScheduledItem("Homework", d4, "HW3", "UML", "https://umlhelp.org/", "" );
+        ScheduledItem si1 = new ScheduledItem("Holiday", d1, "9:00AM - 9:00PM", "Independence Day", "", "", "" );
+        ScheduledItem si2 = new ScheduledItem("Lecture", d2, "9:00AM - 9:00PM","Lecture 3", "Event Programming", "https://eventprogramming.com/", "" );
+        ScheduledItem si3 = new ScheduledItem("Holiday", d3, "9:00AM - 9:00PM","NO LECTURE", "", "", "" );
+        ScheduledItem si4 = new ScheduledItem("Homework", d4, "9:00AM - 9:00PM","HW3", "UML", "https://umlhelp.org/", "" );
         ArrayList<ScheduledItem> scheduledItems = new ArrayList();
         scheduledItems.add(si1);
         scheduledItems.add(si2);
@@ -515,6 +517,7 @@ public class LoadDataJUnitTest {
         for(int i = 0; i < items.size(); i++){
             assertEquals(scheduledItems.get(i).getType(), items.get(i).getType());
             assertEquals(scheduledItems.get(i).getDate(), items.get(i).getDate());
+            assertEquals(scheduledItems.get(i).getTime(), items.get(i).getTime());
             assertEquals(scheduledItems.get(i).getTitle(), items.get(i).getTitle());
             assertEquals(scheduledItems.get(i).getTopic(), items.get(i).getTopic());
             assertEquals(scheduledItems.get(i).getLink(), items.get(i).getLink());

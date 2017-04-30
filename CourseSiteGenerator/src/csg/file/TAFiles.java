@@ -101,6 +101,7 @@ public class TAFiles implements AppFileComponent {
     static final String JSON_SCHEDULEDITEMS = "scheduled_items";
     static final String JSON_SCHEDULEDITEM_TYPE = "type";
     static final String JSON_SCHEDULEDITEM_DATE = "date";
+    static final String JSON_SCHEDULEDITEM_TIME = "time";
     static final String JSON_SCHEDULEDITEM_TITLE = "title";
     static final String JSON_SCHEDULEDITEM_TOPIC = "topic";
     static final String JSON_SCHEDULEDITEM_LINK = "link";
@@ -275,12 +276,13 @@ public class TAFiles implements AppFileComponent {
             JsonObject jsonScheduledItem = jsonScheduledItemsArray.getJsonObject(i);
             String type = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TYPE);
             String date = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_DATE);
+            String itemTime = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TIME);
             String itemTitle = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TITLE);
             String topic = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_TOPIC);
             String link = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_LINK);
             String criteria = jsonScheduledItem.getString(JSON_SCHEDULEDITEM_CRITERIA);
             try{
-                dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTitle, topic, link, criteria);
+                dataManager.addScheduledItem(type, new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy").parse(date), itemTime, itemTitle, topic, link, criteria);
             }catch(java.text.ParseException pe){
                 pe.printStackTrace();
             }
@@ -378,6 +380,7 @@ public class TAFiles implements AppFileComponent {
             JsonObject siJson = Json.createObjectBuilder()
                     .add(JSON_SCHEDULEDITEM_TYPE, si.getType())
                     .add(JSON_SCHEDULEDITEM_DATE, si.getDate().toString())
+                    .add(JSON_SCHEDULEDITEM_TIME, si.getTime())
                     .add(JSON_SCHEDULEDITEM_TITLE, si.getTitle())
                     .add(JSON_SCHEDULEDITEM_TOPIC, si.getTopic())
                     .add(JSON_SCHEDULEDITEM_LINK, si.getLink())
@@ -522,6 +525,7 @@ public class TAFiles implements AppFileComponent {
             JsonObject siJson = Json.createObjectBuilder()
                     .add(JSON_SCHEDULEDITEM_TYPE, si.getType())
                     .add(JSON_SCHEDULEDITEM_DATE, si.getDate().toString())
+                    .add(JSON_SCHEDULEDITEM_TIME, si.getTime())
                     .add(JSON_SCHEDULEDITEM_TITLE, si.getTitle())
                     .add(JSON_SCHEDULEDITEM_TOPIC, si.getTopic())
                     .add(JSON_SCHEDULEDITEM_LINK, si.getLink())

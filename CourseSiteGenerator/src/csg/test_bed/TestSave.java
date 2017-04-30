@@ -85,10 +85,10 @@ public class TestSave {
             data.setStartingMonday(format.parse("May 29, 2017"));
             data.setEndingFriday(format.parse("August 25, 2017"));
             
-            data.addScheduledItem("Holiday", format.parse("July 4, 2017"), "Independence Day", "", "", "");
-            data.addScheduledItem("Lecture", format.parse("July 12, 2017"), "Lecture 3", "Event Programming", "https://eventprogramming.com/", "");
-            data.addScheduledItem("Holiday", format.parse("August 1, 2017"), "NO LECTURE", "", "", "");
-            data.addScheduledItem("Homework", format.parse("August 8, 2017"), "HW3", "UML", "https://umlhelp.org/", "");
+            data.addScheduledItem("Holiday", format.parse("July 4, 2017"), "9:00AM - 9:00PM","Independence Day", "", "", "");
+            data.addScheduledItem("Lecture", format.parse("July 12, 2017"), "9:00AM - 9:00PM","Lecture 3", "Event Programming", "https://eventprogramming.com/", "");
+            data.addScheduledItem("Holiday", format.parse("August 1, 2017"), "9:00AM - 9:00PM","NO LECTURE", "", "", "");
+            data.addScheduledItem("Homework", format.parse("August 8, 2017"), "9:00AM - 9:00PM","HW3", "UML", "https://umlhelp.org/", "");
         }catch(java.text.ParseException pe){
             pe.printStackTrace();
         }
