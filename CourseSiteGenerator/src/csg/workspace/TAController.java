@@ -22,6 +22,7 @@ import jtps.jTPS;
 import jtps.jTPS_Transaction;
 import properties_manager.PropertiesManager;
 import csg.CourseSiteGeneratorApp;
+import csg.CourseSiteGeneratorProp;
 import csg.data.EmailValidator;
 import csg.data.Data;
 import csg.data.TeachingAssistant;
@@ -45,6 +46,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.DatePicker;
 import javafx.scene.paint.Color;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 
 
 /**
@@ -98,14 +101,14 @@ jTPS j=new jTPS();
         
         // WE'LL NEED THIS IN CASE WE NEED TO DISPLAY ANY ERROR MESSAGES
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-       if(workspace.getAddButton().getText().equals("Update TA")){
+       if(workspace.getAddButton().getText().equals(props.getProperty(CourseSiteGeneratorProp.UPDATE_BUTTON_TEXT.toString()))){
              TableView taTable = workspace.getTATable();
          Object selectedItem = taTable.getSelectionModel().getSelectedItem();
           TeachingAssistant ta = (TeachingAssistant)selectedItem;
            if(!(name.equals(oldName)&&email.equals(oldEmail))){
          nameTextField.setText("");
                emailTextField.setText("");
-               workspace.getAddButton().setText("Add TA");
+               workspace.getAddButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_BUTTON_TEXT.toString()));
            jTPS_Transaction change=new change(oldName,oldEmail,name,email,data, ta.getUndergrad().get(), ta.getUndergrad().get());
            j.addTransaction(change );
            }
@@ -160,7 +163,7 @@ jTPS j=new jTPS();
      * @param code The keyboard code pressed.
      */
     public void checkselected(){
-       
+       PropertiesManager props = PropertiesManager.getPropertiesManager();
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
             TableView taTable = workspace.getTATable();
          Object selectedItem = taTable.getSelectionModel().getSelectedItem(); 
@@ -171,12 +174,13 @@ jTPS j=new jTPS();
                 oldName=ta.getName();
                workspace.getEmailTextField().setText(ta.getEmail());
             oldEmail=ta.getEmail();
-                workspace.getAddButton().setText("Update TA");
+                workspace.getAddButton().setText(props.getProperty(CourseSiteGeneratorProp.UPDATE_BUTTON_TEXT.toString()));
             }
    
     }
     
     public void checkTeamSelected(){
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         TableView teamTable = workspace.getTeamTable();
         Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
@@ -186,6 +190,7 @@ jTPS j=new jTPS();
             workspace.getTeamLink().setText(team.getLink());
             workspace.getTeamColor().setValue(hexToRGB(team.getColor()));
             workspace.getTeamTextColor().setValue(hexToRGB(team.getTextColor()));
+            workspace.getAddUpdateTeamButton().setText(props.getProperty(CourseSiteGeneratorProp.UPDATE_TEXT));
         }
     }
     public Color hexToRGB(String hex){
@@ -197,6 +202,7 @@ jTPS j=new jTPS();
     }
     
     public void checkStudentSelected(){
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         TableView studentTable = workspace.getStudentTable();
         Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
@@ -214,6 +220,7 @@ jTPS j=new jTPS();
                     workspace.getTeamComboBox().setValue(team);
                 }
             }
+            workspace.getAddUpdateStudentButton().setText(props.getProperty(CourseSiteGeneratorProp.UPDATE_TEXT));
         }
     }
     public void checkScheduleItemSelected(){
@@ -270,36 +277,213 @@ jTPS j=new jTPS();
             }
         }
     }
-    public void undoTransaction(){
+    
+    public void handleDeleteTeam(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TableView teamTable = workspace.getTeamTable();
+        Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            jTPS_Transaction delete = new deleteTeam_Transaction(app, this, selectedItem, workspace);
+            j.addTransaction(delete);
+        }
+    }
+    public void handleDeleteStudent(){
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+        TableView studentTable = workspace.getStudentTable();
+        Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            jTPS_Transaction delete = new deleteStudent_Transaction(app, this, selectedItem, workspace);
+            j.addTransaction(delete);
+        }
+    }
+    public void handleAddUpdateTeam() {
+        // WE'LL NEED THE WORKSPACE TO RETRIEVE THE USER INPUT VALUES
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+        TextField nameTextField = workspace.getTeamName();
+        ColorPicker color = workspace.getTeamColor();
+        ColorPicker textColor = workspace.getTeamTextColor();
+        TextField link = workspace.getTeamLink();
+        String hexColor = String.format("%02x%02x%02x", (int)(color.getValue().getRed()*255), (int)(color.getValue().getGreen()*255), (int)(color.getValue().getBlue()*255));
+        String hexTextColor = String.format("%02x%02x%02x", (int)(textColor.getValue().getRed()*255), (int)(textColor.getValue().getGreen()*255), (int)(textColor.getValue().getBlue()*255));
+        
+        TableView teamTable = workspace.getTeamTable();
+        Data data = (Data) app.getDataComponent();
+        boolean validTeam = true;
+        
+        ObservableList<Team> teams = data.getTeams();
+        for (int i = 0; i < teams.size(); i++) {
+            Team team = teams.get(i);
+            if (team.getName().equalsIgnoreCase(nameTextField.getText())) {
+                Team selectedTeam = (Team)teamTable.getSelectionModel().getSelectedItem();
+                if( !(selectedTeam.getName().equalsIgnoreCase(nameTextField.getText())) )
+                    validTeam = false;
+            }
+        }
+        
+        /* ADD NEW TEAM */
+        if(workspace.getAddUpdateTeamButton().getText().equals(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()))){
+            if(validTeam){
+                
+                jTPS_Transaction add = new addEditTeam_Transaction(app, this, workspace, nameTextField.getText(), hexColor, hexTextColor, link.getText(), null);
+                j.addTransaction(add);
+                workspace.getTeamName().setText("");
+                Color white = Color.rgb(255, 255, 255);
+                workspace.getTeamColor().setValue(white);
+                workspace.getTeamTextColor().setValue(white);
+                workspace.getTeamLink().setText("");
+             
+
+            }
+            else{
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
+            }
+        }
+        /* UPDATE EXISTING TEAM */
+        else {
+            if (validTeam) {
+                Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Team team = (Team) selectedItem;
+                    System.out.println(team.getName());
+                    jTPS_Transaction add = new addEditTeam_Transaction(app, this, workspace, nameTextField.getText(), hexColor, hexTextColor, link.getText(), team);
+                    j.addTransaction(add);
+                    workspace.getTeamName().setText("");
+                    Color white = Color.rgb(255, 255, 255);
+                    workspace.getTeamColor().setValue(white);
+                    workspace.getTeamTextColor().setValue(white);
+                    workspace.getTeamLink().setText("");
+                    workspace.getTeamTable().getSelectionModel().clearSelection();
+                    workspace.getAddUpdateTeamButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                }
+            } else {
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
+            }
+        }
+    }
+    
+    public void handleAddUpdateStudent() {
+        // WE'LL NEED THE WORKSPACE TO RETRIEVE THE USER INPUT VALUES
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+        TextField firstNameTextField = workspace.getStudentFirstName();
+        TextField lastNameTextField = workspace.getStudentLastName();
+        ComboBox teamComboBox = workspace.getTeamComboBox();
+        TextField roleTextField = workspace.getStudentRole();
+        TableView studentTable = workspace.getStudentTable();
+        
+        Data data = (Data) app.getDataComponent();
+        boolean validStudent = true;
+        
+        ObservableList<Student> students = data.getStudents();
+        for (int i = 0; i < students.size(); i++) {
+            Student student = students.get(i);
+            if (student.getFirstName().equalsIgnoreCase(firstNameTextField.getText()) && student.getLastName().equalsIgnoreCase(lastNameTextField.getText())) {
+                Student selectedStudent = (Student)studentTable.getSelectionModel().getSelectedItem();
+                if( !(selectedStudent.getFirstName().equalsIgnoreCase(firstNameTextField.getText()) && selectedStudent.getLastName().equalsIgnoreCase(lastNameTextField.getText())) )
+                    validStudent = false;
+            }
+        }
+        
+        /* ADD NEW STUDENT */
+        if(workspace.getAddUpdateStudentButton().getText().equals(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()))){
+            if(validStudent){
+                jTPS_Transaction add = new addEditStudent_Transaction(app, this, workspace, firstNameTextField.getText(), lastNameTextField.getText(), teamComboBox.getSelectionModel().getSelectedItem(), roleTextField.getText(), null);
+                j.addTransaction(add);
+                workspace.getStudentFirstName().setText("");
+                workspace.getStudentLastName().setText("");
+                workspace.getTeamComboBox().getSelectionModel().clearSelection();
+                workspace.getStudentRole().setText("");
+             
+
+            }
+            else{
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(STUDENT_NAME_NOT_UNIQUE_TITLE), props.getProperty(STUDENT_NAME_NOT_UNIQUE_MESSAGE));
+            }
+        }
+        
+        /* UPDATE EXISTING STUDENT */
+        else {
+            if (validStudent) {
+                Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
+                if (selectedItem != null) {
+                    Student student = (Student) selectedItem;
+                    jTPS_Transaction add = new addEditStudent_Transaction(app, this, workspace, firstNameTextField.getText(), lastNameTextField.getText(), teamComboBox.getSelectionModel().getSelectedItem(), roleTextField.getText(), student);
+                    j.addTransaction(add);
+                    workspace.getStudentFirstName().setText("");
+                    workspace.getStudentLastName().setText("");
+                    workspace.getTeamComboBox().getSelectionModel().clearSelection();
+                    workspace.getStudentRole().setText("");
+                    workspace.getTeamTable().getSelectionModel().clearSelection();
+                    workspace.getAddUpdateStudentButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                }
+            } else {
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(STUDENT_NAME_NOT_UNIQUE_TITLE), props.getProperty(STUDENT_NAME_NOT_UNIQUE_MESSAGE));
+            }
+        }
+    }
+    
+    public void undoTransaction() {
         j.undoTransaction();
     }
-    public void redoTransaction(){
+
+    public void redoTransaction() {
         j.doTransaction();
     }
-    public void handleKeyPress(KeyEvent codee,KeyCode code) {
+
+    public void handleKeyPress(KeyEvent codee, KeyCode code) {
         // DID THE USER PRESS THE DELETE KEY?
-        if ( code==KeyCode.DELETE) {
-           TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        if (code == KeyCode.DELETE) {
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
             TableView taTable = workspace.getTATable();
-            
+
             // IS A TA SELECTED IN THE TABLE?
             Object selectedItem = taTable.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
-                jTPS_Transaction delete=new deleteTA(app,this,selectedItem, workspace);
+                jTPS_Transaction delete = new deleteTA(app, this, selectedItem, workspace);
                 j.addTransaction(delete);
             }
-        }else if (code==KeyCode.Z&&codee.isControlDown()){
+        } else if (code == KeyCode.Z && codee.isControlDown()) {
             j.undoTransaction();
-        }
-        else if(code==KeyCode.Y&&codee.isControlDown()){
+        } else if (code == KeyCode.Y && codee.isControlDown()) {
             j.doTransaction();
         }
-     
+
     }
     
-public jTPS getJ(){
-    return j;
-}
+    public void handleWorkspaceKeyPress(KeyEvent event, KeyCode code){
+        if (code == KeyCode.Z && event.isControlDown()) {
+            j.undoTransaction();
+        } else if (code == KeyCode.Y && event.isControlDown()) {
+            j.doTransaction();
+        }
+    }
+    
+    public void handleKeyPressTeamTable(KeyEvent event, KeyCode code){
+        if (code == KeyCode.DELETE) {
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+            TableView teamTable = workspace.getTeamTable();
+
+            // IS A TA SELECTED IN THE TABLE?
+            Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                jTPS_Transaction delete = new deleteTeam_Transaction(app, this, selectedItem, workspace);
+                j.addTransaction(delete);
+            }
+        } else if (code == KeyCode.Z && event.isControlDown()) {
+            j.undoTransaction();
+        } else if (code == KeyCode.Y && event.isControlDown()) {
+            j.doTransaction();
+        }
+    }
+    
+    public jTPS getJ() {
+        return j;
+    }
     /**
      * This function provides a response for when the user clicks
      * on the office hours grid to add or remove a TA to a time slot.

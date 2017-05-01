@@ -85,7 +85,10 @@
 		<property name="NAME_PROMPT_TEXT"               value="Numm"></property>
 		<property name="EMAIL_PROMPT_TEXT"              value="Email"></property>
 		<property name="ADD_BUTTON_TEXT"                value="Foto GA"></property>
+		<property name="UPDATE_BUTTON_TEXT"				value="Aktualiséierung GA"></property>
 		<property name="OFFICE_HOURS_SUBHEADER"         value="Büro Stonnen Saachen"></property>
+		<property name = "ADD_TEXT"						value="Foto"></property>
+		<property name = "UPDATE_TEXT"					value="Aktualiséierung"></property>
 
 		<!-- WORKSPACE ERROR MESSAGES -->
 		<property name="MISSING_TA_NAME_TITLE"          value="Vermësst GA Numm"></property>
@@ -163,6 +166,10 @@
 		<property name="RECITATION_DATA_TEXT"			value="Endlech Donnéeën"></property>
 		<property name="SCHEDULE_DATA_TEXT"				value="Zäitplang Donnéeën"></property>
 		<property name="PROJECT_DATA_TEXT"				value="Projet Donnéeën"></property>
+		<property name="TEAM_NAME_NOT_UNIQUE_TITLE"		value="Artikel/Aktualiséierung Equipe Feeler"></property>
+		<property name="TEAM_NAME_NOT_UNIQUE_MESSAGE"	value="Eng equipe mat deem numm schonn!"></property>
+		<property name="STUDENT_NAME_NOT_UNIQUE_TITLE"	value="Artikel/Aktualiséierung Schüler Feeler"></property>
+		<property name="STUDENT_NAME_NOT_UNIQUE_MESSAGE" value="E schüler mat deem numm schonn!"></property>
 	</property_list>
 	<property_options_list>
 		<property_options name="OFFICE_HOURS_TABLE_HEADERS">

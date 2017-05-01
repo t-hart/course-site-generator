@@ -76,6 +76,7 @@ import java.util.Date;
 import java.time.LocalDate;
 import javafx.util.StringConverter;
 import java.time.format.DateTimeFormatter;
+import javafx.scene.paint.Color;
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -181,6 +182,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
     ComboBox recSupervisingTA2;
     
     Button deleteTeamButton;
+    Button deleteStudentButton;
+    
+    Button addUpdateTeamButton;
+    Button addUpdateStudentButton;
     
     /**
      * The constructor initializes the user interface, except for the full
@@ -799,7 +804,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditProjectPane.setHgap(10);
         addEditProjectPane.setVgap(10);
         
-        Label addEditTeamsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.ADDEDIT_TEXT.toString()));
+        Label addEditTeamsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()));
         addEditTeamsLabel.getStyleClass().add("section-subheader");
         addEditProjectPane.add(addEditTeamsLabel, 0, 0, 1, 1);
         addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.NAME_TEXT.toString())+":"), 0, 1, 1, 1);
@@ -819,13 +824,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditProjectPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.TEXT_COLOR_TEXT.toString())+":"), 2, 2, 1, 1);
         addEditProjectPane.add(teamTextColor, 3, 2, 1, 1);
         
-        Button addUpdateProjectButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
-        Button clearProjectButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
-        addUpdateProjectButton.setPrefWidth(100);
-        clearProjectButton.setPrefWidth(100);
+        addUpdateTeamButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()));
+        Button clearTeamButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
+        addUpdateTeamButton.setPrefWidth(100);
+        clearTeamButton.setPrefWidth(100);
         
-        addEditProjectPane.add(addUpdateProjectButton, 0, 4, 1, 1);
-        addEditProjectPane.add(clearProjectButton, 1, 4, 1, 1);
+        addEditProjectPane.add(addUpdateTeamButton, 0, 4, 1, 1);
+        addEditProjectPane.add(clearTeamButton, 1, 4, 1, 1);
         
         teamPane.getChildren().add(addEditProjectPane);
         
@@ -836,7 +841,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         HBox studentDataHeader = new HBox(10);
         studentDataHeader.setAlignment(Pos.CENTER_LEFT);
         
-        Button deleteStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
+        deleteStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
         Label studentsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.STUDENTS_TEXT.toString()));
         studentsLabel.getStyleClass().add("section-subheader");
         studentDataHeader.getChildren().addAll(studentsLabel, deleteStudentButton);   
@@ -894,7 +899,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         addEditStudentPane.add(teamComboBox, 1, 3, 10, 1);
         
-        Button addUpdateStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        addUpdateStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()));
         Button clearStudentButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateStudentButton.setPrefWidth(100);
         clearStudentButton.setPrefWidth(100);
@@ -980,14 +985,14 @@ public class TAWorkspace extends AppWorkspaceComponent {
            controller.handleKeyPress(null, KeyCode.DELETE);
         });
         taTable.setFocusTraversable(true);
-        workspace.setOnKeyPressed(e -> {
+        taTable.setOnKeyPressed(e -> {
             controller.handleKeyPress(e, e.getCode());
         });
         taTable.setOnMouseClicked(e -> {
             controller.checkselected();
         });
         clearButton.setOnAction(e -> {
-            addButton.setText("Add TA");
+            addButton.setText(props.getProperty(CourseSiteGeneratorProp.ADD_BUTTON_TEXT.toString()));
             nameTextField.setText("");
             emailTextField.setText("");
             nameTextField.requestFocus();
@@ -1134,6 +1139,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         teamTable.setOnMouseClicked(e -> {
             controller.checkTeamSelected();
         });
+        teamTable.setOnKeyPressed(e ->{
+            controller.handleKeyPressTeamTable(e, e.getCode());
+        });
         studentTable.setOnMouseClicked(e -> {
             controller.checkStudentSelected();
         });
@@ -1142,6 +1150,38 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         recitationTable.setOnMouseClicked(e -> {
             controller.checkRecitationSelected();
+        });
+        deleteTeamButton.setOnAction(e ->{
+            controller.handleDeleteTeam();
+        });
+        deleteStudentButton.setOnAction(e ->{
+            controller.handleDeleteStudent();
+        });
+        addUpdateTeamButton.setOnAction(e ->{
+            controller.handleAddUpdateTeam();
+        });
+        addUpdateStudentButton.setOnAction(e ->{
+            controller.handleAddUpdateStudent();
+        });
+        clearTeamButton.setOnAction(e -> {
+            getTeamName().setText("");
+            Color color = Color.rgb(255, 255, 255);
+            getTeamColor().setValue(color);
+            getTeamTextColor().setValue(color);
+            getTeamLink().setText("");
+            getTeamTable().getSelectionModel().clearSelection();
+            getAddUpdateTeamButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+        });
+        clearStudentButton.setOnAction(e -> {
+            getStudentFirstName().setText("");
+            getStudentLastName().setText("");
+            getTeamComboBox().getSelectionModel().clearSelection();
+            getStudentRole().setText("");
+            getStudentTable().getSelectionModel().clearSelection();
+            getAddUpdateStudentButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+        });
+        workspace.setOnKeyPressed(e ->{
+            controller.handleWorkspaceKeyPress(e, e.getCode());
         });
     }
 
@@ -1569,4 +1609,10 @@ public class TAWorkspace extends AppWorkspaceComponent {
         return recSupervisingTA2;
     }
     
+    public Button getAddUpdateTeamButton(){
+        return addUpdateTeamButton;
+    }
+    public Button getAddUpdateStudentButton(){
+        return addUpdateStudentButton;
+    }
 }

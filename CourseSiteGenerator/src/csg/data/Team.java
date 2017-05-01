@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
  *
  * @author tjhha
  */
-public class Team {
+public class Team<E extends Comparable<E>> implements Comparable<E> {
     private final StringProperty name;
     private final StringProperty color;
     private final StringProperty textColor;
@@ -16,8 +16,8 @@ public class Team {
     
     public Team(String initName, String initColor, String initTextColor, String initLink){
         name = new SimpleStringProperty(initName);
-        color = new SimpleStringProperty(initColor);
-        textColor = new SimpleStringProperty(initTextColor);
+        color = new SimpleStringProperty(initColor.toLowerCase());
+        textColor = new SimpleStringProperty(initTextColor.toLowerCase());
         link = new SimpleStringProperty(initLink);
     }
 
@@ -40,6 +40,11 @@ public class Team {
     @Override
     public String toString(){
         return name.get();
+    }
+    
+    @Override
+    public int compareTo(E otherTeam) {
+        return getName().compareTo(((Team)otherTeam).getName());
     }
     
 }

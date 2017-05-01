@@ -383,7 +383,52 @@ public class Data implements AppDataComponent {
             }
         }
     }
+    
+    public void removeTeam(String name){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        for(Team team : teams){
+            if(name.equals(team.getName())){
+                teams.remove(team);
+              
+                if(workspace.getTeamName().getText().equals(team.getName())){
+                    workspace.getTeamName().setText("");
+                    Color color = Color.rgb(255, 255, 255);
+                    workspace.getTeamColor().setValue(color);
+                    workspace.getTeamTextColor().setValue(color);
+                    workspace.getTeamLink().setText("");
+                    
+                }
 
+                workspace.getTeamTable().getSelectionModel().clearSelection();
+                workspace.getStudentTable().getSelectionModel().clearSelection();
+                workspace.getStudentFirstName().setText("");
+                workspace.getStudentLastName().setText("");
+                workspace.getTeamComboBox().getSelectionModel().clearSelection();
+                workspace.getStudentRole().setText("");
+
+                return;
+            }
+        }
+        
+
+        
+    }
+    
+    public void removeStudent(String firstName, String lastName){
+        for (Student student : students) {
+            if (firstName.equals(student.getFirstName()) && lastName.equals(student.getLastName())) {
+                students.remove(student);
+                TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+                workspace.getStudentTable().getSelectionModel().clearSelection();
+                workspace.getStudentFirstName().setText("");
+                workspace.getStudentLastName().setText("");
+                workspace.getTeamComboBox().getSelectionModel().clearSelection();
+                workspace.getStudentRole().setText("");
+                return;
+            }
+        }
+    }
+    
     public void addOfficeHoursReservation(String day, String time, String taName) {
         String cellKey = getCellKey(day, time);
         toggleTAOfficeHours(cellKey, taName);
