@@ -53,9 +53,13 @@ public class addEditStudent_Transaction implements jTPS_Transaction {
             }
             data.addStudent(firstName, lastName, team.getName(), role);
         }
-        
         else{
-            data.addStudent(firstName, lastName, team.getName(), role);
+            if(team != null){
+                data.addStudent(firstName, lastName, team.getName(), role);
+            }
+            else{
+                data.addStudent(firstName, lastName, "", role);
+            }
         }
         
         Collections.sort(data.getStudents());

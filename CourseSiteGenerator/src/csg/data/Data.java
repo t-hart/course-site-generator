@@ -383,7 +383,23 @@ public class Data implements AppDataComponent {
             }
         }
     }
-    
+    public void removeScheduledItem(Date date, String topic){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        for(ScheduledItem item : scheduledItems){
+            if(date.equals(item.getDate()) && topic.equalsIgnoreCase(item.getTopic())){
+                scheduledItems.remove(item);
+                workspace.getScheduleItemType().getSelectionModel().clearSelection();
+                workspace.getScheduleItemDate().setValue(null);
+                workspace.getScheduleItemTime().setText("");
+                workspace.getScheduleItemTitle().setText("");
+                workspace.getScheduleItemTopic().setText("");
+                workspace.getScheduleItemLink().setText("");
+                workspace.getScheduleItemCriteria().setText("");
+                
+                return;
+            }
+        }
+    }
     public void removeTeam(String name){
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         for(Team team : teams){

@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
  *
  * @author tjhha
  */
-public class ScheduledItem {
+public class ScheduledItem<E extends Comparable<E>> implements Comparable<E> {
     private final StringProperty type;
     private final Date date;
     private final StringProperty time;
@@ -82,4 +82,8 @@ public class ScheduledItem {
         return Integer.parseInt(dateStringArray[1]);        
     }
     
+    @Override
+    public int compareTo(E otherItem) {
+        return date.compareTo(((ScheduledItem)otherItem).getDate());
+    }
 }

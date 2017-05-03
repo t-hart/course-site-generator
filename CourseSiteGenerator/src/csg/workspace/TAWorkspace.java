@@ -77,6 +77,8 @@ import java.time.LocalDate;
 import javafx.util.StringConverter;
 import java.time.format.DateTimeFormatter;
 import javafx.scene.paint.Color;
+import java.util.Calendar;
+import javafx.beans.value.ChangeListener;
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -186,6 +188,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     Button addUpdateTeamButton;
     Button addUpdateStudentButton;
+    Button addUpdateScheduleItemButton;
+    
     
     /**
      * The constructor initializes the user interface, except for the full
@@ -630,7 +634,11 @@ public class TAWorkspace extends AppWorkspaceComponent {
                 return LocalDate.parse(dateString, dateTimeFormatter);
             }
         });
-        
+        startingMonday.valueProperty().addListener((ov, oldValue, newValue) -> {
+            if(oldValue != null){
+                controller.handleChangeStartDate(java.sql.Date.valueOf(oldValue), java.sql.Date.valueOf(newValue));
+            }
+        });
         endingFriday.setConverter(new StringConverter<LocalDate>() {
             private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -650,7 +658,11 @@ public class TAWorkspace extends AppWorkspaceComponent {
                 return LocalDate.parse(dateString, dateTimeFormatter);
             }
         });
-        
+        endingFriday.valueProperty().addListener((ov, oldValue, newValue) -> {
+            if(oldValue != null){
+                controller.handleChangeEndDate(java.sql.Date.valueOf(oldValue), java.sql.Date.valueOf(newValue));
+            }
+        });
         VBox schedulePane = new VBox(10);
         schedulePane.setPadding(new Insets(10, 10, 10, 10));
         Label scheduleTabHeader = new Label(props.getProperty(CourseSiteGeneratorProp.SCHEDULE_TEXT.toString()));
@@ -745,7 +757,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         addEditSchedulePane.add(scheduleItemLink, 1, 6, 30, 1);
         addEditSchedulePane.add(scheduleItemCriteria, 1, 7, 30, 1);
         
-        Button addUpdateScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        addUpdateScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()));
         Button clearScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateScheduleItemButton.setPrefWidth(100);
         clearScheduleItemButton.setPrefWidth(100);
@@ -1157,11 +1169,24 @@ public class TAWorkspace extends AppWorkspaceComponent {
         deleteStudentButton.setOnAction(e ->{
             controller.handleDeleteStudent();
         });
+        addUpdateScheduleItemButton.setOnAction(e -> {
+            controller.handleAddUpdateScheduledItem();
+        });
         addUpdateTeamButton.setOnAction(e ->{
             controller.handleAddUpdateTeam();
         });
         addUpdateStudentButton.setOnAction(e ->{
             controller.handleAddUpdateStudent();
+        });
+        clearScheduleItemButton.setOnAction(e -> {
+            getScheduleItemType().getSelectionModel().clearSelection();
+            getScheduleItemDate().setValue(null);
+            getScheduleItemTime().setText("");
+            getScheduleItemTitle().setText("");
+            getScheduleItemTopic().setText("");
+            getScheduleItemLink().setText("");
+            getScheduleItemCriteria().setText("");
+            getScheduleItemsTable().getSelectionModel().clearSelection();
         });
         clearTeamButton.setOnAction(e -> {
             getTeamName().setText("");
@@ -1615,4 +1640,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
     public Button getAddUpdateStudentButton(){
         return addUpdateStudentButton;
     }
+
+    public Button getAddUpdateScheduleItemButton() {
+        return addUpdateScheduleItemButton;
+    }
+    
 }
