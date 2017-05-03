@@ -17,24 +17,30 @@ import csg.data.Team;
 import csg.data.Student;
 import java.util.Collections;
 import javafx.collections.ObservableList;
+import java.util.Date;
+import csg.data.ScheduledItem;
 import properties_manager.PropertiesManager;
 
 /**
  *
- * @author moham_000
+ * @author tjhhar
  */
-public class deleteStudent_Transaction implements jTPS_Transaction {
+public class deleteScheduledItem_Transaction implements jTPS_Transaction {
 
     CourseSiteGeneratorApp app;
     TAController controller;
     Object selectedItem;
     TAWorkspace workspace;
-    String firstName;
-    String lastName;
-    String team;
-    String role;
+    
+    String type;
+    Date date;
+    String time;
+    String title;
+    String topic;
+    String link;
+    String criteria;
 
-    deleteStudent_Transaction(CourseSiteGeneratorApp app, TAController controller, Object selectedItem, TAWorkspace workspace) {
+    deleteScheduledItem_Transaction(CourseSiteGeneratorApp app, TAController controller, Object selectedItem, TAWorkspace workspace) {
         this.app = app;
         this.controller = controller;
         this.selectedItem = selectedItem;
@@ -43,27 +49,29 @@ public class deleteStudent_Transaction implements jTPS_Transaction {
 
     @Override
     public void doTransaction() {
-        // GET THE TA AND REMOVE IT
-        Student student = (Student) selectedItem;
-        this.firstName = student.getFirstName();
-        this.lastName = student.getLastName();
-        this.team = student.getTeam();
-        this.role = student.getRole();
+        ScheduledItem item = (ScheduledItem)selectedItem;
+        this.type = item.getType();
+        this.date = item.getDate();
+        this.time = item.getTime();
+        this.title = item.getTitle();
+        this.topic = item.getTopic();
+        this.link = item.getLink();
+        this.criteria = item.getCriteria();
         
         Data data = (Data) app.getDataComponent();
-        data.removeStudent(firstName, lastName);
-        workspace.getStudentTable().getSelectionModel().clearSelection();
+        data.removeScheduledItem(date, topic);
+        workspace.getScheduleItemsTable().getSelectionModel().clearSelection();
         PropertiesManager props = PropertiesManager.getPropertiesManager();
-        workspace.getAddUpdateStudentButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
-        Collections.sort(data.getStudents());
+        workspace.getAddUpdateScheduleItemButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+        Collections.sort(data.getScheduledItems());
     }
 
     @Override
     public void undoTransaction() {
         Data data = (Data) app.getDataComponent();
-        data.addStudent(firstName, lastName, team, role);
+        data.addScheduledItem(type, date, time, title, topic, link, criteria);
         
-        Collections.sort(data.getStudents());
+        Collections.sort(data.getScheduledItems());
     }
 
 }

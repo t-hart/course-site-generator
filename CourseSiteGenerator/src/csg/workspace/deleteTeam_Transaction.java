@@ -11,11 +11,13 @@ import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import jtps.jTPS_Transaction;
 import csg.CourseSiteGeneratorApp;
+import csg.CourseSiteGeneratorProp;
 import csg.data.Data;
 import csg.data.Team;
 import csg.data.Student;
 import java.util.Collections;
 import javafx.collections.ObservableList;
+import properties_manager.PropertiesManager;
 
 /**
  *
@@ -64,7 +66,8 @@ public class deleteTeam_Transaction implements jTPS_Transaction {
         
         data.removeTeam(teamName);
         Collections.sort(students);
-        controller.markWorkAsEdited();
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        workspace.getAddUpdateTeamButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
     }
 
     @Override
@@ -86,7 +89,6 @@ public class deleteTeam_Transaction implements jTPS_Transaction {
         
         studentChangeList.clear();
         Collections.sort(students);
-        controller.markWorkAsEdited();
     }
 
 }

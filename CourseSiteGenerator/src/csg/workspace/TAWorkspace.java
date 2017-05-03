@@ -185,6 +185,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     Button deleteTeamButton;
     Button deleteStudentButton;
+    Button deleteScheduleItemButton;
     
     Button addUpdateTeamButton;
     Button addUpdateStudentButton;
@@ -688,7 +689,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         HBox scheduleItemsHeader = new HBox(10);
         scheduleItemsHeader.setAlignment(Pos.CENTER_LEFT);
         
-        Button deleteScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
+        deleteScheduleItemButton = new Button(props.getProperty(CourseSiteGeneratorProp.DELETE_TEXT.toString()));
         
         Label scheduleItemsLabel = new Label(props.getProperty(CourseSiteGeneratorProp.SCHEDULE_ITEMS_TEXT.toString()));
         scheduleItemsLabel.getStyleClass().add("section-subheader");
@@ -1151,8 +1152,14 @@ public class TAWorkspace extends AppWorkspaceComponent {
         teamTable.setOnMouseClicked(e -> {
             controller.checkTeamSelected();
         });
+        scheduleItemsTable.setOnKeyPressed(e ->{
+            controller.handleKeyPressScheduledItemsTable(e, e.getCode());
+        });
         teamTable.setOnKeyPressed(e ->{
             controller.handleKeyPressTeamTable(e, e.getCode());
+        });
+        studentTable.setOnKeyPressed(e ->{
+            controller.handleKeyPressStudentTable(e, e.getCode());
         });
         studentTable.setOnMouseClicked(e -> {
             controller.checkStudentSelected();
@@ -1162,6 +1169,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         recitationTable.setOnMouseClicked(e -> {
             controller.checkRecitationSelected();
+        });
+        deleteScheduleItemButton.setOnAction(e -> {
+            controller.handleDeleteScheduledItem();
         });
         deleteTeamButton.setOnAction(e ->{
             controller.handleDeleteTeam();

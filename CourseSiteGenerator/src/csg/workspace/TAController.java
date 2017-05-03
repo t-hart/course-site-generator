@@ -64,6 +64,8 @@ public class TAController {
 String oldName="";
 String oldEmail="";
 jTPS j=new jTPS();
+boolean ignoreStart = false;
+boolean ignoreEnd = false;
     /**
      * Constructor, note that the app must already be constructed.
      */
@@ -156,54 +158,66 @@ jTPS j=new jTPS();
     }
     
     public void handleChangeStartDate(Date oldDate, Date newDate){
-        Data data = (Data)app.getDataComponent();
-        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
-        
-        Calendar oldCal = Calendar.getInstance();
-        oldCal.setTime(oldDate);  
-        
-        Calendar newCal = Calendar.getInstance();
-        newCal.setTime(newDate);
-        
-        if(newDate.compareTo(java.sql.Date.valueOf(workspace.getEndingFriday().getValue())) > 0){
-            System.out.println("PLACEHOLDER\nStarting date must be before ending date!");
-            if(newCal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
+        if (!ignoreStart) {
+            Data data = (Data) app.getDataComponent();
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+
+            Calendar oldCal = Calendar.getInstance();
+            oldCal.setTime(oldDate);
+
+            Calendar newCal = Calendar.getInstance();
+            newCal.setTime(newDate);
+
+            System.out.println("-- -- --");
+
+            if (newDate.compareTo(java.sql.Date.valueOf(workspace.getEndingFriday().getValue())) > 0) {
+                System.out.println("PLACEHOLDER\nStarting date must be before ending date!");
+                if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+                    System.out.println("PLACEHOLDER\nStarting date must be a Monday!");
+                }
+                ignoreStart = true;
+                workspace.getStartingMonday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
+            } else if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
                 System.out.println("PLACEHOLDER\nStarting date must be a Monday!");
+                ignoreStart = true;
+                workspace.getStartingMonday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
+            } else {
+                jTPS_Transaction change = new changeStartingEndingDate_Transaction(this, workspace, oldDate, newDate, "start");
+                j.addTransaction(change);
             }
-            workspace.getStartingMonday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
-        }
-        else if(newCal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY){
-            System.out.println("PLACEHOLDER\nStarting date must be a Monday!");
-            workspace.getStartingMonday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
-        }
-        else{
-            data.setStartingMonday(newDate);
+        } else {
+            ignoreStart = false;
         }
     }
     
     public void handleChangeEndDate(Date oldDate, Date newDate){
-        Data data = (Data)app.getDataComponent();
-        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
-        
-        Calendar oldCal = Calendar.getInstance();
-        oldCal.setTime(oldDate);  
-        
-        Calendar newCal = Calendar.getInstance();
-        newCal.setTime(newDate);
-        
-        if(newDate.compareTo(java.sql.Date.valueOf(workspace.getStartingMonday().getValue())) < 0){
-            System.out.println("PLACEHOLDER\nEnding date must be after starting date!");
-            if(newCal.get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY){
+        if (!ignoreEnd) {
+            Data data = (Data) app.getDataComponent();
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+
+            Calendar oldCal = Calendar.getInstance();
+            oldCal.setTime(oldDate);
+
+            Calendar newCal = Calendar.getInstance();
+            newCal.setTime(newDate);
+
+            if (newDate.compareTo(java.sql.Date.valueOf(workspace.getStartingMonday().getValue())) < 0) {
+                System.out.println("PLACEHOLDER\nEnding date must be after starting date!");
+                if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
+                    System.out.println("PLACEHOLDER\nEnding date must be a Friday!");
+                }
+                ignoreEnd = true;
+                workspace.getEndingFriday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
+            } else if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
                 System.out.println("PLACEHOLDER\nEnding date must be a Friday!");
+                ignoreEnd = true;
+                workspace.getEndingFriday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
+            } else {
+                jTPS_Transaction change = new changeStartingEndingDate_Transaction(this, workspace, oldDate, newDate, "end");
+                j.addTransaction(change);
             }
-            workspace.getEndingFriday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
-        }
-        else if(newCal.get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY){
-            System.out.println("PLACEHOLDER\nEnding date must be a Friday!");
-            workspace.getEndingFriday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
-        }
-        else{
-            data.setEndingFriday(newDate);
+        } else {
+            ignoreEnd = false;
         }
     }
     
@@ -331,7 +345,15 @@ jTPS j=new jTPS();
             }
         }
     }
-    
+    public void handleDeleteScheduledItem(){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        TableView scheduledItemsTable = workspace.getScheduleItemsTable();
+        Object selectedItem = scheduledItemsTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            jTPS_Transaction delete = new deleteScheduledItem_Transaction(app, this, selectedItem, workspace);
+            j.addTransaction(delete);
+        }
+    }
     public void handleDeleteTeam(){
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         TableView teamTable = workspace.getTeamTable();
@@ -362,6 +384,28 @@ jTPS j=new jTPS();
         TextField itemLink = workspace.getScheduleItemLink();
         TextField itemCriteria = workspace.getScheduleItemCriteria();
         
+        TableView itemTable = workspace.getScheduleItemsTable();
+        Object selectedItem = itemTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            ScheduledItem item = (ScheduledItem)selectedItem;
+            if(item.getType().equals(itemType.getValue().toString()) && item.getDate().equals(java.sql.Date.valueOf(itemDate.getValue())) &&
+                    item.getTime().equals(itemTime.getText()) && item.getTitle().equals(itemTitle.getText()) &&
+                    item.getTopic().equals(itemTopic.getText()) && item.getLink().equals(itemLink.getText()) &&
+                    item.getCriteria().equals(itemCriteria.getText())){
+                
+                workspace.getScheduleItemType().getSelectionModel().clearSelection();
+                workspace.getScheduleItemDate().setValue(null);
+                workspace.getScheduleItemTime().setText("");
+                workspace.getScheduleItemTitle().setText("");
+                workspace.getScheduleItemTopic().setText("");
+                workspace.getScheduleItemLink().setText("");
+                workspace.getScheduleItemCriteria().setText("");
+                workspace.getScheduleItemsTable().getSelectionModel().clearSelection();
+                workspace.getAddUpdateScheduleItemButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                return;
+            }
+        }  
+        
         if(itemType.getSelectionModel().getSelectedItem() == null || itemDate.getValue() == null || itemTitle.getText().equals("")){
             System.out.println("PLACEHOLDER\nPlease specifiy a type, date, time, and title of the scheduled item.");
             return;
@@ -369,7 +413,6 @@ jTPS j=new jTPS();
         
         String dateOfPicker = itemDate.getValue().getDayOfMonth()+"/"+itemDate.getValue().getMonth().getValue()+"/"+itemDate.getValue().getYear();
         
-        TableView itemTable = workspace.getScheduleItemsTable();
         Data data = (Data) app.getDataComponent();
         boolean validItem = true;
         
@@ -405,7 +448,6 @@ jTPS j=new jTPS();
         /* UPDATE EXISTING TEAM */
         else {
             if (validItem) {
-                Object selectedItem = itemTable.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
                     ScheduledItem item = (ScheduledItem) selectedItem;
 
@@ -439,12 +481,28 @@ jTPS j=new jTPS();
         String hexColor = String.format("%02x%02x%02x", (int)(color.getValue().getRed()*255), (int)(color.getValue().getGreen()*255), (int)(color.getValue().getBlue()*255));
         String hexTextColor = String.format("%02x%02x%02x", (int)(textColor.getValue().getRed()*255), (int)(textColor.getValue().getGreen()*255), (int)(textColor.getValue().getBlue()*255));
         
+        TableView teamTable = workspace.getTeamTable();
+        Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            Team team = (Team) selectedItem;
+            if (team.getName().equals(nameTextField.getText()) && team.getColor().equals(hexColor) && team.getTextColor().equals(hexTextColor) && team.getLink().equals(link.getText())) {
+
+                workspace.getTeamName().setText("");
+                Color white = Color.rgb(255, 255, 255);
+                workspace.getTeamColor().setValue(white);
+                workspace.getTeamTextColor().setValue(white);
+                workspace.getTeamLink().setText("");
+                workspace.getTeamTable().getSelectionModel().clearSelection();
+                workspace.getAddUpdateTeamButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                return;
+            }
+        }
+        
         if(nameTextField.getText().equals("")){
             System.out.println("PLACEHOLDER\nTeam name must be specified!");
             return;
         }
         
-        TableView teamTable = workspace.getTeamTable();
         Data data = (Data) app.getDataComponent();
         boolean validTeam = true;
         
@@ -480,7 +538,6 @@ jTPS j=new jTPS();
         /* UPDATE EXISTING TEAM */
         else {
             if (validTeam) {
-                Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
                     Team team = (Team) selectedItem;
                     System.out.println(team.getName());
@@ -510,6 +567,21 @@ jTPS j=new jTPS();
         ComboBox teamComboBox = workspace.getTeamComboBox();
         TextField roleTextField = workspace.getStudentRole();
         TableView studentTable = workspace.getStudentTable();
+        
+        Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
+        if (selectedItem != null) {
+            Student student = (Student) selectedItem;
+            if (student.getFirstName().equals(firstNameTextField.getText()) && student.getLastName().equals(lastNameTextField.getText()) && student.getTeam().equals(((Team) (teamComboBox.getSelectionModel().getSelectedItem())).getName()) && student.getRole().equals(roleTextField.getText())) {
+
+                workspace.getStudentFirstName().setText("");
+                workspace.getStudentLastName().setText("");
+                workspace.getTeamComboBox().getSelectionModel().clearSelection();
+                workspace.getStudentRole().setText("");
+                workspace.getTeamTable().getSelectionModel().clearSelection();
+                workspace.getAddUpdateStudentButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                return;
+            }
+        }
         
         if(firstNameTextField.getText().equals("") || lastNameTextField.getText().equals("")){
             System.out.println("PLACEHOLDER\nYou must specify a student first name and last name!");
@@ -550,7 +622,6 @@ jTPS j=new jTPS();
         /* UPDATE EXISTING STUDENT */
         else {
             if (validStudent) {
-                Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
                 if (selectedItem != null) {
                     Student student = (Student) selectedItem;
                     jTPS_Transaction add = new addEditStudent_Transaction(app, this, workspace, firstNameTextField.getText(), lastNameTextField.getText(), teamComboBox.getSelectionModel().getSelectedItem(), roleTextField.getText(), student);
@@ -571,10 +642,12 @@ jTPS j=new jTPS();
     
     public void undoTransaction() {
         j.undoTransaction();
+        markWorkAsEdited();
     }
 
     public void redoTransaction() {
         j.doTransaction();
+        markWorkAsEdited();
     }
 
     public void handleKeyPress(KeyEvent codee, KeyCode code) {
@@ -605,6 +678,24 @@ jTPS j=new jTPS();
         }
     }
     
+    public void handleKeyPressScheduledItemsTable(KeyEvent event, KeyCode code){
+        if (code == KeyCode.DELETE) {
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+            TableView itemTable = workspace.getScheduleItemsTable();
+
+            // IS A TA SELECTED IN THE TABLE?
+            Object selectedItem = itemTable.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                jTPS_Transaction delete = new deleteScheduledItem_Transaction(app, this, selectedItem, workspace);
+                j.addTransaction(delete);
+            }
+        } else if (code == KeyCode.Z && event.isControlDown()) {
+            j.undoTransaction();
+        } else if (code == KeyCode.Y && event.isControlDown()) {
+            j.doTransaction();
+        }
+    }
+    
     public void handleKeyPressTeamTable(KeyEvent event, KeyCode code){
         if (code == KeyCode.DELETE) {
             TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
@@ -614,6 +705,24 @@ jTPS j=new jTPS();
             Object selectedItem = teamTable.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 jTPS_Transaction delete = new deleteTeam_Transaction(app, this, selectedItem, workspace);
+                j.addTransaction(delete);
+            }
+        } else if (code == KeyCode.Z && event.isControlDown()) {
+            j.undoTransaction();
+        } else if (code == KeyCode.Y && event.isControlDown()) {
+            j.doTransaction();
+        }
+    }
+    
+    public void handleKeyPressStudentTable(KeyEvent event, KeyCode code){
+        if (code == KeyCode.DELETE) {
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+            TableView studentTable = workspace.getStudentTable();
+
+            // IS A TA SELECTED IN THE TABLE?
+            Object selectedItem = studentTable.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                jTPS_Transaction delete = new deleteStudent_Transaction(app, this, selectedItem, workspace);
                 j.addTransaction(delete);
             }
         } else if (code == KeyCode.Z && event.isControlDown()) {
@@ -729,4 +838,13 @@ jTPS j=new jTPS();
             cell.getStyleClass().add(CLASS_HIGHLIGHTED_GRID_ROW_OR_COLUMN);
         }
     }
+
+    public void setIgnoreStart(boolean ignoreStart) {
+        this.ignoreStart = ignoreStart;
+    }
+
+    public void setIgnoreEnd(boolean ignoreEnd) {
+        this.ignoreEnd = ignoreEnd;
+    }
+    
 }
