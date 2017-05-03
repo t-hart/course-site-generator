@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
  *
  * @author tjhha
  */
-public class Recitation {
+public class Recitation<E extends Comparable<E>> implements Comparable<E> {
 
     private final StringProperty section;
     private final StringProperty instructor;
@@ -17,7 +17,7 @@ public class Recitation {
     private final StringProperty supervisingTA_2;
 
     public Recitation(String initSection, String initInstructor, String initDayTime, String initLocation, String initSupervisingTA_1, String initSupervisingTA_2) {
-        section = new SimpleStringProperty(initSection);
+        section = new SimpleStringProperty(initSection.toUpperCase());
         instructor = new SimpleStringProperty(initInstructor);
         dayTime = new SimpleStringProperty(initDayTime);
         location = new SimpleStringProperty(initLocation);
@@ -47,5 +47,9 @@ public class Recitation {
 
     public String getSupervisingTA_2() {
         return supervisingTA_2.get();
+    }
+    @Override
+    public int compareTo(E otherRec) {
+        return getSection().compareTo(((Recitation)otherRec).getSection());
     }
 }

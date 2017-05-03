@@ -321,6 +321,7 @@ boolean ignoreEnd = false;
         }
     }
     public void checkRecitationSelected(){
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         TableView recitationTable = workspace.getRecitationTable();
         Object selectedItem = recitationTable.getSelectionModel().getSelectedItem();
@@ -343,6 +344,7 @@ boolean ignoreEnd = false;
                     workspace.getRecSupervisingTA2().setValue(ta);
                 }
             }
+            workspace.getAddUpdateRecitationButton().setText(props.getProperty(CourseSiteGeneratorProp.UPDATE_TEXT));
         }
     }
     public void handleDeleteScheduledItem(){
@@ -372,6 +374,105 @@ boolean ignoreEnd = false;
             j.addTransaction(delete);
         }
     }
+    
+    public void handleAddUpdateRecitation(){
+        // WE'LL NEED THE WORKSPACE TO RETRIEVE THE USER INPUT VALUES
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+        TextField section = workspace.getRecSection();
+        TextField instructor = workspace.getRecInstructor();
+        TextField dayTime = workspace.getRecDayTime();
+        TextField location = workspace.getRecLocation();
+        ComboBox ta1 = workspace.getRecSupervisingTA1();
+        ComboBox ta2 = workspace.getRecSupervisingTA2();
+        
+        TableView recTable = workspace.getRecitationTable();
+        Object selectedItem = recTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            Recitation rec = (Recitation)selectedItem;
+            if(rec.getSection().equalsIgnoreCase(section.getText()) && rec.getInstructor().equals(instructor.getText()) && rec.getDayTime().equals(dayTime.getText()) && rec.getLocation().equals(location.getText()) && rec.getSupervisingTA_1().equals(((TeachingAssistant)(ta1.getSelectionModel().getSelectedItem())).getName()) && rec.getSupervisingTA_2().equals(((TeachingAssistant)(ta2.getSelectionModel().getSelectedItem())).getName())){
+                
+                workspace.getRecitationTable().getSelectionModel().clearSelection();
+                workspace.getRecSection().setText("");
+                workspace.getRecInstructor().setText("");
+                workspace.getRecDayTime().setText("");
+                workspace.getRecLocation().setText("");
+                workspace.getRecSupervisingTA1().getSelectionModel().clearSelection();
+                workspace.getRecSupervisingTA2().getSelectionModel().clearSelection();
+                workspace.getAddUpdateRecitationButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                return;
+            }
+        }  
+        
+        if(section.getText().equals("") || dayTime.getText().equals("") || location.getText().equals("")){
+            System.out.println("PLACEHOLDER\nPlease specifiy a section ID, day/time, and location of the recitation.");
+            return;
+        }
+        
+        Data data = (Data) app.getDataComponent();
+        boolean validRec = true;
+        
+        ObservableList<Recitation> recs = data.getRecitations();
+        for (int i = 0; i < recs.size(); i++) {
+            Recitation rec = recs.get(i);
+            if(rec.getSection().equals(section.getText())){
+                if(selectedItem != null){
+                    Recitation recitation = (Recitation)selectedItem;
+                    if(recitation.getSection().equals(section.getText())){
+                        //ok
+                    }
+                    else{
+                        validRec = false;
+                    }
+                }
+            }
+        }
+        
+        /* ADD NEW TEAM */
+        if(workspace.getAddUpdateRecitationButton().getText().equals(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()))){
+            if (validRec) {
+
+                jTPS_Transaction add = new addEditRec_Transaction(app, this, workspace, section.getText(), instructor.getText(), dayTime.getText(), location.getText(), ((TeachingAssistant)(ta1.getSelectionModel().getSelectedItem())),((TeachingAssistant)(ta2.getSelectionModel().getSelectedItem())), null);
+                j.addTransaction(add);
+                workspace.getRecitationTable().getSelectionModel().clearSelection();
+                workspace.getRecSection().setText("");
+                workspace.getRecInstructor().setText("");
+                workspace.getRecDayTime().setText("");
+                workspace.getRecLocation().setText("");
+                workspace.getRecSupervisingTA1().getSelectionModel().clearSelection();
+                workspace.getRecSupervisingTA2().getSelectionModel().clearSelection();
+            }
+            else{
+//                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+//                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
+                  System.out.println("PLACEHOLDER\nRecitation section ID must be unique!");
+            }
+        }
+        /* UPDATE EXISTING TEAM */
+        else {
+            if (validRec) {
+                if (selectedItem != null) {
+                    Recitation rec = (Recitation) selectedItem;
+                    
+                    jTPS_Transaction add = new addEditRec_Transaction(app, this, workspace, section.getText(), instructor.getText(), dayTime.getText(), location.getText(), ((TeachingAssistant)(ta1.getSelectionModel().getSelectedItem())),((TeachingAssistant)(ta2.getSelectionModel().getSelectedItem())), rec);
+                    j.addTransaction(add);
+                    workspace.getRecitationTable().getSelectionModel().clearSelection();
+                    workspace.getRecSection().setText("");
+                    workspace.getRecInstructor().setText("");
+                    workspace.getRecDayTime().setText("");
+                    workspace.getRecLocation().setText("");
+                    workspace.getRecSupervisingTA1().getSelectionModel().clearSelection();
+                    workspace.getRecSupervisingTA2().getSelectionModel().clearSelection();
+                    workspace.getAddUpdateRecitationButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                }
+            } else {
+//                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+//                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
+                  System.out.println("PLACEHOLDER\nRecitation section ID must be unique!");
+            }
+        }
+    }
+    
     public void handleAddUpdateScheduledItem(){
         // WE'LL NEED THE WORKSPACE TO RETRIEVE THE USER INPUT VALUES
         PropertiesManager props = PropertiesManager.getPropertiesManager();

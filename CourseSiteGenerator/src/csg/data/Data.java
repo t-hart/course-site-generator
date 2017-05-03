@@ -383,6 +383,24 @@ public class Data implements AppDataComponent {
             }
         }
     }
+    
+    public void removeRecitation(String section){
+        TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        for(Recitation rec : recitations){
+            if(rec.getSection().equalsIgnoreCase(section)){
+                recitations.remove(rec);
+                workspace.getRecitationTable().getSelectionModel().clearSelection();
+                workspace.getRecSection().setText("");
+                workspace.getRecInstructor().setText("");
+                workspace.getRecDayTime().setText("");
+                workspace.getRecLocation().setText("");
+                workspace.getRecSupervisingTA1().getSelectionModel().clearSelection();
+                workspace.getRecSupervisingTA2().getSelectionModel().clearSelection();
+                return;
+            }
+        }
+    }
+    
     public void removeScheduledItem(Date date, String topic){
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
         for(ScheduledItem item : scheduledItems){

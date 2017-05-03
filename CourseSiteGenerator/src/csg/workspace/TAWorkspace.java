@@ -190,7 +190,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     Button addUpdateTeamButton;
     Button addUpdateStudentButton;
     Button addUpdateScheduleItemButton;
-    
+    Button addUpdateRecitationButton;
     
     /**
      * The constructor initializes the user interface, except for the full
@@ -605,13 +605,13 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         addEditPane.setStyle("-fx-background-color: #EBEBEB");
         
-        Button addUpdateRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
-        Button clearAddEditRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
+        addUpdateRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        Button clearRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateRecitationButton.setPrefWidth(110);
-        clearAddEditRecitationButton.setPrefWidth(110);
+        clearRecitationButton.setPrefWidth(110);
         
         addEditPane.add(addUpdateRecitationButton, 0, 7, 1, 1);
-        addEditPane.add(clearAddEditRecitationButton, 1, 7, 1, 1);
+        addEditPane.add(clearRecitationButton, 1, 7, 1, 1);
         
         recitationDataPane.getChildren().add(addEditPane);
         
@@ -1179,6 +1179,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         deleteStudentButton.setOnAction(e ->{
             controller.handleDeleteStudent();
         });
+        addUpdateRecitationButton.setOnAction(e ->{
+            controller.handleAddUpdateRecitation();
+        });
         addUpdateScheduleItemButton.setOnAction(e -> {
             controller.handleAddUpdateScheduledItem();
         });
@@ -1187,6 +1190,16 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         addUpdateStudentButton.setOnAction(e ->{
             controller.handleAddUpdateStudent();
+        });
+        clearRecitationButton.setOnAction(e -> {
+            getRecitationTable().getSelectionModel().clearSelection();
+            getRecSection().setText("");
+            getRecInstructor().setText("");
+            getRecDayTime().setText("");
+            getRecLocation().setText("");
+            getRecSupervisingTA1().getSelectionModel().clearSelection();
+            getRecSupervisingTA2().getSelectionModel().clearSelection();
+            getAddUpdateRecitationButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
         });
         clearScheduleItemButton.setOnAction(e -> {
             getScheduleItemType().getSelectionModel().clearSelection();
@@ -1655,4 +1668,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         return addUpdateScheduleItemButton;
     }
     
+    public Button getAddUpdateRecitationButton(){
+        return addUpdateRecitationButton;
+    }
 }
