@@ -162,11 +162,30 @@ public class TAFiles implements AppFileComponent {
         TextField instructorNameField = workspace.getInstructorName();
         instructorNameField.setText(instructorName);
         Label exportDirLabel = workspace.getExportDir();
+        
+        if (courseExportDir.length() > 30) {
+                courseExportDir = "..." + courseExportDir.substring(courseExportDir.length() - 30, courseExportDir.length());
+            } else {
+                while (courseExportDir.length() < 33) {
+                    courseExportDir += " ";
+                }
+            }
+
         exportDirLabel.setText(courseExportDir);
         
         String siteTemplateDir = json.getString(JSON_SITETEMPLATE_DIR);
         dataManager.setSiteTemplateDir(siteTemplateDir);
         Label siteTemplatDirLabel = workspace.getSiteTemplateDir();
+        
+        if (siteTemplateDir.length() > 60) {
+            siteTemplateDir = "..." + siteTemplateDir.substring(siteTemplateDir.length() - 60, siteTemplateDir.length());
+        } else {
+            while (siteTemplateDir.length() < 63) {
+                siteTemplateDir += " ";
+            }
+        }
+        workspace.getSiteTemplateDir().setText(siteTemplateDir);
+
         siteTemplatDirLabel.setText(siteTemplateDir);
         JsonArray jsonSitePagesArray = json.getJsonArray(JSON_SITEPAGES);
         for(int i = 0; i < jsonSitePagesArray.size(); i++){

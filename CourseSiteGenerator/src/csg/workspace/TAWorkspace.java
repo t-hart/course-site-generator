@@ -72,6 +72,8 @@ import javafx.util.Callback;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.beans.value.ObservableValue;
 import csg.data.*;
+import static djf.settings.AppStartupConstants.PATH_WORK;
+import java.io.File;
 import java.util.Date;
 import java.time.LocalDate;
 import javafx.util.StringConverter;
@@ -79,6 +81,12 @@ import java.time.format.DateTimeFormatter;
 import javafx.scene.paint.Color;
 import java.util.Calendar;
 import javafx.beans.value.ChangeListener;
+import java.util.ArrayList;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import java.util.Collection;
+
 
 /**
  * This class serves as the workspace component for the TA Manager application.
@@ -191,6 +199,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
     Button addUpdateStudentButton;
     Button addUpdateScheduleItemButton;
     Button addUpdateRecitationButton;
+    
+    Button changeCourseInfoButton;
+    Button selectTemplateButton;
     
     /**
      * The constructor initializes the user interface, except for the full
@@ -393,17 +404,30 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.EXPORT_DIR_TEXT.toString())+":"), 0, 6, 1, 1);
         courseInfoPane.add(exportDir, 1, 6, 1, 1);
         
-        ObservableList subjectList = FXCollections.observableArrayList("CME", "ESE", "CSE");
+        ArrayList<String> departments = props.getPropertyOptionsList(CourseSiteGeneratorProp.COURSE_OPTIONS);
+        ObservableList subjectList = FXCollections.observableArrayList(departments);
         subjectComboBox = new ComboBox(subjectList);
         subjectComboBox.setPrefWidth(80);
         subjectComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(subjectComboBox, 1, 1, 2, 1);
         
-        ObservableList semesterList = FXCollections.observableArrayList(props.getProperty(CourseSiteGeneratorProp.SEMESTER_LIST.toString()));
-        semesterComboBox = new ComboBox(semesterList);
+        
+        ArrayList<String> semesterList = props.getPropertyOptionsList(CourseSiteGeneratorProp.SEMESTER_LIST);
+        ObservableList<String> oSemesterList = FXCollections.observableArrayList(semesterList);
+        semesterComboBox = new ComboBox(oSemesterList);
         semesterComboBox.setPrefWidth(80);
         semesterComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(semesterComboBox, 1, 2, 2, 1);
+        
+        courseTitle.textProperty().addListener((ov, oldValue, newValue) ->{
+            data.setTitle(newValue);
+        });
+        instructorName.textProperty().addListener((ov, oldValue, newValue) ->{
+            data.setInstructorName(newValue);
+        });
+        instructorHome.textProperty().addListener((ov, oldValue, newValue) ->{
+            data.setInstructorHome(newValue);
+        });
         
         courseInfoPane.add(courseTitle, 1, 3, 5, 1);
         courseInfoPane.add(instructorName, 1, 4, 5, 1);
@@ -411,19 +435,29 @@ public class TAWorkspace extends AppWorkspaceComponent {
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.NUMBER_TEXT.toString())+":"), 3, 1, 1, 1);
         courseInfoPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.YEAR_TEXT.toString())+":"), 3, 2, 1, 1);
         
-        ObservableList numberList = FXCollections.observableArrayList("101", "114", "214", "219");
-        numberComboBox = new ComboBox(numberList);
+        ArrayList<String> numList = new ArrayList<>();
+        for(int i = 100; i <= 499; i++){
+            numList.add(Integer.toString(i));
+        }
+        
+        numberComboBox = new ComboBox(FXCollections.observableArrayList(numList));
         numberComboBox.setPrefWidth(80);
         numberComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(numberComboBox, 5, 1, 1, 1);
         
-        ObservableList yearList = FXCollections.observableArrayList("2017", "2018", "2019");
+        ArrayList yearArrayList = new ArrayList();
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        for(int i = year-1; i <year+9; i++){
+            yearArrayList.add(Integer.toString(i));
+        }
+        
+        ObservableList yearList = FXCollections.observableArrayList(yearArrayList);
         yearComboBox = new ComboBox(yearList);
         yearComboBox.setPrefWidth(80);
         yearComboBox.getSelectionModel().selectFirst();
         courseInfoPane.add(yearComboBox, 5, 2, 1, 1);
         
-        Button changeCourseInfoButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
+        changeCourseInfoButton = new Button(props.getProperty(CourseSiteGeneratorProp.CHANGE_BUTTON_TEXT.toString()));
         changeCourseInfoButton.setPrefWidth(80);
         courseInfoPane.add(changeCourseInfoButton, 5, 6, 1, 1);
         courseInfoPane.setStyle("-fx-background-color: #EBEBEB");
@@ -437,7 +471,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         siteTemplatePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.SITE_TEMPLATE_DISC_TEXT.toString())));
         siteTemplatePane.getChildren().add(siteTemplateDir);
         
-        Button selectTemplateButton = new Button(props.getProperty(CourseSiteGeneratorProp.SELECT_TEMPLATE_BUTTON_TEXT.toString()));
+        selectTemplateButton = new Button(props.getProperty(CourseSiteGeneratorProp.SELECT_TEMPLATE_BUTTON_TEXT.toString()));
         siteTemplatePane.getChildren().add(selectTemplateButton);
         
         siteTemplatePane.getChildren().add(new Label(props.getProperty(CourseSiteGeneratorProp.SITE_PAGES_TEXT.toString())+":"));
@@ -490,7 +524,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.RIGHT_FOOTER_IMAGE_TEXT.toString())+":"), 0, 3, 1, 1);
         pageStyleGridPane.add(new Label(props.getProperty(CourseSiteGeneratorProp.STYLESHEET_TEXT.toString())+":"), 0, 4, 1, 1);
         
-        ObservableList stylesheetList = FXCollections.observableArrayList("bolb_wolf.css", "sea_wolf.css");
+        ObservableList stylesheetList = getCSSFiles();
         stylesheetComboBox = new ComboBox(stylesheetList);
         stylesheetComboBox.setPrefWidth(160);
         stylesheetComboBox.getSelectionModel().selectFirst();
@@ -982,7 +1016,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
             controller.redoTransaction();
         });
         aboutButton.setOnAction(e -> {
-            
+            AboutPopup.display();
         });
         // CONTROLS FOR ADDING TAs
         nameTextField.setOnAction(e -> {
@@ -1230,6 +1264,36 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         workspace.setOnKeyPressed(e ->{
             controller.handleWorkspaceKeyPress(e, e.getCode());
+        });
+        changeCourseInfoButton.setOnAction(e -> {
+            controller.handleChangeExportDir();
+        });
+        selectTemplateButton.setOnAction(e -> {
+            controller.handleChangeTemplateDir();
+        });
+        changeBannerSchoolImageButton.setOnAction(e ->{
+           controller.handleChangeBannerSchoolImage(); 
+        });
+        changeLeftFooterImageButton.setOnAction(e -> {
+            controller.handleChangeLeftFooterImage();
+        });
+        changeRightFooterImageButton.setOnAction(e -> {
+            controller.handleChangeRightFooterImage();
+        });
+        stylesheetComboBox.setOnAction(e -> {
+            controller.handleChangeCSS();
+        });
+        subjectComboBox.setOnAction(e -> {
+            controller.handleChangeSubject();
+        });
+        numberComboBox.setOnAction(e ->{
+            controller.handleChangeNumber();
+        });
+        semesterComboBox.setOnAction(e ->{
+            controller.handleChangeSemester();
+        });
+        yearComboBox.setOnAction(e -> {
+            controller.handleChangeYear();
         });
     }
 
@@ -1670,5 +1734,15 @@ public class TAWorkspace extends AppWorkspaceComponent {
     
     public Button getAddUpdateRecitationButton(){
         return addUpdateRecitationButton;
+    }
+    
+    public ObservableList getCSSFiles(){
+        File cssDir = new File(PATH_WORK+"\\css");
+        Collection<File> files = FileUtils.listFiles(cssDir, new RegexFileFilter("^(.*css)$"), DirectoryFileFilter.DIRECTORY);
+        ArrayList fileList = new ArrayList();
+        for(File file : files){
+            fileList.add(file.getName());
+        }
+        return FXCollections.observableArrayList(fileList);
     }
 }
