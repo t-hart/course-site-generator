@@ -72,6 +72,7 @@ public class TAController {
     jTPS j = new jTPS();
     boolean ignoreStart = false;
     boolean ignoreEnd = false;
+    boolean ignoreStart2 = false;
 
     /**
      * Constructor, note that the app must already be constructed.
@@ -157,8 +158,10 @@ public class TAController {
         Collections.sort(data.getTeachingAssistants());
     }
 
-    public void handleChangeStartDate(Date oldDate, Date newDate) {
-        if (!ignoreStart) {
+    public synchronized void handleChangeStartDate(Date oldDate, Date newDate) {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+        System.out.println(ignoreStart);
+        
             Data data = (Data) app.getDataComponent();
             TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
 
@@ -167,31 +170,28 @@ public class TAController {
 
             Calendar newCal = Calendar.getInstance();
             newCal.setTime(newDate);
-
-            System.out.println("-- -- --");
-
             if (newDate.compareTo(java.sql.Date.valueOf(workspace.getEndingFriday().getValue())) > 0) {
-                System.out.println("PLACEHOLDER\nStarting date must be before ending date!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(STARTING_DATE_ERROR_TITLE), props.getProperty(STARTING_DATE_ERROR1));
                 if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-                    System.out.println("PLACEHOLDER\nStarting date must be a Monday!");
+                    dialog.show(props.getProperty(STARTING_DATE_ERROR_TITLE), props.getProperty(STARTING_DATE_ERROR2));
                 }
-                ignoreStart = true;
                 workspace.getStartingMonday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
             } else if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-                System.out.println("PLACEHOLDER\nStarting date must be a Monday!");
-                ignoreStart = true;
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(STARTING_DATE_ERROR_TITLE), props.getProperty(STARTING_DATE_ERROR2));
                 workspace.getStartingMonday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
             } else {
-                jTPS_Transaction change = new changeStartingEndingDate_Transaction(this, workspace, oldDate, newDate, "start");
+                jTPS_Transaction change = new changeStartingEndingDate_Transaction(this, workspace, oldDate, newDate, "start", app);
                 j.addTransaction(change);
             }
-        } else {
-            ignoreStart = false;
-        }
+        
     }
 
     public void handleChangeEndDate(Date oldDate, Date newDate) {
-        if (!ignoreEnd) {
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
+       
             Data data = (Data) app.getDataComponent();
             TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
 
@@ -202,23 +202,23 @@ public class TAController {
             newCal.setTime(newDate);
 
             if (newDate.compareTo(java.sql.Date.valueOf(workspace.getStartingMonday().getValue())) < 0) {
-                System.out.println("PLACEHOLDER\nEnding date must be after starting date!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ENDING_DATE_ERROR_TITLE), props.getProperty(ENDING_DATE_ERROR1));
                 if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
-                    System.out.println("PLACEHOLDER\nEnding date must be a Friday!");
+                    dialog.show(props.getProperty(ENDING_DATE_ERROR_TITLE), props.getProperty(ENDING_DATE_ERROR2));
                 }
                 ignoreEnd = true;
                 workspace.getEndingFriday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
             } else if (newCal.get(Calendar.DAY_OF_WEEK) != Calendar.FRIDAY) {
-                System.out.println("PLACEHOLDER\nEnding date must be a Friday!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ENDING_DATE_ERROR_TITLE), props.getProperty(ENDING_DATE_ERROR2));
                 ignoreEnd = true;
                 workspace.getEndingFriday().setValue(new java.sql.Date(oldDate.getTime()).toLocalDate());
             } else {
-                jTPS_Transaction change = new changeStartingEndingDate_Transaction(this, workspace, oldDate, newDate, "end");
+                jTPS_Transaction change = new changeStartingEndingDate_Transaction(this, workspace, oldDate, newDate, "end", app);
                 j.addTransaction(change);
             }
-        } else {
-            ignoreEnd = false;
-        }
+        
     }
 
     /**
@@ -379,6 +379,16 @@ public class TAController {
             j.addTransaction(delete);
         }
     }
+    
+    public void handleDeleteRecitation(){
+        TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+        TableView recTable = workspace.getRecitationTable();
+        Object selectedItem = recTable.getSelectionModel().getSelectedItem();
+        if(selectedItem != null){
+            jTPS_Transaction delete = new deleteRecitation_Transaction(app, this, selectedItem, workspace);
+            j.addTransaction(delete);
+        }
+    }
 
     public void handleAddUpdateRecitation() {
         // WE'LL NEED THE WORKSPACE TO RETRIEVE THE USER INPUT VALUES
@@ -390,7 +400,16 @@ public class TAController {
         TextField location = workspace.getRecLocation();
         ComboBox ta1 = workspace.getRecSupervisingTA1();
         ComboBox ta2 = workspace.getRecSupervisingTA2();
-
+        
+        if(ta1.getSelectionModel().getSelectedItem() != null && ta2.getSelectionModel().getSelectedItem() != null){
+        if(((TeachingAssistant)(ta1.getSelectionModel().getSelectedItem())).getName().equals(((TeachingAssistant)(ta2.getSelectionModel().getSelectedItem())).getName()) && !(((TeachingAssistant)(ta1.getSelectionModel().getSelectedItem())).getName().equals(""))){
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            dialog.show(props.getProperty(ADD_RECITATION_ERROR_TITLE), props.getProperty(ADD_RECITATION_ERROR3));
+            workspace.getRecSupervisingTA1().getSelectionModel().clearSelection();
+                workspace.getRecSupervisingTA2().getSelectionModel().clearSelection();
+            return;
+        }
+        }
         TableView recTable = workspace.getRecitationTable();
         Object selectedItem = recTable.getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
@@ -410,7 +429,8 @@ public class TAController {
         }
 
         if (section.getText().equals("") || dayTime.getText().equals("") || location.getText().equals("")) {
-            System.out.println("PLACEHOLDER\nPlease specifiy a section ID, day/time, and location of the recitation.");
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            dialog.show(props.getProperty(ADD_RECITATION_ERROR_TITLE), props.getProperty(ADD_RECITATION_ERROR1));
             return;
         }
 
@@ -446,9 +466,8 @@ public class TAController {
                 workspace.getRecSupervisingTA1().getSelectionModel().clearSelection();
                 workspace.getRecSupervisingTA2().getSelectionModel().clearSelection();
             } else {
-//                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
-//                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
-                System.out.println("PLACEHOLDER\nRecitation section ID must be unique!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ADD_RECITATION_ERROR_TITLE), props.getProperty(ADD_RECITATION_ERROR2));
             }
         } /* UPDATE EXISTING TEAM */ else {
             if (validRec) {
@@ -469,7 +488,8 @@ public class TAController {
             } else {
 //                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
 //                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
-                System.out.println("PLACEHOLDER\nRecitation section ID must be unique!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ADD_RECITATION_ERROR_TITLE), props.getProperty(ADD_RECITATION_ERROR2));
             }
         }
     }
@@ -488,8 +508,20 @@ public class TAController {
 
         TableView itemTable = workspace.getScheduleItemsTable();
         Object selectedItem = itemTable.getSelectionModel().getSelectedItem();
+        
+        Data data = (Data) app.getDataComponent();
+        for(Object item : data.getScheduledItems()){
+            ScheduledItem shItem = (ScheduledItem)item;
+            if(shItem.getDate().equals(java.sql.Date.valueOf(itemDate.getValue())) && shItem.getTopic().equals(itemTopic.getText()) && selectedItem == null){
+                workspace.getAddUpdateScheduleItemButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ADD_SCHEDULE_ITEM_ERROR_TITLE), props.getProperty(ADD_SCHEDULE_ITEM_ERROR2));
+                return;
+            }
+        }
         if (selectedItem != null) {
             ScheduledItem item = (ScheduledItem) selectedItem;
+            
             if (item.getType().equals(itemType.getValue().toString()) && item.getDate().equals(java.sql.Date.valueOf(itemDate.getValue()))
                     && item.getTime().equals(itemTime.getText()) && item.getTitle().equals(itemTitle.getText())
                     && item.getTopic().equals(itemTopic.getText()) && item.getLink().equals(itemLink.getText())
@@ -509,13 +541,14 @@ public class TAController {
         }
 
         if (itemType.getSelectionModel().getSelectedItem() == null || itemDate.getValue() == null || itemTitle.getText().equals("")) {
-            System.out.println("PLACEHOLDER\nPlease specifiy a type, date, time, and title of the scheduled item.");
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            dialog.show(props.getProperty(ADD_SCHEDULE_ITEM_ERROR_TITLE), props.getProperty(ADD_SCHEDULE_ITEM_ERROR1));
             return;
         }
 
         String dateOfPicker = itemDate.getValue().getDayOfMonth() + "/" + itemDate.getValue().getMonth().getValue() + "/" + itemDate.getValue().getYear();
 
-        Data data = (Data) app.getDataComponent();
+        
         boolean validItem = true;
 
         ObservableList<ScheduledItem> items = data.getScheduledItems();
@@ -542,15 +575,15 @@ public class TAController {
                 workspace.getScheduleItemCriteria().setText("");
                 workspace.getScheduleItemsTable().getSelectionModel().clearSelection();
             } else {
-//                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
-//                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
-                System.out.println("PLACEHOLDER\nScheduled item date and title must be unique!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ADD_SCHEDULE_ITEM_ERROR_TITLE), props.getProperty(ADD_SCHEDULE_ITEM_ERROR2));
             }
         } /* UPDATE EXISTING TEAM */ else {
+            System.out.println("ey");
             if (validItem) {
                 if (selectedItem != null) {
                     ScheduledItem item = (ScheduledItem) selectedItem;
-
+                    System.out.println("here");
                     jTPS_Transaction add = new addEditScheduleItem_Transaction(app, this, workspace, itemType.getSelectionModel().getSelectedItem().toString(), "" + itemDate.getValue().getMonth().getValue(), "" + itemDate.getValue().getDayOfMonth(), "" + itemDate.getValue().getYear(), itemTime.getText(), itemTitle.getText(), itemTopic.getText(), itemLink.getText(), itemCriteria.getText(), item);
                     j.addTransaction(add);
                     workspace.getScheduleItemType().getSelectionModel().clearSelection();
@@ -564,9 +597,8 @@ public class TAController {
                     workspace.getAddUpdateScheduleItemButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
                 }
             } else {
-//                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
-//                dialog.show(props.getProperty(TEAM_NAME_NOT_UNIQUE_TITLE), props.getProperty(TEAM_NAME_NOT_UNIQUE_MESSAGE));
-                System.out.println("PLACEHOLDER\nScheduled item date and title must be unique!");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(ADD_SCHEDULE_ITEM_ERROR_TITLE), props.getProperty(ADD_SCHEDULE_ITEM_ERROR2));
             }
         }
     }
@@ -600,7 +632,8 @@ public class TAController {
         }
 
         if (nameTextField.getText().equals("")) {
-            System.out.println("PLACEHOLDER\nTeam name must be specified!");
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            dialog.show(props.getProperty(ADD_TEAM_ERROR_TITLE), props.getProperty(ADD_TEAM_ERROR1));
             return;
         }
 
@@ -682,7 +715,8 @@ public class TAController {
         }
 
         if (firstNameTextField.getText().equals("") || lastNameTextField.getText().equals("")) {
-            System.out.println("PLACEHOLDER\nYou must specify a student first name and last name!");
+            AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+            dialog.show(props.getProperty(ADD_STUDENT_ERROR_TTILE), props.getProperty(ADD_STUDENT_ERROR1));
             return;
         }
 
@@ -739,7 +773,7 @@ public class TAController {
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         DirectoryChooser dc = new DirectoryChooser();
-        dc.setTitle("PLACEHOLDER\nChoose an export directory");
+        dc.setTitle(props.getProperty(CHOOSE_EXPORT_DIR_TITLE));
 //        dc.setTitle(props.getProperty(SAVE_WORK_TITLE));
         File selectedDirectory = dc.showDialog(app.getGUI().getWindow());
         if (selectedDirectory != null) {
@@ -754,6 +788,8 @@ public class TAController {
                 }
             }
             workspace.getExportDir().setText(dir);
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         }
     }
 
@@ -762,7 +798,7 @@ public class TAController {
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
         PropertiesManager props = PropertiesManager.getPropertiesManager();
         DirectoryChooser dc = new DirectoryChooser();
-        dc.setTitle("PLACEHOLDER\nChoose an template directory");
+        dc.setTitle(props.getProperty(CHOOSE_TEMP_DIR_TITLE));
 //        dc.setTitle(props.getProperty(SAVE_WORK_TITLE));
         File selectedDirectory = dc.showDialog(app.getGUI().getWindow());
         if (selectedDirectory != null) {
@@ -801,101 +837,123 @@ public class TAController {
                 if (projectsHTML.exists()) {
                     data.addSitePage(false, "Projects", "projects.html", "ProjectsBuilder.js");
                 }
+                AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
             } else {
-                System.out.println("PLACEHOLDER\nNo usable HTML files found.\nMake sure they are named 'index.html', 'syllabus.html', 'schedule.html', 'hws.html', and/or 'projects.html.'");
+                AppMessageDialogSingleton dialog = AppMessageDialogSingleton.getSingleton();
+                dialog.show(props.getProperty(TEMPLATE_ERROR_TITLE), props.getProperty(TEMPLATE_ERROR1)+"\n"+props.getProperty(TEMPLATE_ERROR2));
             }
 
         }
     }
-    
-    public void handleChangeBannerSchoolImage(){
+
+    public void handleChangeBannerSchoolImage() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
         FileChooser fc = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PLACEHOLDER\nIMAGE FILE","*.jpg", "*.gif", "*.bmp", "*.tiff", "*.png");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(props.getProperty(IMAGE_FILE), "*.jpg", "*.gif", "*.bmp", "*.tiff", "*.png");
         fc.getExtensionFilters().add(extFilter);
-	fc.setTitle("PLACEHOLDER\nSelect school banner image");
+        fc.setTitle(props.getProperty(SELECT_IMAGE));
         File selectedFile = fc.showOpenDialog(app.getGUI().getWindow());
-        
-        if(selectedFile != null){
+
+        if (selectedFile != null) {
             data.setBannerSchoolImageDir(selectedFile.getPath());
-            workspace.getBannerSchool().setImage(new Image("file:"+selectedFile.getPath()));
+            workspace.getBannerSchool().setImage(new Image("file:" + selectedFile.getPath()));
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         }
     }
 
-    public void handleChangeLeftFooterImage(){
+    public void handleChangeLeftFooterImage() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
         FileChooser fc = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PLACEHOLDER\nIMAGE FILE","*.jpg", "*.gif", "*.bmp", "*.tiff", "*.png");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(props.getProperty(IMAGE_FILE), "*.jpg", "*.gif", "*.bmp", "*.tiff", "*.png");
         fc.getExtensionFilters().add(extFilter);
-	fc.setTitle("PLACEHOLDER\nSelect left footer image");
+        fc.setTitle(props.getProperty(SELECT_IMAGE));
         File selectedFile = fc.showOpenDialog(app.getGUI().getWindow());
-        
-        if(selectedFile != null){
+
+        if (selectedFile != null) {
             data.setLeftFooterImageDir(selectedFile.getPath());
-            workspace.getLeftFooter().setImage(new Image("file:"+selectedFile.getPath()));
+            workspace.getLeftFooter().setImage(new Image("file:" + selectedFile.getPath()));
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         }
     }
-    
-    public void handleChangeRightFooterImage(){
+
+    public void handleChangeRightFooterImage() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+        PropertiesManager props = PropertiesManager.getPropertiesManager();
+
         FileChooser fc = new FileChooser();
-        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("PLACEHOLDER\nIMAGE FILE","*.jpg", "*.gif", "*.bmp", "*.tiff", "*.png");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(props.getProperty(IMAGE_FILE), "*.jpg", "*.gif", "*.bmp", "*.tiff", "*.png");
         fc.getExtensionFilters().add(extFilter);
-	fc.setTitle("PLACEHOLDER\nSelect right footer image");
+        fc.setTitle(props.getProperty(SELECT_IMAGE));
         File selectedFile = fc.showOpenDialog(app.getGUI().getWindow());
-        
-        if(selectedFile != null){
+
+        if (selectedFile != null) {
             data.setRightFooterImageDir(selectedFile.getPath());
-            workspace.getRightFooter().setImage(new Image("file:"+selectedFile.getPath()));
+            workspace.getRightFooter().setImage(new Image("file:" + selectedFile.getPath()));
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         }
     }
-    
-    public void handleChangeCSS(){
+
+    public void handleChangeCSS() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+
         String newCSS = workspace.getStylesheet().getSelectionModel().getSelectedItem().toString();
         data.setStylesheetDir(newCSS);
+        AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
     }
-    
-    public void handleChangeSubject(){
+
+    public void handleChangeSubject() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+
         ComboBox cb = workspace.getSubjectComboBox();
         data.setSubject(cb.getSelectionModel().getSelectedItem().toString());
+        AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
     }
-    
-    public void handleChangeNumber(){
+
+    public void handleChangeNumber() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+
         ComboBox cb = workspace.getNumberComboBox();
         data.setNumber(cb.getSelectionModel().getSelectedItem().toString());
+        AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
     }
-    
-    public void handleChangeSemester(){
+
+    public void handleChangeSemester() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+
         ComboBox cb = workspace.getSemesterComboBox();
         data.setSemester(cb.getSelectionModel().getSelectedItem().toString());
+        AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
     }
-    
-    public void handleChangeYear(){
+
+    public void handleChangeYear() {
         Data data = (Data) app.getDataComponent();
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
-        
+
         ComboBox cb = workspace.getYearComboBox();
         data.setYear(cb.getSelectionModel().getSelectedItem().toString());
+        AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
     }
-    
+
     public void undoTransaction() {
         j.undoTransaction();
         markWorkAsEdited();
@@ -943,6 +1001,24 @@ public class TAController {
             Object selectedItem = itemTable.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
                 jTPS_Transaction delete = new deleteScheduledItem_Transaction(app, this, selectedItem, workspace);
+                j.addTransaction(delete);
+            }
+        } else if (code == KeyCode.Z && event.isControlDown()) {
+            j.undoTransaction();
+        } else if (code == KeyCode.Y && event.isControlDown()) {
+            j.doTransaction();
+        }
+    }
+    
+    public void handleRecTableKeyPress(KeyEvent event, KeyCode code){
+         if (code == KeyCode.DELETE) {
+            TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
+            TableView itemTable = workspace.getRecitationTable();
+
+            // IS A TA SELECTED IN THE TABLE?
+            Object selectedItem = itemTable.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                jTPS_Transaction delete = new deleteRecitation_Transaction(app, this, selectedItem, workspace);
                 j.addTransaction(delete);
             }
         } else if (code == KeyCode.Z && event.isControlDown()) {
@@ -1103,5 +1179,6 @@ public class TAController {
     public void setIgnoreEnd(boolean ignoreEnd) {
         this.ignoreEnd = ignoreEnd;
     }
+    
 
 }

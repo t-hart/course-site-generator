@@ -8,7 +8,7 @@
 -->
 <properties>
 	<property_list>
-		<property name="APP_TITLE"	    value="TA Manager"></property>
+		<property name="APP_TITLE"	    value="Course Site Generator™"></property>
 		<property name="APP_LOGO"	    value="TAManagerLogo.png"></property>
 		<property name="APP_PATH_CSS"	    value="style/"></property>
 		<property name="APP_CSS"	    value="tam_style.css"></property>
@@ -170,6 +170,41 @@
 		<property name="TEAM_NAME_NOT_UNIQUE_MESSAGE"	value="A team with that name already exists!"></property>
 		<property name="STUDENT_NAME_NOT_UNIQUE_TITLE"	value="Add/Update Student Error"></property>
 		<property name="STUDENT_NAME_NOT_UNIQUE_MESSAGE" value="A student with that name already exists!"></property>
+
+		<property name = "STARTING_DATE_ERROR_TITLE"	value="Starting Date Error"></property>
+		<property name = "STARTING_DATE_ERROR1"	value = "Starting date must be before ending date!"></property>
+		<property name = "STARTING_DATE_ERROR2" value = "Starting date must be a Monday!"></property>
+		<property name = "ENDING_DATE_ERROR_TITLE"	value="Ending Date Error"></property>
+		<property name = "ENDING_DATE_ERROR1"	value = "Ending date must be after starting date!"></property>
+		<property name = "ENDING_DATE_ERROR2" value = "Ending date must be a Friday!"></property>
+		<property name = "ADD_RECITATION_ERROR_TITLE"	value="Add/Update Recitation Error"></property>
+		<property name = "ADD_RECITATION_ERROR1"	value = "Please specify a section ID, day/time, and location of the recitation."></property>
+		<property name = "ADD_RECITATION_ERROR2" value = "Recitation section ID must be unique!"></property>
+		<property name = "ADD_SCHEDULE_ITEM_ERROR_TITLE"	value="Add Schedule Item Error"></property>
+		<property name = "ADD_SCHEDULE_ITEM_ERROR1"	value = "Please specify a type, date, time, and title of the schedule item."></property>
+		<property name = "ADD_SCHEDULE_ITEM_ERROR2"	value = "Schedule item date and title must be unique!"></property>
+		<property name="ADD_TEAM_ERROR_TITLE"	value="Add/Update Team Error!"></property>
+		<property name = "ADD_TEAM_ERROR1"	value="Team name must be specified!"></property>
+		<property name = "ADD_STUDENT_ERROR_TTILE"	value = "Add/Update Student Error!"></property>
+		<property name = "ADD_STUDENT_ERROR1"	value = "You must specify a student first name and last name!"></property>
+		<property name = "CHOOSE_EXPORT_DIR_TITLE"	value="Choose an export directory"></property>
+		<property name = "CHOOSE_TEMP_DIR_TITLE"	value = "Choose an template directory"></property>
+		<property name = "TEMPLATE_ERROR_TITLE" value = "Template Error!"></property>
+		<property name = "TEMPLATE_ERROR1" value = "No usable HTML files found."></property>
+		<property name = "TEMPLATE_ERROR2" value = "Make sure they are named 'index.html', 'syllabus.html', 'schedule.html', 'hws.html', and/or 'projects.html.'"></property>
+		<property name = "SELECT_IMAGE" value = "Select Image"></property>
+		<property name = "ABOUT_POPUP_TITLE"	value = "About"></property>
+		<property name = "ABOUT1" value = "Couse Site Generator™"></property>
+		<property name = "ABOUT2" value = "Created by: Timothy Hart"></property>
+		<property name = "ABOUT3" value = "CSE 219 Final Project"></property>
+		<property name = "ABOUT4" value = "Spring 2017"></property>
+		<property name = "ABOUT5" value = "Contact: tjh.hart@gmail.com"></property>
+        <property name = "CLOSE"	value = "Close"></property>
+        <property name = "IMAGE_FILE"	value = "Image File"></property>
+        <property name = "ADD_RECITATION_ERROR3" value = "You cannot choose the same TA twice!"></property>
+
+
+
 	</property_list>
 	<property_options_list>
 		<property_options name="OFFICE_HOURS_TABLE_HEADERS">

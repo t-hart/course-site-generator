@@ -155,6 +155,20 @@ public class Data implements AppDataComponent {
         TAWorkspace workspace = (TAWorkspace) app.getWorkspaceComponent();
         ComboBox a = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(2);
         ComboBox c = (ComboBox) workspace.getOfficeHoursSubheaderBox().getChildren().get(4);
+        
+        workspace.getSubjectComboBox().getSelectionModel().clearSelection();
+        workspace.getNumberComboBox().getSelectionModel().clearSelection();
+        workspace.getSemesterComboBox().getSelectionModel().clearSelection();
+        workspace.getYearComboBox().getSelectionModel().clearSelection();
+        workspace.getCourseTitle().setText("");
+        workspace.getInstructorName().setText("");
+        workspace.getInstructorHome().setText("");
+        workspace.getExportDir().setText("                       ");
+        workspace.getSiteTemplateDir().setText("");
+        workspace.getBannerSchool().setImage(null);
+        workspace.getLeftFooter().setImage(null);
+        workspace.getRightFooter().setImage(null);
+        workspace.getStylesheet().getSelectionModel().clearSelection();
 
         a.getSelectionModel().select(0);
         c.getSelectionModel().select(47);
@@ -403,7 +417,11 @@ public class Data implements AppDataComponent {
     
     public void removeScheduledItem(Date date, String topic){
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();
+        System.out.println(date);
+        System.out.println(topic);
         for(ScheduledItem item : scheduledItems){
+            System.out.println(item.getDate());
+            System.out.println(item.getTopic());
             if(date.equals(item.getDate()) && topic.equalsIgnoreCase(item.getTopic())){
                 scheduledItems.remove(item);
                 workspace.getScheduleItemType().getSelectionModel().clearSelection();
@@ -413,10 +431,11 @@ public class Data implements AppDataComponent {
                 workspace.getScheduleItemTopic().setText("");
                 workspace.getScheduleItemLink().setText("");
                 workspace.getScheduleItemCriteria().setText("");
-                
+                System.out.println("item deleted");
                 return;
             }
         }
+        System.out.println("item not found");
     }
     public void removeTeam(String name){
         TAWorkspace workspace = (TAWorkspace)app.getWorkspaceComponent();

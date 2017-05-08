@@ -74,12 +74,8 @@ public class addEditScheduleItem_Transaction implements jTPS_Transaction {
         }
             
         if(item != null){
-            for(int i = 0; i < items.size(); i++){
-                if(item.getYear() == Integer.valueOf(year) && item.getMonth() == Integer.valueOf(month) && item.getDay() == Integer.valueOf(day) && item.getTopic().equalsIgnoreCase(topic)){
-                    data.removeScheduledItem(item.getDate(), item.getTopic());
-                    break;
-                }
-            }
+            data.removeScheduledItem(item.getDate(), item.getTopic());
+         
             
             data.addScheduledItem(type, itemDate, time, title, topic, link, criteria);
         }

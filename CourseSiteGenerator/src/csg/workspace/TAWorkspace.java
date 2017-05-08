@@ -73,6 +73,7 @@ import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.beans.value.ObservableValue;
 import csg.data.*;
 import static djf.settings.AppStartupConstants.PATH_WORK;
+import djf.ui.AppGUI;
 import java.io.File;
 import java.util.Date;
 import java.time.LocalDate;
@@ -123,6 +124,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
     Button redoButton;
     Button aboutButton;
     FlowPane rightToolbar;
+    
 
     // THE HEADER ON THE RIGHT
     HBox officeHoursHeaderBox;
@@ -421,12 +423,18 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         courseTitle.textProperty().addListener((ov, oldValue, newValue) ->{
             data.setTitle(newValue);
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         });
         instructorName.textProperty().addListener((ov, oldValue, newValue) ->{
             data.setInstructorName(newValue);
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         });
         instructorHome.textProperty().addListener((ov, oldValue, newValue) ->{
             data.setInstructorHome(newValue);
+            AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
         });
         
         courseInfoPane.add(courseTitle, 1, 3, 5, 1);
@@ -639,7 +647,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
         
         addEditPane.setStyle("-fx-background-color: #EBEBEB");
         
-        addUpdateRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADDUPDATE_TEXT.toString()));
+        addUpdateRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT.toString()));
         Button clearRecitationButton = new Button(props.getProperty(CourseSiteGeneratorProp.CLEAR_BUTTON_TEXT.toString()));
         addUpdateRecitationButton.setPrefWidth(110);
         clearRecitationButton.setPrefWidth(110);
@@ -672,6 +680,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         startingMonday.valueProperty().addListener((ov, oldValue, newValue) -> {
             if(oldValue != null){
                 controller.handleChangeStartDate(java.sql.Date.valueOf(oldValue), java.sql.Date.valueOf(newValue));
+                AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
             }
         });
         endingFriday.setConverter(new StringConverter<LocalDate>() {
@@ -696,6 +706,8 @@ public class TAWorkspace extends AppWorkspaceComponent {
         endingFriday.valueProperty().addListener((ov, oldValue, newValue) -> {
             if(oldValue != null){
                 controller.handleChangeEndDate(java.sql.Date.valueOf(oldValue), java.sql.Date.valueOf(newValue));
+                AppGUI gui = app.getGUI();
+            gui.getFileController().markAsEdited(gui);
             }
         });
         VBox schedulePane = new VBox(10);
@@ -1186,6 +1198,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         teamTable.setOnMouseClicked(e -> {
             controller.checkTeamSelected();
         });
+        recitationTable.setOnKeyPressed(e -> {
+            controller.handleRecTableKeyPress(e, e.getCode());
+        });
         scheduleItemsTable.setOnKeyPressed(e ->{
             controller.handleKeyPressScheduledItemsTable(e, e.getCode());
         });
@@ -1203,6 +1218,9 @@ public class TAWorkspace extends AppWorkspaceComponent {
         });
         recitationTable.setOnMouseClicked(e -> {
             controller.checkRecitationSelected();
+        });
+        deleteRecitationButton.setOnAction(e -> {
+            controller.handleDeleteRecitation();
         });
         deleteScheduleItemButton.setOnAction(e -> {
             controller.handleDeleteScheduledItem();
@@ -1244,6 +1262,7 @@ public class TAWorkspace extends AppWorkspaceComponent {
             getScheduleItemLink().setText("");
             getScheduleItemCriteria().setText("");
             getScheduleItemsTable().getSelectionModel().clearSelection();
+            getAddUpdateScheduleItemButton().setText(props.getProperty(CourseSiteGeneratorProp.ADD_TEXT));
         });
         clearTeamButton.setOnAction(e -> {
             getTeamName().setText("");

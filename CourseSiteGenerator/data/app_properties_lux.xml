@@ -8,7 +8,7 @@
 -->
 <properties>
 	<property_list>
-		<property name="APP_TITLE"	    value="GA Manager"></property>
+		<property name="APP_TITLE"	    value="Course Site Generator™"></property>
 		<property name="APP_LOGO"	    value="TAManagerLogo.png"></property>
 		<property name="APP_PATH_CSS"	    value="style/"></property>
 		<property name="APP_CSS"	    value="tam_style.css"></property>
@@ -170,6 +170,38 @@
 		<property name="TEAM_NAME_NOT_UNIQUE_MESSAGE"	value="Eng equipe mat deem numm schonn!"></property>
 		<property name="STUDENT_NAME_NOT_UNIQUE_TITLE"	value="Artikel/Aktualiséierung Schüler Feeler"></property>
 		<property name="STUDENT_NAME_NOT_UNIQUE_MESSAGE" value="E schüler mat deem numm schonn!"></property>
+
+		<property name = "STARTING_DATE_ERROR_TITLE"	value="Ab Datum Feeler"></property>
+		<property name = "STARTING_DATE_ERROR1"	value = "Ab Datum muss virun Datum ofleeft!"></property>
+		<property name = "STARTING_DATE_ERROR2" value = "Ab Datum muss e Méindeg ginn!"></property>
+		<property name = "ENDING_DATE_ERROR_TITLE"	value="Gedronk Datum Feeler"></property>
+		<property name = "ENDING_DATE_ERROR1"	value = "Gedronk Datum muss no ab Datum!"></property>
+		<property name = "ENDING_DATE_ERROR2" value = "Gedronk Datum muss e Freideg ginn!"></property>
+		<property name = "ADD_RECITATION_ERROR_TITLE"	value="Artikel/Aktualiséierung Endlech Feeler"></property>
+		<property name = "ADD_RECITATION_ERROR1"	value = "Weg uginn eng Rubrik ID, Dag/Zäit a Plaz vun der Endlech."></property>
+		<property name = "ADD_RECITATION_ERROR2" value = "Sektioun Endlech ID mussen eenzegaarteg ginn!"></property>
+		<property name = "ADD_SCHEDULE_ITEM_ERROR_TITLE"	value="Foto Zäitplang Element Feeler"></property>
+		<property name = "ADD_SCHEDULE_ITEM_ERROR1"	value = "Weg uginn engem Typ, Datum, Zäit, an Titel vum Zäitplang Punkt."></property>
+		<property name = "ADD_SCHEDULE_ITEM_ERROR2"	value = "Zäitplang Punkt Datum an Titel muss eenzegaarteg ginn!"></property>
+		<property name="ADD_TEAM_ERROR_TITLE"	value="Artikel/Aktualiséierung Equipe Feeler!"></property>
+		<property name = "ADD_TEAM_ERROR1"	value="Equipe Numm muss uginn ginn!"></property>
+		<property name = "ADD_STUDENT_ERROR_TTILE"	value = "Artikel/Aktualiséierung Schüler Feeler!"></property>
+		<property name = "ADD_STUDENT_ERROR1"	value = "Du muss e Schüler Virnumm a Familljennumm uginn!"></property>
+		<property name = "CHOOSE_EXPORT_DIR_TITLE"	value="Wielt eng Exportatioun Standuert"></property>
+		<property name = "CHOOSE_TEMP_DIR_TITLE"	value = "Wielt eng Skelett Standuert"></property>
+		<property name = "TEMPLATE_ERROR_TITLE" value = "Schabloun Feeler!"></property>
+		<property name = "TEMPLATE_ERROR1" value = "Nee villsäiteg HTML Fichieren fonnt."></property>
+		<property name = "TEMPLATE_ERROR2" value = "Nee villsäiteg HTML Fichieren fonnt.\nSécherstellen se genannt ginn 'index.html', 'syllabus.html', 'schedule.html', 'hws.html', an/oder 'projects.html.'"></property>
+		<property name = "SELECT_IMAGE" value = "En Image"></property>
+		<property name = "ABOUT_POPUP_TITLE"	value = "Iwwer"></property>
+		<property name = "ABOUT1" value = "Couse Site Generator™"></property>
+		<property name = "ABOUT2" value = "Geschafen, déi vun: Timothy Hart"></property>
+		<property name = "ABOUT3" value = "CSE 219 Finale Project"></property>
+		<property name = "ABOUT4" value = "Fréijoer 2017"></property>
+		<property name = "ABOUT5" value = "Kontakt: tjh.hart@gmail.com"></property>
+        <property name = "CLOSE"	value = "Enk"></property>
+        <property name = "IMAGE_FILE"	value = "Bild"></property>
+        <property name = "ADD_RECITATION_ERROR3" value = "Du kanns dat selwecht GA zweemol net wielen!"></property>
 	</property_list>
 	<property_options_list>
 		<property_options name="OFFICE_HOURS_TABLE_HEADERS">

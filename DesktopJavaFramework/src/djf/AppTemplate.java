@@ -159,7 +159,7 @@ public abstract class AppTemplate extends Application {
             propertiesFileName = "app_properties_eng.xml";
             langChoice = new String("eng");
         }
-        propertiesFileName = "app_properties_eng.xml";
+//        propertiesFileName = "app_properties_eng.xml";
         try {
 	    // LOAD THE SETTINGS FOR STARTING THE APP
 	    props.addProperty(PropertiesManager.DATA_PATH_PROPERTY, PATH_DATA);
