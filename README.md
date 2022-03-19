@@ -10,4 +10,4 @@ The Course Site Generator application intends to automate the process of buildin
 
 ## Links
 
-[Software Design Document](https://drive.google.com/file/d/0B7oeYZjL6Zs7UFBsd2V0amxDaGs/view?usp=sharing)
+[Software Design Document](SoftwareDesignDescription.pdf)
